@@ -1,7 +1,7 @@
 <template>
-    <Vueform ref="form$">
+    <!-- <Vueform ref="form$">
         <ButtonElement name="editProfile" button-label="編輯個人資料" :full="true" size="lg" @click="editProfile"/>
-    </Vueform>
+    </Vueform> -->
 </template>
     
 <script setup>
