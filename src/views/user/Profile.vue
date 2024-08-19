@@ -8,13 +8,26 @@
     import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios';
 import  { useRouter } from 'vue-router';
+import useUserStore from '@/stores/userstore';
+const userStore = useUserStore();
+
 
 onMounted(function(){
     callFind();
 })
 
+let userId = userStore.userId;
+
 function callFind() {
-    //準備呼叫一支需登入才看得到的api
+    axios.get(`/user/secure/${userId}`)
+    .then(function(response){
+        console.log("response",response);
+
+    })
+    .catch(function(error){
+        console.log("error", error);
+
+    })
 }
 </script>
     

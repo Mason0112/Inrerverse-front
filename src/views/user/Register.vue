@@ -46,9 +46,9 @@
 
             <TextElement name="nickname" placeholder="請輸入暱稱" rules="required" />
 
-            <PhoneElement name="phoneNumber" placeholder="Phone" :rules="[
+            <PhoneElement name="phoneNumber" placeholder="請輸入電話號碼" :rules="[
                 'required',
-            ]" field-name="Phone" :allow-incomplete="true" :unmask="true" />
+            ]" field-name="電話號碼" :allow-incomplete="true" :unmask="true" />
 
             <SelectElement name="country1" :search="true" :native="false" input-type="search" autocomplete="disabled"
                 placeholder="國籍" items="/json/countries.json" />
@@ -77,9 +77,6 @@
                 'required',
             ]" /> -->
             <TextElement name="gender" placeholder="性別" rules="required" />
-            <TextElement name="photo" placeholder="照片" />
-            <TextElement name="bio" placeholder="自介" />
-
 
             <CheckboxElement name="terms" text="I accept the Terms & Conditions & Privacy Policy" rules="accepted"/>
             <StaticElement name="divider_1" tag="hr" />
@@ -108,7 +105,6 @@ function register() {
                 city: city.value,
                 birthday: birthday.value,
                 gender: gender.value,
-                photo: photo.value,
         }
     
     console.log(request);
