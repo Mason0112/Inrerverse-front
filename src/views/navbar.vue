@@ -1,0 +1,53 @@
+<template>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <RouterLink class="navbar-brand" :to="{ name: 'home-link' }">InterVerse</RouterLink>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <RouterLink class="nav-link active" aria-current="page" :to="{ name: 'home-link' }">首頁</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'login-link' }" v-show="!userStore.isLoggedIn">登入</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'register-link' }">註冊</RouterLink>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false" v-show="userStore.isLoggedIn">
+              Dropdown link
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'profile-link' }">編輯個人資料</RouterLink>
+              </li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" @click="logout">登出</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<script setup>
+import useUserStore from '@/stores/userstore';
+import axios from '@/plugins/axios';
+
+const userStore = useUserStore();
+
+function logout() {
+  userStore.resetStore();
+  axios.defaults.headers.authorization ='';
+}
+
+</script>
+
+<style></style>
