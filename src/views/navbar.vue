@@ -18,6 +18,9 @@
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'register-link' }">註冊</RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'product-category' }">類別頁面</RouterLink>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               data-bs-toggle="dropdown" aria-expanded="false" v-show="userStore.isLoggedIn">
@@ -27,6 +30,7 @@
               <li>
                 <RouterLink class="dropdown-item" :to="{ name: 'profile-link' }">編輯個人資料</RouterLink>
               </li>
+             
               <li><a class="dropdown-item" href="#">Another action</a></li>
               <li><a class="dropdown-item" @click="logout">登出</a></li>
             </ul>
