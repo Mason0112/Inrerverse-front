@@ -1,6 +1,6 @@
 <template>
     <img :src="`${photo}`" alt="Profile Photo" />
-    
+
     <Vueform ref="form$">
         <ButtonElement name="editProfile" button-label="編輯個人資料" :full="true" size="lg" @click="editProfile"/>
     </Vueform>
@@ -30,7 +30,7 @@ function callFind() {
         console.log("response1",response1);
         console.log("response2", response2);
 
-        photo = response2.data;
+        photo.value = response2.data;
 
     })
     .catch(function(error){
