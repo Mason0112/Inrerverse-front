@@ -1,11 +1,11 @@
 <template>
-    <!-- <Vueform ref="form$">
+    <Vueform ref="form$">
         <ButtonElement name="editProfile" button-label="編輯個人資料" :full="true" size="lg" @click="editProfile"/>
-    </Vueform> -->
+    </Vueform>
 </template>
     
 <script setup>
-    import { ref, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios';
 import  { useRouter } from 'vue-router';
 import useUserStore from '@/stores/userstore';

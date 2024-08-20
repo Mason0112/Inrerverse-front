@@ -113,7 +113,7 @@ function register() {
         console.log("response", response);
 
         if (response.data.success){
-            router.push("/user/login");
+            router.push("/login");
         }
     })
     .catch(function(error){
