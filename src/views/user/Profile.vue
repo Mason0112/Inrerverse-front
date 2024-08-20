@@ -2,6 +2,7 @@
     <Vueform ref="form$">
         <ButtonElement name="editProfile" button-label="編輯個人資料" :full="true" size="lg" @click="editProfile"/>
     </Vueform>
+
 </template>
     
 <script setup>
@@ -9,6 +10,8 @@ import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios';
 import  { useRouter } from 'vue-router';
 import useUserStore from '@/stores/userstore';
+
+const router = useRouter();
 const userStore = useUserStore();
 
 
@@ -27,6 +30,10 @@ function callFind() {
     .catch(function(error){
         console.log("error", error);
 
+        const status = error.response.status;
+        if (status === 403) {
+        router.push('/403');
+      }
     })
 }
 </script>
