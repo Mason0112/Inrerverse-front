@@ -15,7 +15,6 @@ function toHome() {
     router.push("/");
 }
 
-
 </script>
 
 <style></style>

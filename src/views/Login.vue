@@ -21,8 +21,6 @@ const router = useRouter();
 const userStore = useUserStore();
 
 function login() {
-        // console.log("accountNumber", accountNumber.value, "password", password.value);
-
         let request={
                 accountNumber: accountNumber.value,
                 password: password.value
@@ -40,7 +38,6 @@ function login() {
                         
                         // 把JWT塞到axios的headers裡
                         axios.defaults.headers.authorization = 'Bearer '+response.data.token;
-                        console.log(axios.defaults.headers.authorization)
 
                         // 轉址到首頁
                         router.push("/");
