@@ -14,29 +14,21 @@
     <br>
 
     <div class="row">
-        <div class="col-4">分頁</div>
-    </div>
-    <br>
-    <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <div class="card">
-                <img src="..." class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Card title</h5>
-                    <div class="card-text text-danger text-end" >100元
-                    </div>
-                    <div class="row">
-                        <div class="col text-start">
-                            <button type="button" class="btn btn-primary">開啟修改</button>
-                        </div>
-                        <div class="col text-end"> 
-                            <button type="button" class="btn btn-primary">刪除</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-4">分頁
+
         </div>
     </div>
+    <br>
+
+
+    <div class="row">
+        <div class="col-lg-3 col-md-6" v-for=" category in categories" :key="category.id">
+            <CategoryCard :category="category" @delete="callRemove(category.id)"></CategoryCard>
+        </div>
+    </div>
+
+
+
 </template>
 
 <script setup>
@@ -44,6 +36,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios';
 import Swal from 'sweetalert2';
+import CategoryCard from '@/components/product/CategoryCard.vue';
 
 const categories = ref([]);
 const router = useRouter();
@@ -52,6 +45,11 @@ const router = useRouter();
 onMounted(function () {
     getAllCategories()
 });
+function callRemove(id){
+console.log("callRemove",id);
+}
+
+
 function getAllCategories() {
     axiosapi.get(`/categories`).then(function(response){
         console.log("response",response)

@@ -1,27 +1,27 @@
 <template>
+
     <div class="card">
-        <img class="card-img-top" :src="`${path}${product.id}`" :alt="product.name">
         <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <div class="card-text text-danger text-end">NT$ {{ product.price }}</div>
-            <div class="row ">
+            <h5 class="card-title">{{ category.name }}</h5>
+            <div class="row">
                 <div class="col text-start">
-                    <button type="button" class="btn btn-primary" @click="emits('openUpdate', 'update', product.id)">開啟修改</button>
+                    <button type="button" class="btn btn-primary" @click="doclick1(category.id)">開啟修改</button>
                 </div>
                 <div class="col text-end">
-                    <button type="button" class="btn btn-primary" @click="emits('delete', product.id)">刪除</button>
+                    <button type="button" class="btn btn-primary" @click="emits('delete',category.id)">刪除</button>
                 </div>
             </div>
         </div>
     </div>
-</template>
-    
-<script setup>
-   
 
-    const path = import.meta.env.VITE_DETAIL_URL;
+</template>
+
+<script setup>
+    const props = defineProps(["category"]);
+    const emits = defineEmits(["","delete"])
+    function doclick1(id){
+
+    }   
 </script>
-    
-<style>
-    
-</style>
+
+<style></style>
