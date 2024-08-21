@@ -57,7 +57,8 @@ function openModal(action, id){
             category.value = { };
         } else {
             isShowButtonInsert.value = false;  
-            category.value = {name};  
+            category.value = { name : '不知道'};
+            //有多拿到一個id參數 要做findbyid
         }
         categoryModal.value.showModal();
 }
