@@ -35,7 +35,6 @@
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios';
-import Swal from 'sweetalert2';
 import CategoryCard from '@/components/product/CategoryCard.vue';
 
 const categories = ref([]);
