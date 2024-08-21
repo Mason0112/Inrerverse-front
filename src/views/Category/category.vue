@@ -2,7 +2,7 @@
     <h3>Category Table</h3>
     <div class="row">
         <div class="col-4">
-            <button type="button" class="btn btn-primary">開啟新增</button>
+            <button type="button" class="btn btn-primary" @click="openModal('insert')">開啟新增</button>
         </div>
         <div class="col-4">
             <input type="text" placeholder="請輸入產品名稱">
@@ -23,11 +23,15 @@
 
     <div class="row">
         <div class="col-lg-3 col-md-6" v-for=" category in categories" :key="category.id">
-            <CategoryCard :category="category" @delete="callRemove(category.id)"></CategoryCard>
+            <CategoryCard :category="category" @delete="callRemove(category.id)" @open-update="openModal"></CategoryCard>
         </div>
     </div>
 
-
+    <CategoryModal ref="categoryModal" 
+    v-model:category="category" 
+    :is-show-button-insert="isShowButtonInsert" 
+    @insert="callCreate" 
+    @update="callModify"></CategoryModal>
 
 </template>
 
@@ -36,11 +40,28 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios';
 import Swal from 'sweetalert2';
-import CategoryCard from '@/components/product/CategoryCard.vue';
+import CategoryCard from '@/components/category/CategoryCard.vue';
+import CategoryModal from '@/components/category/CategoryModal.vue';
 
 const categories = ref([]);
-const router = useRouter();
 
+//Modal start
+const categoryModal =ref(null);
+const category = ref({});
+const isShowButtonInsert = ref(true);
+
+function openModal(action, id){
+        console.log("openModal",action,id)
+        if (action==="insert") {
+            isShowButtonInsert.value = true;
+            category.value = { };
+        } else {
+            isShowButtonInsert.value = false;  
+            category.value = {name};  
+        }
+        categoryModal.value.showModal();
+}
+//Modal end
 
 onMounted(function () {
     getAllCategories()
@@ -57,6 +78,17 @@ function getAllCategories() {
     })
 
 }
+
+function callCreate(){
+    console.log("callCreate",category.value);
+    categoryModal.value.hideModal();
+}
+
+function callModify(){
+    console.log("callModify",category.value);
+    categoryModal.value.hideModal();
+}
+
 
 
 </script>
