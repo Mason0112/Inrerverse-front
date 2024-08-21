@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router/router'
+import { handleRedirect } from '@/plugins/axios'; // 攔截器
+        handleRedirect(router);
 import FontAwesomeIcon from './plugins/fontawesome'
 import Vueform from '@vueform/vueform'
 import vueformConfig from './plugins/vueform.config'

@@ -2,7 +2,7 @@
     <div>
       <navbar></navbar>
     </div>
-    <RouterView></RouterView>    
+    <RouterView></RouterView>
 </template>
   
 <script setup>
