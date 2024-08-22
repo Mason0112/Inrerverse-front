@@ -37,17 +37,25 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import axiosapi from '@/plugins/axios';
-import Swal from 'sweetalert2';
 import CategoryCard from '@/components/category/CategoryCard.vue';
 import CategoryModal from '@/components/category/CategoryModal.vue';
 
+//進入頁面先做的事情start 把所以種類讀進來
+onMounted(function () {
+    getAllCategories()
+});
+function getAllCategories() {
+    axiosapi.get(`/categories`).then(function(response){
+        console.log("response",response)
+        categories.value = response.data
+    })
+}
+//進入頁面先做的事情end
 const categories = ref([]);
-
+const category = ref({});
 //Modal start
 const categoryModal =ref(null);
-const category = ref({});
 const isShowButtonInsert = ref(true);
 
 function openModal(action, id){
@@ -57,36 +65,44 @@ function openModal(action, id){
             category.value = { };
         } else {
             isShowButtonInsert.value = false;  
-            category.value = { name : '不知道'};
-            //有多拿到一個id參數 要做findbyid
+             //有多拿到一個id參數 要做findbyid
+            axiosapi.get(`/categories/${id}`).then(function(response){
+                console.log("response",response)
+                //const category = ref({}); 透過ref綁定元件 修改裡面的value
+                category.value =    {  id:response.data.id,
+                                    name:response.data.name
+                                    };
+               
+    })
+           
         }
         categoryModal.value.showModal();
 }
 //Modal end
 
-onMounted(function () {
-    getAllCategories()
-});
+
+//刪除
 function callRemove(id){
-console.log("callRemove",id);
-}
-
-
-function getAllCategories() {
-    axiosapi.get(`/categories`).then(function(response){
-        console.log("response",response)
-        categories.value = response.data
+    console.log("callRemove",id);
+    axiosapi.delete(`/categories/${id}`).then(function(response){
     })
-
 }
-
+//新增
 function callCreate(){
     console.log("callCreate",category.value);
+    axiosapi.post("/categories", category.value).then(function(response) {
+    })
     categoryModal.value.hideModal();
 }
-
+//修改
 function callModify(){
+    //物件
     console.log("callModify",category.value);
+    //id
+    console.log("callModify",category.value.id);
+
+    axiosapi.put(`/categories/${category.value.id}`, category.value).then(function(response) {
+    })
     categoryModal.value.hideModal();
 }
 

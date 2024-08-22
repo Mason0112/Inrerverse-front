@@ -21,6 +21,9 @@
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'product-category' }">類別頁面</RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'product-product' }">產品頁面</RouterLink>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
