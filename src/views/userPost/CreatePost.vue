@@ -3,8 +3,9 @@
         <n-input
             type="textarea"
             placeholder="你在想什麼?"
-            v-model="content"
+            v-model:value="content"
         />
+        <!-- <div>Content: {{ content }}</div> -->
         <n-upload
             action="/userPost/"
             :default-file-list="fileList"
@@ -20,22 +21,26 @@
 import { ref } from 'vue'
 import axios from '@/plugins/axios'
 import useUserStore from '@/stores/userstore';
-// 响应式变量
+
 const content = ref('')
-const fileList = ref([])  // 这里不指定类型，直接使用空数组
+const fileList = ref([])  
 
 const userStore = useUserStore();
 
 let userId = userStore.userId;
 
-// 提交函数
+// 提交
 async function submit() {
+  const post={
+    content : content.value,
+    user:{
+      id:userId
+    }
+  }
   try {
-    await axios.post('/userPost', 
-    { text: content.value,
-        userId: userId
-     })
+    await axios.post('/userPost', post)
     alert('提交成功')
+    // console.log("123"+content.value)
   } catch (error) {
     console.error('提交失敗', error)
     alert('提交失敗!')

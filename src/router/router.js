@@ -8,6 +8,7 @@ import Register from "@/views/user/Register.vue";
 import Profile from "@/views/user/Profile.vue";
 import category from "@/views/Category/category.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
+import UserPost from "@/views/userPost/UserPost.vue";
 
 const routes = [
     { path: "/", name: "home-link", component: Home },
@@ -18,6 +19,8 @@ const routes = [
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/product/category", name: "product-category", component: category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
+    { path: "/post/userPost", name: "user-post-link", component: UserPost},
+    
 
 ]
 
