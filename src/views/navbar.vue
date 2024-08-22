@@ -33,6 +33,14 @@
             </ul>
           </li>
         </ul>
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <RouterLink class="nav-link" :to="{ name: 'login-link' }" v-show="!userStore.isLoggedIn"><font-awesome-icon :icon="['fas', 'sign-in-alt']" /> 登入</RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" :to="{ name: 'register-link' }"><font-awesome-icon :icon="['fas', 'user-plus']" /> 註冊</RouterLink>
+            </li>
+          </ul>
       </div>
     </div>
   </nav>

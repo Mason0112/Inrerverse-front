@@ -1,6 +1,7 @@
 <template>
     <div>
       <navbar></navbar>
+      <navbarTest></navbarTest>
 
     </div>
     <RouterView></RouterView>
@@ -8,6 +9,7 @@
   
 <script setup>
   import navbar from './views/navbar.vue';
+  import navbarTest from './views/navbarTest.vue';
 
 
   import 'bootstrap/dist/css/bootstrap.min.css';
