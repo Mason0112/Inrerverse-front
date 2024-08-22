@@ -20,14 +20,15 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false" v-show="userStore.isLoggedIn">
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <!-- v-show="userStore.isLoggedIn" -->
               Dropdown link
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <li>
                 <RouterLink class="dropdown-item" :to="{ name: 'profile-link' }">編輯個人資料</RouterLink>
               </li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'profile-link' }">###</RouterLink></li>
               <li><a class="dropdown-item" @click="logout">登出</a></li>
             </ul>
           </li>

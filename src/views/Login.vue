@@ -1,6 +1,6 @@
 <template>
         <div class="container">
-                <Vueform :display-errors="false" ref="form$">
+                <Vueform :display-errors="false" ref="form$" :endpoint="false">
                         <TextElement name="accountNumber" placeholder="請輸入帳號" label="帳號" rules="required"/>
                         <TextElement name="password" input-type="password" placeholder="請輸入密碼" label="密碼" rules="required"/>
                         {{  message }}
@@ -24,8 +24,6 @@ const userStore = useUserStore();
 const message= ref("");
 
 function login() {
-        // console.log("accountNumber", accountNumber.value, "password", password.value);
-
         let request={
                 accountNumber: accountNumber.value,
                 password: password.value
@@ -44,7 +42,6 @@ function login() {
                         
                         // 把JWT塞到axios的headers裡
                         axios.defaults.headers.authorization = 'Bearer '+response.data.token;
-                        console.log(axios.defaults.headers.authorization)
 
                         // 轉址到首頁
                         router.push("/");

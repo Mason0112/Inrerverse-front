@@ -26,7 +26,12 @@ const user = defineStore("user", function() {
     }
 
     function resetStore() {
+<<<<<<< HEAD
         userId.value = '';
+=======
+        userId.value = null;
+        nickname.value = null;
+>>>>>>> 63ceeaef0d67695a05f56707c1d3138e16c62850
         isLoggedIn.value = false;
         token.value = '';
     }
@@ -42,8 +47,13 @@ const user = defineStore("user", function() {
 }, {
     // 另再宣告要被piniaPluginPersistedstate套件管控在 怎麼樣的storage 和 storage裡面的的paths(只需變數名)
     persist: {
+<<<<<<< HEAD
         storage: sessionStorage,
         paths: ["userId", "nickname", "isLoggedIn", "token"]
+=======
+        storage: localStorage,
+        paths: ["userId", "nickname", "isLoggedIn"]
+>>>>>>> 63ceeaef0d67695a05f56707c1d3138e16c62850
     }
 });
 
