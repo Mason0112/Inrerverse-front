@@ -1,6 +1,6 @@
 <template>
         <div class="container">
-                <Vueform :display-errors="false" ref="form$">
+                <Vueform :display-errors="false" ref="form$" :endpoint="false">
                         <TextElement name="accountNumber" placeholder="請輸入帳號" label="帳號" rules="required"/>
                         <TextElement name="password" input-type="password" placeholder="請輸入密碼" label="密碼" rules="required"/>
                         <ButtonElement name="login" button-label="登入" :full="true" size="lg" @click="login" :submits="true"/>
