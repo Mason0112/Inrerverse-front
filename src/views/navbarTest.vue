@@ -54,6 +54,17 @@
               <li><a class="dropdown-item" @click="logout(); closeDropdown('person')">登出</a></li>
             </ul>
           </li>
+
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
+              <font-awesome-icon :icon="['far', 'bell']" /></RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
+              <font-awesome-icon :icon="['fas', 'cart-shopping']" /></RouterLink>
+          </li>
+          
+
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'login-link' }" v-show="!userStore.isLoggedIn">
               <font-awesome-icon :icon="['fas', 'sign-in-alt']" /> 登入
@@ -105,8 +116,6 @@ const userStore = useUserStore();
 function logout() {
   userStore.resetStore();
   axios.defaults.headers.authorization = '';
-
-
 }
 
 </script>
