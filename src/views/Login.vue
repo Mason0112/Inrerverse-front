@@ -21,7 +21,7 @@ const form$ = ref(null);
 const router = useRouter();
 const userStore = useUserStore();
 
-const message= ref("");
+let message=ref('');
 
 function login() {
         let request={
@@ -48,8 +48,7 @@ function login() {
 
                 // 登入失敗的邏輯
                 } else {
-
-                        message.value= "帳密不對"
+                        message.value= response.data.message
 
                 }
 
