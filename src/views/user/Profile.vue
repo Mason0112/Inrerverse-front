@@ -1,14 +1,14 @@
 <template>
-    <!-- <img :src="`${photo}`" alt="Profile Photo" />
+  <!-- <img :src="`${photo}`" alt="Profile Photo" /> -->
 
-    <Vueform ref="form$">
+  <!-- <Vueform ref="form$">
         <ButtonElement name="editProfile" button-label="編輯個人資料" :full="true" size="lg" @click="editProfile"/>
     </Vueform> -->
   <div class="profile-page">
-    <!-- 侧边栏导航 -->
+
     <aside class="sidebar">
       <ul>
-        <li>Events</li>
+        <li><RouterLink :to="{ name: 'friend-link' }">我的好友</RouterLink></li>
         <li>News</li>
         <li>Chats</li>
         <li class="active">Profile</li>
@@ -16,11 +16,13 @@
       </ul>
     </aside>
 
-    <!-- 主要内容部分 -->
     <section class="profile-content">
-      <!-- 用户信息卡片 -->
+      <!-- 用户訊息卡片 -->
       <div class="user-card">
         <img :src="`${photo}`" alt="User Photo" class="user-photo" />
+        <n-upload :on-change="handleChange">
+          <n-button>修改大頭照</n-button>
+        </n-upload>
         <h3>{{ nickname }}</h3>
         <p>{{ accountNumber }}</p>
         <p>{{ email }}</p>
@@ -34,61 +36,99 @@
       <!-- 用户资料编辑表单 -->
       <div class="edit-profile">
         <h4>修改資料</h4>
-
       </div>
     </section>
-  </div>
 
+  </div>
 </template>
-    
+
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from '@/plugins/axios';
-import useUserStore from '@/stores/userstore';
+import { ref, onMounted } from "vue";
+import axios from "@/plugins/axios";
+import useUserStore from "@/stores/userstore";
 
 const userStore = useUserStore();
-let accountNumber=ref("");
-let email=ref("");
-let nickname=ref("");
-let phoneNumber=ref("");
-let country=ref("");
-let city=ref("");
-let birthday=ref("");
-let gender=ref("");
-let photo=ref("");
-
-onMounted(function(){
-    callFind();
-})
-
 let userId = userStore.userId;
 
+let accountNumber = ref("");
+let email = ref("");
+let nickname = ref("");
+let phoneNumber = ref("");
+let country = ref("");
+let city = ref("");
+let birthday = ref("");
+let gender = ref("");
+let photo = ref("");
+
+onMounted(function () {
+  callFind();
+});
+
 function callFind() {
-
-    Promise.all([
-        axios.get(`/user/secure/${userId}`),
-        axios.get(`/user/secure/profile-photo/${userId}`)
-    ])
-    .then(function([response1, response2]){
-        console.log("response1",response1);
-        console.log("response2", response2);
-
-        accountNumber.value= response1.data.accountNumber;
-        email.value= response1.data.email;
-        nickname.value = response1.data.nickname;
-
-        photo.value = response2.data;
-
+axios.get(`/user/secure/${userId}`)
+    .then(function (response) {
+      console.log("response", response);
+      accountNumber.value = response.data.accountNumber;
+      email.value = response.data.email;
+      nickname.value = response.data.nickname;
     })
-    .catch(function(error){
-        console.log("error", error);
+    .catch(function (error) {
+      console.log("error", error);
+    });
 
+  axios.get(`/user/secure/profile-photo/${userId}`)
+    .then(function (response) {
+      console.log("response", response);
+      photo.value = response.data;
     })
+    .catch(function (error) {
+      console.log("error", error);
+    });
+}
+
+
+const selectedFile = ref(null);
+function handleChange({ file }) {
+  // 当选择文件时触发
+  selectedFile.value = file;
+
+  // 用户选择文件并点击“确定”后立即上传
+  uploadPhoto();
+}
+
+async function uploadPhoto() {
+
+  const formData = new FormData();
+  formData.append('file', selectedFile.value.file); // `file` 属性包含实际文件
+
+  try {
+    const response = await axios.post(`/user/secure/profile-photo/${userId}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    console.log('更新成功', response.data);
+    photo.value = response.data;
+  } catch (error) {
+    console.error('更新失敗', error);
+  }
+
+  axios.post(`/user/secure/profile-photo/${userId}`, formData, {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  }
+})
+  .then(function(response){
+    console.log(response.data);
+
+  }).catch(function(error){
+    console.log('error', error);
+  })
 }
 </script>
-    
+
 <style scoped>
-    .profile-page {
+.profile-page {
   display: flex;
 }
 

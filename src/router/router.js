@@ -7,6 +7,7 @@ import Login from "@/views/Login.vue";
 import Register from "@/views/user/Register.vue";
 import Profile from "@/views/user/Profile.vue";
 import Notification from "@/views/user/Notification.vue";
+import Friend from "@/views/friend/Friend.vue";
 
 const routes = [
     { path: "/", name: "home-link", component: Home },
@@ -15,7 +16,9 @@ const routes = [
     { path: "/login", name: "login-link", component: Login },
     { path: "/user/register", name: "register-link", component: Register },
     { path: "/user/profile", name: "profile-link", component: Profile },
-    { path: "/user/notification", name: "notification-link", component: Notification }
+    { path: "/user/notification", name: "notification-link", component: Notification },
+    { path: "/friend", name: "friend-link", component: Friend },
+    
 ]
 
 const router = createRouter({
