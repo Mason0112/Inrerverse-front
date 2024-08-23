@@ -1,8 +1,9 @@
 <template>
         <div class="container">
-                <Vueform :display-errors="false" ref="form$">
+                <Vueform :display-errors="false" ref="form$" :endpoint="false">
                         <TextElement name="accountNumber" placeholder="請輸入帳號" label="帳號" rules="required"/>
                         <TextElement name="password" input-type="password" placeholder="請輸入密碼" label="密碼" rules="required"/>
+                        {{  message }}
                         <ButtonElement name="login" button-label="登入" :full="true" size="lg" @click="login" :submits="true"/>
                 </Vueform>
         </div>
@@ -20,6 +21,8 @@ const form$ = ref(null);
 const router = useRouter();
 const userStore = useUserStore();
 
+let message=ref('');
+
 function login() {
         let request={
                 accountNumber: accountNumber.value,
@@ -35,6 +38,7 @@ function login() {
                         userStore.setUserId(response.data.id);
                         userStore.setNickname(response.data.nickname);
                         userStore.setIsLoggedIn(true);
+                        userStore.setToken(response.data.token)
                         
                         // 把JWT塞到axios的headers裡
                         axios.defaults.headers.authorization = 'Bearer '+response.data.token;
@@ -44,6 +48,7 @@ function login() {
 
                 // 登入失敗的邏輯
                 } else {
+                        message.value= response.data.message
 
                 }
 
