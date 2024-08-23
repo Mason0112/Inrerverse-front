@@ -54,16 +54,21 @@
               <li><a class="dropdown-item" @click="logout(); closeDropdown('person')">登出</a></li>
             </ul>
           </li>
+          <li class="nav-item">
+            <n-badge :value="notiValue" :max="15" v-show="userStore.isLoggedIn">
+              <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
+                <font-awesome-icon :icon="['far', 'bell']" />
+              </RouterLink>
+            </n-badge>
+          </li>
+          <li class="nav-item">
+            <n-badge :value="cartValue" :max="15" v-show="userStore.isLoggedIn">
+              <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
+                <font-awesome-icon :icon="['fas', 'cart-shopping']" />
+              </RouterLink>
+            </n-badge>
+          </li>
 
-          <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
-              <font-awesome-icon :icon="['far', 'bell']" /></RouterLink>
-          </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
-              <font-awesome-icon :icon="['fas', 'cart-shopping']" /></RouterLink>
-          </li>
-          
 
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'login-link' }" v-show="!userStore.isLoggedIn">
@@ -86,6 +91,9 @@
 import { ref } from 'vue';
 import useUserStore from '@/stores/userstore';
 import axios from '@/plugins/axios';
+
+const notiValue = ref(5);
+const cartValue = ref(2);
 
 const dropdownStates = ref({
   club: false,
