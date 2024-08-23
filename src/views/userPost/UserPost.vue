@@ -1,12 +1,20 @@
 <template>
     <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
         
-        <div v-for="onePost in postList" :key="onePost.id" class="item">
+        <div v-for="onePost in postList" :key="onePost.id" class="item"  @click="showId(onePost)">
                 <div class="container">
                 <div> {{ formatDate(onePost.added) }}</div>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
                     {{ onePost.content }}
                 </n-ellipsis>
+                <div v-if="onePost.userId !== null">
+                    <div v-if="onePost.user.id == userStore.userId">
+
+                        <button class="btn btn-outline-secondary btn-sm">編輯</button>
+                        <button class="btn btn-outline-danger btn-sm">刪除</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </n-infinite-scroll>
@@ -18,31 +26,31 @@ import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 
 const userStore = useUserStore();
-const id = userStore.userId;
+const userId = userStore.userId;
 const content = ref('')
 const added = ref('')
-const postList = ref([
-    id ,
-    content,
-    added,
-
-
-])
+const postList = ref([])
 onMounted(function(){
-    showUserPostList(id)
+    showUserPostList(userId)
 })
 
+function showId(onePost) {
+    if (onePost.user) {
+        console.log(onePost.user.id);
+    } else {
+        console.log('User is undefined');
+    }
+}
 
-function showUserPostList(id){
-    console.log(id + 123)
-    axios.get(`/userPost/showUserAllPost/${id}`)
-    .then(Response=>{
-        postList.value = Response.data
-    console.log(postList)
-    })
-    .catch(error => {
-    console.error("erroe fetching user posts:", error)
-    })
+function showUserPostList(userId) {
+    axios.get(`/userPost/showUserAllPost/${userId}`)
+        .then(response => {
+            postList.value = response.data;
+            console.log(postList.value);
+        })
+        .catch(error => {
+            console.error("Error fetching user posts:", error);
+        });
 }
 
 //載入更多
@@ -50,6 +58,16 @@ const count = ref(6);
 const handleLoad = () => {
     count.value += 1;
 };
+
+//修改post
+function updatePost(onePost){
+    onePost.value={
+        id,
+        content,
+        
+    }
+}
+
 
 //格式化時間
 function formatDate(dateString) {
@@ -78,7 +96,7 @@ function formatDate(dateString) {
         align-items: center;
         justify-content: center;
         margin-bottom: 10px;
-        background-color: lightblue;
+        background-color: rgba(0, 128, 0, 0.16);
         padding: 10px;
     }
 
