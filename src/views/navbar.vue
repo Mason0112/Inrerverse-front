@@ -23,6 +23,10 @@
           </li>
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'product-product' }">產品頁面</RouterLink>
+            <RouterLink class="nav-link" :to="{ name: 'post-create-link' }">新增動態</RouterLink>
+          </li>          
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }" >動態牆</RouterLink>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
@@ -57,11 +61,12 @@ import useUserStore from '@/stores/userstore';
 import axios from '@/plugins/axios';
 
 const userStore = useUserStore();
-
 function logout() {
   userStore.resetStore();
   axios.defaults.headers.authorization ='';
 }
+
+
 
 </script>
 
