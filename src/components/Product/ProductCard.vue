@@ -1,15 +1,16 @@
 <template>
 
     <div class="card">
-        <img class="card-img-top" :src="`${product.productPhotos[0].photoPath}`" :alt="product.name">
+        <img class="card-img-top" :src="`${path}/products/${product.id}/firstphoto`" :alt="product.name">
         <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
+            <div class="card-text text-danger text-end">NT$ {{ product.price }}</div>
             <div class="row">
                 <div class="col text-start">
-                    <button type="button" class="btn btn-primary">開啟修改</button>
+                    <button type="button" class="btn btn-primary"  @click="emits('openUpdate','update',product.id)">開啟修改</button>
                 </div>
                 <div class="col text-end">
-                    <button type="button" class="btn btn-primary" >刪除</button>
+                    <button type="button" class="btn btn-primary" @click="emits('delete',product.id)">刪除</button>
                 </div>
             </div>
         </div>
@@ -18,7 +19,9 @@
 </template>
 
 <script setup>
-   const props = defineProps(["product"]);
+    const path = import.meta.env.VITE_API_URL;
+    const props = defineProps(["product"]);
+    const emits = defineEmits(["openUpdate","delete"])
 
 </script>
 

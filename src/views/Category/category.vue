@@ -40,6 +40,8 @@ import { ref, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios';
 import CategoryCard from '@/components/category/CategoryCard.vue';
 import CategoryModal from '@/components/category/CategoryModal.vue';
+const categories = ref([]);//接資料進來
+
 
 //進入頁面先做的事情start 把所以種類讀進來
 onMounted(function () {
@@ -52,12 +54,12 @@ function getAllCategories() {
     })
 }
 //進入頁面先做的事情end
-const categories = ref([]);
-const category = ref({});
+
+
 //Modal start
 const categoryModal =ref(null);
 const isShowButtonInsert = ref(true);
-
+const category = ref({});//v-model 雙向資料綁定的對象
 function openModal(action, id){
         console.log("openModal",action,id)
         if (action==="insert") {
