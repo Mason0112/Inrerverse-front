@@ -28,3 +28,7 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/interverse-front/v17/.wsuo
