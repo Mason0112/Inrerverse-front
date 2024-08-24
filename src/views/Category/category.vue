@@ -70,7 +70,7 @@ function openModal(action, id){
              //有多拿到一個id參數 要做findbyid
             axiosapi.get(`/categories/${id}`).then(function(response){
                 console.log("response",response)
-                //const category = ref({}); 透過ref綁定元件 修改裡面的value
+                //const category = ref({}); 把資料傳給後面的頁面
                 category.value =    {  id:response.data.id,
                                     name:response.data.name
                                     };
