@@ -31,6 +31,7 @@
                     v-model:product="product" 
                     :categories="categories"
                     :is-show-button-insert="isShowButtonInsert" 
+                    :is-show-category="isShowCategory"
                     @insert="callCreate" 
                     @update="callModify"
                     @fileUpload="handleFileUpload">
@@ -73,29 +74,35 @@ function getAllCategories() {
 
 //Modal start
 import ProductModal from '@/components/Product/ProductModal.vue';
-const product = ref({});//v-model雙向資料綁定的對象
+const product = ref({});
 const category = ref({});//新增或修改時拿來存category的
-const productModal = ref(null);
+const productModal = ref(null);//v-model雙向資料綁定的對象 控制開關
 const isShowButtonInsert = ref(true);
+const isShowCategory = ref(true);
 
 function openModal(action, id) {
     console.log("openModal", action, id)
     if (action === "insert") {
         isShowButtonInsert.value = true;
-        product.value = {};
+        isShowCategory.value =true;
+        product.value = ({});
     } else {
         isShowButtonInsert.value = false;
+        isShowCategory.value =false;
         //有多拿到一個id參數 要做findbyid
-        axiosapi.get(`/categories/${id}`).then(function (response) {
+        axiosapi.get(`/products/${id}`).then(function (response) {
             console.log("response", response)
-            //const product = ref({}); 透過ref綁定元件 修改裡面的value
-            // product.value =    {  id:response.data.id,
-            //                     name:response.data.name
-            //                     };
+            product.value =    {  id:response.data.id,
+                                name:response.data.name,
+                                description:response.data.description,
+                                color:response.data.color,
+                                price:response.data.price
+                                };
+            console.log("responseProduct", product.value);
 
         })
 
-    }
+        }
     productModal.value.showModal();
 }
 //Modal end
@@ -134,9 +141,9 @@ function callCreate() {
                         'Content-Type': 'multipart/form-data'
                     }
                 });
-            }
+        }
             
-            return Promise.resolve(); // 如果没有图片，返回一个已解决的 Promise
+        return Promise.resolve(); // 如果没有图片，返回一个已解决的 Promise
     });
     productModal.value.hideModal();
 }
@@ -154,18 +161,43 @@ function callModify() {
     console.log("callModify", product.value);
     //id
     console.log("callModify", product.value.id);
+
+    let request = {
+                    "name": product.value.name,
+                    "description": product.value.description,
+                    "color": product.value.color,
+                    "price": product.value.price
+                    };
+        axiosapi.put(`/products/${product.value.id}`, request).then(function(response) {
+            console.log("Product modify", response);
+         // 第三步：上传图片（如果有）
+            if (fileObject.value) {
+                const formData = new FormData();
+                formData.append('file', fileObject.value);
+                formData.append('productId', response.data.id); // 假设后端返回的产品数据中包含 id
+
+                return axiosapi.post("/api/product-photos", formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+        }  
+        return Promise.resolve(); // 如果没有图片，返回一个已解决的 Promise
+         });
+
+
     productModal.value.hideModal();
 }
 
 //刪除
-
-
-
-
-
-function callRemove(id) {
-    console.log("callRemove", id);
+function callRemove(id){
+    console.log("callRemove",id);
+    axiosapi.delete(`/products/${id}`).then(function(response){
+    })
 }
+
+//重新導頁面的function 之後要加在新增刪除修改後面
+
 
 
 </script>

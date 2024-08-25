@@ -57,9 +57,9 @@ function getAllCategories() {
 
 
 //Modal start
-const categoryModal =ref(null);
+const categoryModal =ref(null);//v-model 雙向資料綁定的對象
 const isShowButtonInsert = ref(true);
-const category = ref({});//v-model 雙向資料綁定的對象
+const category = ref({});
 function openModal(action, id){
         console.log("openModal",action,id)
         if (action==="insert") {
@@ -70,12 +70,11 @@ function openModal(action, id){
              //有多拿到一個id參數 要做findbyid
             axiosapi.get(`/categories/${id}`).then(function(response){
                 console.log("response",response)
-                //const category = ref({}); 把資料傳給後面的頁面
                 category.value =    {  id:response.data.id,
                                     name:response.data.name
                                     };
                
-    })
+            })
            
         }
         categoryModal.value.showModal();

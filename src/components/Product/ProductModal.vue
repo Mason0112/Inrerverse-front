@@ -15,10 +15,10 @@
               <td><input type="text" name="id" :value="product.id" readonly @input="modify('id', $event.target.value)">
               </td>
             </tr>
-            <tr>
+            <tr v-show="isShowCategory">
               <td>Category : </td>
               <td>
-                <select name="category" :value="product.Category" @change="modify('category', $event.target.value)">
+                <select name="category" :value="product.category" @change="modify('category', $event.target.value)">
                   <option value="">請選擇類別</option>
                   <option v-for="category in categories" :key="category.id" :value="category.id">
                     {{ category.name }}
@@ -71,8 +71,9 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js';
-const props = defineProps(["product", "isShowButtonInsert", "categories"]);
+const props = defineProps(["product", "isShowButtonInsert", "categories","isShowCategory"]);
 const emits = defineEmits(["update:product", "insert", "update","fileUpload"])
+
 
 const fileObject = ref(null); // 新增：用於存儲文件對象
 
@@ -85,15 +86,15 @@ function handleFileChange(event) {
     modify('photo', file.name);
     
     //創建 FormData 並發射 fileUpload 事件
-    const formData = new FormData();
-    formData.append('photo', file);
-    console.log("File name:", file.name);
-    console.log("File size:", file.size);
-    console.log("File type:", file.type);
+    // const formData = new FormData();
+    // formData.append('photo', file);
+    // console.log("File name:", file.name);
+    // console.log("File size:", file.size);
+    // console.log("File type:", file.type);
 
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(key, value);
+    // }
     emits('fileUpload', file);
   }
 }
