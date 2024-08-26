@@ -11,7 +11,7 @@
                     <div v-if="onePost.user.id == userStore.userId">
 
                         <button class="btn btn-outline-secondary btn-sm">編輯</button>
-                        <button class="btn btn-outline-danger btn-sm">刪除</button>
+                        <button class="btn btn-outline-danger btn-sm" @click=deletePost>刪除</button>
                     </div>
                 </div>
 
@@ -68,6 +68,18 @@ function updatePost(onePost){
     }
 }
 
+function deletePost(){
+    confirm("確定要刪除嗎");
+    if(true){
+        axios.delete(`/userPost/${postId}`)
+        .then(response=>{
+            console.log(postId)
+            })
+        .catch(error => {
+            console.error("Error fetching user posts:", error);
+        })
+    }
+}
 
 //格式化時間
 function formatDate(dateString) {
