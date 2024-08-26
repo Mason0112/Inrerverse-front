@@ -20,6 +20,7 @@
     "pinia": "^2.2.2",
     "pinia-plugin-persistedstate": "^3.2.1",
     "sweetalert2": "^11.12.4",
+    "tocas": "^5.0.1",
     "vue": "^3.4.29",
     "vue-router": "^4.4.3"
   },

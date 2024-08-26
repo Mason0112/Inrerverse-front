@@ -15,6 +15,7 @@
 
   import 'bootstrap/dist/css/bootstrap.min.css';
   import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+  import 'tocas/dist/tocas.min.css'
 
   import axios from '@/plugins/axios';
   import useUserStore from '@/stores/userstore';

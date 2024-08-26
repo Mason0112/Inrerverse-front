@@ -101,8 +101,7 @@ function openModal(action, id) {
             console.log("responseProduct", product.value);
 
         })
-
-        }
+    }
     productModal.value.showModal();
 }
 //Modal end

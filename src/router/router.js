@@ -9,6 +9,8 @@ import Profile from "@/views/user/Profile.vue";
 import Notification from "@/views/user/Notification.vue";
 import Category from "@/views/Category/category.vue";
 import Product from "@/views/Product/Product.vue";
+import CartProductList from "@/views/Cart/CartProductList.vue";
+import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 
 const routes = [
     { path: "/", name: "home-link", component: Home },
@@ -19,8 +21,9 @@ const routes = [
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/user/notification", name: "notification-link", component: Notification },
     { path: "/product/category", name: "product-category", component: Category},
-    { path: "/product/product", name: "product-product", component: Product }
-
+    { path: "/product/product", name: "product-product", component: Product },
+    { path: "/product/Cart", name: "product-cart", component: CartProductList },
+    { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail }
 ]
 
 const router = createRouter({
