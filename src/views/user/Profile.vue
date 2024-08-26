@@ -6,14 +6,39 @@
                     <div class="profile-section">
                         <div class="user-avatar">
                             <img :src="`${photo}`" alt="User Photo">
+                            <n-upload ref="upload" :default-upload="false" :on-change="handleChange">
+                                <n-button>修改大頭照</n-button>
+                            </n-upload>
                         </div>
-                        <h5 class="user-name">{{ nickname }}</h5>
-                        <h6 class="user-email">{{ email }}</h6>
+                        <hr />
+                        <h5> {{ nickname }}</h5>
+                        <table class="profile-info">
+                            <tr>
+                                <td><font-awesome-icon :icon="['fas', 'envelope']" /></td>
+                                <td>{{ email }}</td>
+                            </tr>
+                            <tr>
+                                <td><font-awesome-icon :icon="['fas', 'phone']" /></td>
+                                <td>{{ phoneNumber }}</td>
+                            </tr>
+                            <tr>
+                                <td><font-awesome-icon :icon="['fas', 'location-dot']" /></td>
+                                <td>{{ country }} , {{ city }}</td>
+                            </tr>
+                            <tr>
+                                <td><font-awesome-icon :icon="['fas', 'cake-candles']" /></td>
+                                <td>{{ age }} 歲</td>
+                            </tr>
+                            <tr>
+                                <td><font-awesome-icon :icon="['fas', 'venus-mars']" /></td>
+                                <td>{{ gender }}</td>
+                            </tr>
+                        </table>
+
                     </div>
                     <div class="about-section">
-                        <h5>About</h5>
-                        <p>I'm Yuki. Full Stack Designer I enjoy creating user-centric, delightful and human
-                            experiences.</p>
+                        <h5>關於我</h5>
+                        <p>{{ bio }}</p>
                     </div>
                 </div>
                 <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
@@ -34,7 +59,7 @@
                                     </button>
                                 </li>
                             </ul>
-    
+
                             <!-- Tabs Content -->
                             <div class="tab-content mt-3">
                                 <div v-if="activeTab === 'profile'" class="tab-pane active">
@@ -45,13 +70,13 @@
                                 <div v-if="activeTab === 'friends'" class="tab-pane active">
                                     <h3>好友列表</h3>
                                     <!-- Friends Section -->
-                                    <p>Here is the friends content.</p>
+                                    <FriendList></FriendList>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    
+
                 </div>
             </div>
         </div>
@@ -60,6 +85,7 @@
 
 <script setup>
 import ProfileForm from '@/components/user/ProfileForm.vue';
+import FriendList from '@/components/user/FriendList.vue';
 
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
@@ -76,74 +102,82 @@ let nickname = ref("");
 let phoneNumber = ref("");
 let country = ref("");
 let city = ref("");
-let birthday = ref("");
+let age = ref("");
 let gender = ref("");
 let photo = ref("");
+let bio = ref("");
 
 onMounted(function () {
-  callFind();
+    callFind();
 });
 
 function callFind() {
-axios.get(`/user/secure/${userId}`)
-    .then(function (response) {
-      console.log("response", response);
-      accountNumber.value = response.data.accountNumber;
-      email.value = response.data.email;
-      nickname.value = response.data.nickname;
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
+    axios.get(`/user/secure/${userId}`)
+        .then(function (response) {
+            console.log("response", response);
+            accountNumber.value = response.data.accountNumber;
+            email.value = response.data.email;
+            nickname.value = response.data.nickname;
+            phoneNumber.value = response.data.phoneNumber;
+            country.value = response.data.country;
+            city.value = response.data.city;
+            age.value = response.data.age;
+            gender.value = response.data.gender;
+            bio.value = response.data.bio;
+        })
+        .catch(function (error) {
+            console.log("error", error);
+        });
 
-  axios.get(`/user/secure/profile-photo/${userId}`)
-    .then(function (response) {
-      console.log("response", response);
-      photo.value = response.data;
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
+    axios.get(`/user/secure/profile-photo/${userId}`)
+        .then(function (response) {
+            console.log("response", response);
+            photo.value = response.data;
+        })
+        .catch(function (error) {
+            console.log("error", error);
+        });
 }
 
 
 const selectedFile = ref(null);
+const uploadRef = ref(null);
 function handleChange({ file }) {
-  // 当选择文件时触发
-  selectedFile.value = file;
-
-  // 用户选择文件并点击“确定”后立即上传
-  uploadPhoto();
+    // 当选择文件时触发
+    selectedFile.value = file;
+    // 用户选择文件并点击“确定”后立即上传
+    uploadPhoto();
 }
 
 async function uploadPhoto() {
 
-  const formData = new FormData();
-  formData.append('file', selectedFile.value.file); // `file` 属性包含实际文件
+    const formData = new FormData();
+    formData.append('file', selectedFile.value.file); // `file` 属性包含实际文件
+    
+    try {
+        const response = await axios.post(`/user/secure/profile-photo/${userId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        
+        console.log('更新成功', response.data);
+        photo.value = response.data;
+    } catch (error) {
+        console.error('更新失敗', error);
+    }
 
-  try {
-    const response = await axios.post(`/user/secure/profile-photo/${userId}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    console.log('更新成功', response.data);
-    photo.value = response.data;
-  } catch (error) {
-    console.error('更新失敗', error);
-  }
+    axios.post(`/user/secure/profile-photo/${userId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+        .then(function (response) {
+            console.log(response.data);
 
-  axios.post(`/user/secure/profile-photo/${userId}`, formData, {
-  headers: {
-    'Content-Type': 'multipart/form-data',
-  }
-})
-  .then(function(response){
-    console.log(response.data);
-
-  }).catch(function(error){
-    console.log('error', error);
-  })
+        }).catch(function (error) {
+            console.log('error', error);
+        })
 }
 </script>
 
@@ -152,6 +186,7 @@ async function uploadPhoto() {
     margin-top: 20px;
 }
 
+.about-section,
 .profile-section,
 .details-section {
     padding: 15px;
@@ -162,20 +197,30 @@ async function uploadPhoto() {
     align-items: center;
 }
 
-.user-avatar img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-}
-
-.user-name {
-    margin: 10px 0 5px;
-    font-weight: bold;
-}
-
-.user-email {
+.profile-info {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
     font-size: 0.9rem;
+    text-align: left;
     color: #6c757d;
+}
+
+.profile-info td {
+    padding: 5px 10px;
+    vertical-align: middle;
+}
+
+.profile-info td:first-child {
+    width: 30px;
+    text-align: center;
+}
+
+.user-avatar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
 }
 
 .about-section {
