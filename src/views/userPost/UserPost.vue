@@ -1,7 +1,7 @@
 <template>
     <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
         
-        <div v-for="onePost in postList" :key="onePost.id" class="item"  @click="showId(onePost)">
+        <div v-for="onePost in postList" :key="onePost.id" class="item">
                 <div class="container">
                 <div> {{ formatDate(onePost.added) }}</div>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
@@ -10,13 +10,15 @@
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
 
-                        <button class="btn btn-outline-secondary btn-sm">編輯</button>
-                        <button class="btn btn-outline-danger btn-sm" @click=deletePost>刪除</button>
+                        <button class="btn btn-outline-secondary btn-sm" @click="openModal">編輯</button>
+
+                        <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
                     </div>
                 </div>
-
+                
             </div>
         </div>
+        <updatePostModal ref="updatePostModal"></updatePostModal>
     </n-infinite-scroll>
 </template>
 
@@ -24,23 +26,25 @@
 import { defineComponent, onMounted, ref } from "vue";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
+import UpdatePostModal from "./updatePostModal.vue";
 
 const userStore = useUserStore();
 const userId = userStore.userId;
-const content = ref('')
-const added = ref('')
+//初始化
+const updatePostModal =ref(null);
+
 const postList = ref([])
 onMounted(function(){
     showUserPostList(userId)
 })
 
-function showId(onePost) {
-    if (onePost.user) {
-        console.log(onePost.user.id);
-    } else {
-        console.log('User is undefined');
-    }
-}
+// function showId(onePost) {
+//     if (onePost.user) {
+//         console.log(onePost.user.id);
+//     } else {
+//         console.log('User is undefined');
+//     }
+// }
 
 function showUserPostList(userId) {
     axios.get(`/userPost/showUserAllPost/${userId}`)
@@ -53,6 +57,13 @@ function showUserPostList(userId) {
         });
 }
 
+function openModal() {
+
+        console.log(updatePostModal.value);
+        updatePostModal.value.showModal();
+    
+}
+
 //載入更多
 const count = ref(6);
 const handleLoad = () => {
@@ -62,18 +73,21 @@ const handleLoad = () => {
 //修改post
 function updatePost(onePost){
     onePost.value={
-        id,
-        content,
-        
+        id : onePost.id,
+        content : onePost.content,
+
     }
+    console.log(onePost.value)
+    // UpdatePostModal.value.showModal();
 }
 
-function deletePost(){
+function deletePost(onePost){
     confirm("確定要刪除嗎");
+    
     if(true){
-        axios.delete(`/userPost/${postId}`)
+        axios.delete(`/userPost/${onePost.id}`)
         .then(response=>{
-            console.log(postId)
+            console.log(onePost.id)
             })
         .catch(error => {
             console.error("Error fetching user posts:", error);
