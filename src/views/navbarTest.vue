@@ -63,7 +63,7 @@
           </li>
           <li class="nav-item">
             <n-badge :value="cartValue" :max="15" v-show="userStore.isLoggedIn">
-              <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
+              <RouterLink class="nav-link" :to="{ name: 'profiletest-link' }" v-show="userStore.isLoggedIn">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" />
               </RouterLink>
             </n-badge>

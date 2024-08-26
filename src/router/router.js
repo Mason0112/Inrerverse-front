@@ -5,9 +5,10 @@ import Forbidden from "@/views/result/Forbidden.vue";
 import NotFound from "@/views/result/NotFound.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/user/Register.vue";
-import Profile from "@/views/user/Profile.vue";
 import Notification from "@/views/user/Notification.vue";
 import Friend from "@/views/friend/Friend.vue";
+import Profile from "@/views/user/Profile.vue";
+import ProfileTest from "@/views/test/ProfileTest.vue";
 
 const routes = [
     { path: "/", name: "home-link", component: Home },
@@ -18,6 +19,7 @@ const routes = [
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/user/notification", name: "notification-link", component: Notification },
     { path: "/friend", name: "friend-link", component: Friend },
+    { path: "/profile", name: "profiletest-link", component: ProfileTest }
     
 ]
 

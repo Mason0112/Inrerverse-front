@@ -1,51 +1,71 @@
 <template>
-  <!-- <img :src="`${photo}`" alt="Profile Photo" /> -->
+    <div class="container mt-4">
+        <div class="main-content">
+            <div class="row gutters">
+                <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+                    <div class="profile-section">
+                        <div class="user-avatar">
+                            <img :src="`${photo}`" alt="User Photo">
+                        </div>
+                        <h5 class="user-name">{{ nickname }}</h5>
+                        <h6 class="user-email">{{ email }}</h6>
+                    </div>
+                    <div class="about-section">
+                        <h5>About</h5>
+                        <p>I'm Yuki. Full Stack Designer I enjoy creating user-centric, delightful and human
+                            experiences.</p>
+                    </div>
+                </div>
+                <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+                    <div class="details-section">
+                        <div class="container mt-4">
+                            <!-- Tabs Navigation -->
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" :class="{ active: activeTab === 'profile' }"
+                                        @click="activeTab = 'profile'">
+                                        Profile
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" :class="{ active: activeTab === 'friends' }"
+                                        @click="activeTab = 'friends'">
+                                        Friends
+                                    </button>
+                                </li>
+                            </ul>
+    
+                            <!-- Tabs Content -->
+                            <div class="tab-content mt-3">
+                                <div v-if="activeTab === 'profile'" class="tab-pane active">
+                                    <h3>個人資料</h3>
+                                    <!-- Profile Section -->
+                                    <ProfileForm></ProfileForm>
+                                </div>
+                                <div v-if="activeTab === 'friends'" class="tab-pane active">
+                                    <h3>好友列表</h3>
+                                    <!-- Friends Section -->
+                                    <p>Here is the friends content.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-  <!-- <Vueform ref="form$">
-        <ButtonElement name="editProfile" button-label="編輯個人資料" :full="true" size="lg" @click="editProfile"/>
-    </Vueform> -->
-  <div class="profile-page">
-
-    <aside class="sidebar">
-      <ul>
-        <li><RouterLink :to="{ name: 'friend-link' }">我的好友</RouterLink></li>
-        <li>News</li>
-        <li>Chats</li>
-        <li class="active">Profile</li>
-        <li>Settings</li>
-      </ul>
-    </aside>
-
-    <section class="profile-content">
-      <!-- 用户訊息卡片 -->
-      <div class="user-card">
-        <img :src="`${photo}`" alt="User Photo" class="user-photo" />
-        <n-upload :on-change="handleChange">
-          <n-button>修改大頭照</n-button>
-        </n-upload>
-        <h3>{{ nickname }}</h3>
-        <p>{{ accountNumber }}</p>
-        <p>{{ email }}</p>
-        <!-- <div class="stats">
-          <span>{{ user.following }} Following</span>
-          <span>{{ user.followers }} Followers</span>
-          <span>{{ user.events }} Events</span>
-        </div> -->
-      </div>
-
-      <!-- 用户资料编辑表单 -->
-      <div class="edit-profile">
-        <h4>修改資料</h4>
-      </div>
-    </section>
-
-  </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
+import ProfileForm from '@/components/user/ProfileForm.vue';
+
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+
+const activeTab = ref('profile')
 
 const userStore = useUserStore();
 let userId = userStore.userId;
@@ -128,76 +148,61 @@ async function uploadPhoto() {
 </script>
 
 <style scoped>
-.profile-page {
-  display: flex;
+.main-content {
+    margin-top: 20px;
 }
 
-.sidebar {
-  width: 200px;
-  background-color: #f0f0f0;
-  padding: 20px;
+.profile-section,
+.details-section {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    align-items: center;
 }
 
-.sidebar ul {
-  list-style: none;
-  padding: 0;
+.user-avatar img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
 }
 
-.sidebar li {
-  margin: 15px 0;
-  cursor: pointer;
+.user-name {
+    margin: 10px 0 5px;
+    font-weight: bold;
 }
 
-.sidebar .active {
-  font-weight: bold;
-  color: #00416a;
+.user-email {
+    font-size: 0.9rem;
+    color: #6c757d;
 }
 
-.profile-content {
-  flex: 1;
-  padding: 40px;
-  background-color: #fff;
+.about-section {
+    text-align: center;
+    margin-top: 20px;
 }
 
-.user-card {
-  background: #f9f9f9;
-  padding: 20px;
-  margin-bottom: 40px;
-  text-align: center;
+.section-title {
+    font-weight: bold;
+    color: #007bff;
 }
 
-.user-photo {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 20px;
+.form-control {
+    margin-bottom: 15px;
 }
 
-.stats {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 20px;
+.actions .btn {
+    margin-left: 10px;
 }
 
-.edit-profile {
-  background: #f9f9f9;
-  padding: 20px;
+.gutters {
+    margin-left: -15px;
+    margin-right: -15px;
 }
 
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.save-button {
-  background-color: #00416a;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
+.gutters>.col-md-6 {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 </style>
