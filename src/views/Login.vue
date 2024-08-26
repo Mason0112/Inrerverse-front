@@ -4,36 +4,26 @@
       <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
         <div class="card border-0 shadow rounded-3 my-5">
           <div class="card-body p-4 p-sm-5">
+
             <Vueform :display-errors="false" ref="form$" :endpoint="false">
               <StaticElement name="register_title" content="登入" tag="h1" />
               <StaticElement name="divider" tag="hr" />
               <TextElement name="accountNumber" label="帳號" rules="required" />
-              <TextElement
-                name="password"
-                input-type="password"
-                label="密碼"
-                rules="required"
-              />
-              <ButtonElement
-                name="login"
-                button-label="登入"
-                align="center"
-                size="lg"
-                @click="login"
-                :submits="true"
-              />
+              <TextElement name="password" input-type="password" label="密碼" rules="required"/>
+              <ButtonElement name="login" button-label="登入" align="center" size="lg" @click="login" :submits="true"/>
             </Vueform>
 
             <hr class="my-4" />
-            <div class="d-grid mb-2">
-              <button
-                class="btn btn-google text-uppercase fw-bold"
-                type="submit"
-              >
-                <font-awesome-icon :icon="['fab', 'google']" /> 使用google登入
-              </button>
-            </div>
+              <div class="d-grid mb-2">
+                <button
+                  class="btn btn-google text-uppercase fw-bold"
+                  type="submit"
+                >
+                  <font-awesome-icon :icon="['fab', 'google']" /> 使用google登入
+                </button>
+              </div>
           </div>
+
         </div>
       </div>
     </div>

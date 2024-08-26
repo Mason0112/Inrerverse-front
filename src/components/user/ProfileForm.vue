@@ -1,4 +1,6 @@
 <template>
+    <div class="container update-form">
+
         <h6 class="section-title">編輯個人資料</h6>
         <Vueform size="md" :display-errors="false" ref="form$" :endpoint="false">
             <TextElement name="email" input-type="email" :rules="[
@@ -33,19 +35,13 @@
                 'required', 'before:today'
             ]" display-format="YYYY-MM-DD" />
             <TextElement name="gender" placeholder="性別" rules="required" />
-            <ButtonElement name="register" button-label="取消" :full="true" size="lg" :columns="{
-                container: 6,
-                label: 12,
-                wrapper: 12,
-            }"/>
-            <ButtonElement name="register" button-label="更新" :full="true" size="lg":submits="true" :columns="{
-                container: 6,
-                label: 12,
-                wrapper: 12,
-            }"/>
+            <ButtonElement name="cancel" button-label="取消" size="lg" align="right"/>
+            <ButtonElement name="register" button-label="更新" size="lg":submits="true" align="right"/>
 
             <!-- @click="register"  -->
         </Vueform>
+
+    </div>
 </template>
     
 <script setup>
@@ -54,9 +50,8 @@
 </script>
 
 
-<style>
-    body{
-    margin-top:20px;
-    background:#FAFAFA;    
+<style scope>
+.update-form {
+    width: 75%;
 }
 </style>

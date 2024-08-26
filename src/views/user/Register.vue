@@ -148,12 +148,6 @@ function register() {
   background-size: cover;
 }
 
-.btn-login {
-  font-size: 0.9rem;
-  letter-spacing: 0.05rem;
-  padding: 0.75rem 1rem;
-}
-
 .btn-google {
   color: white;
   background-color: #ea4335;
