@@ -82,6 +82,6 @@ function login() {
 <style>
 .btn-google {
   color: white;
-  background-color: #ea4335;
+  background-color: grey;
 }
 </style>

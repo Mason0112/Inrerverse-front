@@ -140,7 +140,7 @@ function register() {
 
 </script>
 
-<style>
+<style scoped>
 .card-img-left {
   width: 45%;
   /* Link to your background image using in the property below! */

@@ -1,127 +1,64 @@
 <template>
-        <div class="dropdown">
-  <a id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="/page.html">
-    <i class="glyphicon glyphicon-bell"></i>
-  </a>
+    <li class="nav-item dropdown" @click="fetchNotifications">
+      <n-badge :value="notifications.length" :max="15">
+        <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
+           @click="toggleDropdown" aria-expanded="dropdownVisible">
+          <font-awesome-icon :icon="['far', 'bell']" />
+        </a>
+      </n-badge>
+      <ul class="dropdown-menu" :class="{ 'show': dropdownVisible }" aria-labelledby="notificationDropdown">
+        <li v-if="notifications.length === 0" class="dropdown-item text-muted">沒有新通知</li>
+        <li v-for="(notification, index) in notifications" :key="index" class="dropdown-item">
+          {{ notification.message }}
+        </li>
+      </ul>
+    </li>
+  </template>
   
-  <ul class="dropdown-menu notifications" role="menu" aria-labelledby="dLabel">
-    
-    <div class="notification-heading"><h4 class="menu-title">Notifications</h4><h4 class="menu-title pull-right">View all<i class="glyphicon glyphicon-circle-arrow-right"></i></h4>
-    </div>
-    <li class="divider"></li>
-   <div class="notifications-wrapper">
-     <a class="content" href="#">
-      
-       <div class="notification-item">
-        <h4 class="item-title">Evaluation Deadline 1 · day ago</h4>
-        <p class="item-info">Marketing 101, Video Assignment</p>
-      </div>
-       
-    </a>
-     <a class="content" href="#">
-      <div class="notification-item">
-        <h4 class="item-title">Evaluation Deadline 1 · day ago</h4>
-        <p class="item-info">Marketing 101, Video Assignment</p>
-      </div>
-    </a>
-     <a class="content" href="#">
-      <div class="notification-item">
-        <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-        <p class="item-info">Marketing 101, Video Assignment</p>
-      </div>
-    </a>
-     <a class="content" href="#">
-      <div class="notification-item">
-        <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-        <p class="item-info">Marketing 101, Video Assignment</p>
-      </div>
-
-    </a>
-     <a class="content" href="#">
-      <div class="notification-item">
-        <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-        <p class="item-info">Marketing 101, Video Assignment</p>
-      </div>
-    </a>
-     <a class="content" href="#">
-      <div class="notification-item">
-        <h4 class="item-title">Evaluation Deadline 1 • day ago</h4>
-        <p class="item-info">Marketing 101, Video Assignment</p>
-      </div>
-    </a>
-
-   </div>
-    <li class="divider"></li>
-    <div class="notification-footer"><h4 class="menu-title">View all<i class="glyphicon glyphicon-circle-arrow-right"></i></h4></div>
-  </ul>
+  <script setup>
+  import { ref } from 'vue';
+  import axios from 'axios';
   
-</div>
-</template>
-    
-<script setup>
-    
-</script>
-    
-<style scoped>
-    .dropdown {
-    display:inline-block;
-    margin-left:20px;
-    padding:10px;
-  }
-
-
-.glyphicon-bell {
-   
-    font-size:1.5rem;
-  }
-
-.notifications {
-   min-width:420px; 
-  }
+  const notifications = ref([]);
+  const dropdownVisible = ref(false);
   
-  .notifications-wrapper {
-     overflow:auto;
-      max-height:250px;
+  // 模拟 API 调用
+  async function fetchNotifications() {
+    try {
+      const response = await axios.get('/api/notifications'); // 调用你的 API
+      notifications.value = response.data; // 假设返回的数组格式为 [{ message: '...' }, ...]
+    } catch (error) {
+      console.error('获取通知失败:', error);
     }
-    
- .menu-title {
-     color:#ff7788;
-     font-size:1.5rem;
-      display:inline-block;
-      }
- 
-.glyphicon-circle-arrow-right {
-      margin-left:10px;     
-   }
+  }
   
-   
- .notification-heading, .notification-footer  {
- 	padding:2px 10px;
-       }
-      
-        
-.dropdown-menu.divider {
-  margin:5px 0;          
+  function toggleDropdown(event) {
+    event.stopPropagation(); // 阻止事件冒泡以避免意外关闭
+    dropdownVisible.value = !dropdownVisible.value;
+  }
+  
+  // 关闭下拉菜单的监听
+  document.addEventListener('click', () => {
+    dropdownVisible.value = false;
+  });
+  </script>
+  
+  <style scoped>
+  .dropdown-menu {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+  }
+  
+  .nav-link {
+    cursor: pointer;
   }
 
-.item-title {
-  
- font-size:1.3rem;
- color:#000;
-    
+  .navbar .dropdown-toggle::after {
+  display: none; /* 隱藏 Bootstrap 生成的下拉箭頭 */
 }
-
-.notifications a.content {
- text-decoration:none;
- background:#ccc;
-
- }
-    
-.notification-item {
- padding:10px;
- margin:5px;
- background:#ccc;
- border-radius:4px;
- }
-
-</style>
+  </style>
+  
