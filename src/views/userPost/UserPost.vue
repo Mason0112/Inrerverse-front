@@ -3,14 +3,15 @@
         
         <div v-for="onePost in postList" :key="onePost.id" class="item">
                 <div class="container">
-                <div> {{ formatDate(onePost.added) }}</div>
+                    <div> {{ formatDate(onePost.added) }}</div>
+                    <div>{{ onePost.user.nickname }}</div>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
                     {{ onePost.content }}
                 </n-ellipsis>
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
 
-                        <button class="btn btn-outline-secondary btn-sm" @click="openModal">編輯</button>
+                        <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
 
                         <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
                     </div>
@@ -18,12 +19,12 @@
                 
             </div>
         </div>
-        <updatePostModal ref="updatePostModal"></updatePostModal>
+        <updatePostModal ref="updatePostModal" :post="selectedPost" @update:onePost="handlePostUpdate"></updatePostModal>
     </n-infinite-scroll>
 </template>
 
 <script setup>
-import { defineComponent, onMounted, ref } from "vue";
+import {onMounted, ref } from "vue";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import UpdatePostModal from "./updatePostModal.vue";
@@ -32,6 +33,7 @@ const userStore = useUserStore();
 const userId = userStore.userId;
 //初始化
 const updatePostModal =ref(null);
+const selectedPost=ref(null)
 
 const postList = ref([])
 onMounted(function(){
@@ -57,28 +59,40 @@ function showUserPostList(userId) {
         });
 }
 
-function openModal() {
-
-        console.log(updatePostModal.value);
-        updatePostModal.value.showModal();
-    
-}
-
 //載入更多
 const count = ref(6);
 const handleLoad = () => {
     count.value += 1;
 };
 
+// const onePost={
+//     id:0,
+//     content:'',
+//     user:{
+//         id:0
+//     }
+
+// }
+
+
 //修改post
 function updatePost(onePost){
     onePost.value={
-        id : onePost.id,
-        content : onePost.content,
+            id : onePost.id,
+            content : onePost.content,
+        
+        }
+        selectedPost.value={...onePost}
+        console.log(selectedPost.value)
+    updatePostModal.value.showModal();
+}
 
+// 即時更新貼文
+function handlePostUpdate(updatePost){
+    const index = postList.value.findIndex(post => post.id=== updatePost.id);
+    if(index !== -1){
+        postList.value[index]=updatePost
     }
-    console.log(onePost.value)
-    // UpdatePostModal.value.showModal();
 }
 
 function deletePost(onePost){
