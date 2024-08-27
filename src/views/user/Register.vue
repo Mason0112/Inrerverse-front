@@ -89,7 +89,7 @@
             
             <TextElement name="gender" placeholder="性別" rules="required" />
 
-            <CheckboxElement name="terms" text="I accept the Terms & Conditions & Privacy Policy" rules="accepted" />
+            <!-- <CheckboxElement name="terms" text="I accept the Terms & Conditions & Privacy Policy" rules="accepted" /> -->
             <StaticElement name="divider_1" tag="hr" />
             <ButtonElement name="register" button-label="註冊" :full="true" size="lg" @click="register" :submits="true" />
         </Vueform>

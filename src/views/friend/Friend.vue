@@ -1,32 +1,32 @@
 <template>
-    <h1>我的好友們</h1>
-    <div class="container mt-5">
+  <h1>我的好友們</h1>
+  <div class="container mt-5">
     <div class="row d-flex justify-content-center">
       <div class="col-md-10">
         <div class="card">
           <div class="input-box">
-
-            <input type="text" class="form-control" />
-            <font-awesome-icon
-              :icon="['fas', 'magnifying-glass']"
-              class="input-icon"
-            />
+            <input type="text" class="form-control" v-model="searchTerm" @input="filterFriends" />
+            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="input-icon" />
           </div>
-
-          <div class="list border-bottom" v-for="friend in friends" :key="user2Id">
-            <!-- <img :src="`${photo}`" alt="User Photo" /> -->
-            <div class="d-flex flex-column ml-3">
-              <span>{{ friend.accountNumber}}</span>
-              <small>{{ friend.age }} 歲</small>
+          
+          <div v-if="loading" class="text-center my-3">
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
             </div>
           </div>
-          <div class="list">
-            <i class="fa fa-weibo"></i>
-            <div class="d-flex flex-column ml-3">
-              <span>Client communication policy</span>
-              <small>#politics - may - @max</small>
-            </div>
+
+          <div v-else-if="filteredFriends.length === 0" class="text-center my-3">
+            No friends found.
           </div>
+
+          <template v-else>
+            <div class="list border-bottom" v-for="friend in filteredFriends" :key="friend.user2Id">
+              <div class="d-flex flex-column ml-3">
+                <span>{{ friend.accountNumber }}</span>
+                <small>{{ friend.age }} 歲</small>
+              </div>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -34,67 +34,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 
 const userStore = useUserStore();
-let userId = userStore.userId;
+const userId = userStore.userId;
 
 const friends = ref([]);
+const loading = ref(true);
+const searchTerm = ref('');
 
-const accountNumber = ref('');
-const age = ref('');
-
-onMounted(function () {
-    callFind();
+const filteredFriends = computed(() => {
+  return friends.value.filter(friend => 
+    friend.accountNumber.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+    friend.age.toString().includes(searchTerm.value)
+  );
 });
 
-function callFind() {
+onMounted(async () => {
+  await fetchFriends();
+});
 
-    axios.get(`/friend/${userId}/list`)
-        .then(function (response) {
-            console.log("response", response);
-
-            const friendsData = response.data;
-
-      // 将 friend 列表赋值给 friends 变量
-      friends.value = friendsData;
-
-      // 传递 friendsData 去获取每个 user2Id 的详细信息
-      fetchUserDetails(friendsData);
-
-        })
-        .catch(function (error) {
-            console.log("error", error);
-        });
+async function fetchFriends() {
+  try {
+    const response = await axios.get(`/friend/${userId}/list`);
+    const friendsData = response.data;
+    await fetchUserDetails(friendsData);
+  } catch (error) {
+    console.error("Error fetching friends:", error);
+  } finally {
+    loading.value = false;
+  }
 }
 
-function fetchUserDetails(friendsData) {
-  const user2Ids = friendsData.map(friend => friend.user2Id);
-
-  const requests = user2Ids.map(user2Id => axios.get(`/user/secure/${user2Id}`));
-
-  Promise.all(requests)
-    .then(responses => {
-      // 将用户详情和 friend 关联起来
-      responses.forEach((response, index) => {
-        const userDetails = response.data;
-
-        // 将 userDetails 赋值到对应的 friend 对象中
-        friendsData[index].accountNumber = userDetails.accountNumber;
-        friendsData[index].age = userDetails.age;
-      });
-
-      // 更新 friends 变量以触发重新渲染
-      friends.value = friendsData;
-    })
-    .catch(error => {
-      console.error('Error fetching user details:', error);
-    });
+async function fetchUserDetails(friendsData) {
+  try {
+    const requests = friendsData.map(friend => axios.get(`/user/secure/${friend.user2Id}`));
+    const responses = await Promise.all(requests);
+    
+    friends.value = friendsData.map((friend, index) => ({
+      ...friend,
+      accountNumber: responses[index].data.accountNumber,
+      age: responses[index].data.age
+    }));
+  } catch (error) {
+    console.error('Error fetching user details:', error);
+  }
 }
 
+function filterFriends() {
+  // 這個函數可以留空，因為我們使用了計算屬性 filteredFriends
+}
 </script>
+
 
 <style scoped>
 .input-icon {

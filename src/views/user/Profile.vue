@@ -105,16 +105,16 @@ const activeTab = ref("profile");
 const userStore = useUserStore();
 let userId = userStore.userId;
 
-let accountNumber = ref("");
-let email = ref("");
-let nickname = ref("");
-let phoneNumber = ref("");
-let country = ref("");
-let city = ref("");
-let age = ref("");
-let gender = ref("");
-let photo = ref("");
-let bio = ref("");
+let accountNumber = ref('');
+let email = ref('');
+let nickname = ref('');
+let phoneNumber = ref('');
+let country = ref('');
+let city = ref('');
+let age = ref('');
+let gender = ref('');
+let photo = ref('');
+let bio = ref('');
 
 onMounted(function () {
   callFind();
