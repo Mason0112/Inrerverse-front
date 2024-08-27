@@ -15,7 +15,7 @@
             <RouterLink class="nav-link" :to="{ name: 'login-link' }">登入</RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'register-link' }">註冊</RouterLink>
+            <RouterLink class="nav-link" :to="{ name: 'personal-link' }">註冊</RouterLink>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
@@ -42,10 +42,10 @@
         </ul>
 
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item dropdown">
+          <li class="nav-item dropdown me-2">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
               @click="toggleDropdown('person')" aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn">
-              我的 <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.person }" />
+              <font-awesome-icon :icon="['fas', 'user']" /> <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.person }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
               :class="{ 'show': dropdownStates.person }">
@@ -54,16 +54,19 @@
               <li><a class="dropdown-item" @click="logout(); closeDropdown('person')">登出</a></li>
             </ul>
           </li>
-          <li class="nav-item">
-            <n-badge :value="notiValue" :max="15" v-show="userStore.isLoggedIn">
+          <li class="nav-item me-2" >
+            <!-- <n-badge :value="notiValue" :max="15" v-show="userStore.isLoggedIn">
               <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
                 <font-awesome-icon :icon="['far', 'bell']" />
               </RouterLink>
-            </n-badge>
+            </n-badge> -->
+            <div v-show="userStore.isLoggedIn">
+              <NotificationDropdown></NotificationDropdown>
+            </div>
           </li>
-          <li class="nav-item">
+          <li class="nav-item me-2">
             <n-badge :value="cartValue" :max="15" v-show="userStore.isLoggedIn">
-              <RouterLink class="nav-link" :to="{ name: 'notification-link' }" v-show="userStore.isLoggedIn">
+              <RouterLink class="nav-link" :to="{ name: 'profiletest-link' }" v-show="userStore.isLoggedIn">
                 <font-awesome-icon :icon="['fas', 'cart-shopping']" />
               </RouterLink>
             </n-badge>
@@ -81,6 +84,7 @@
             </RouterLink>
           </li>
 
+
         </ul>
       </div>
     </div>
@@ -91,6 +95,8 @@
 import { ref } from 'vue';
 import useUserStore from '@/stores/userstore';
 import axios from '@/plugins/axios';
+
+import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
 
 const notiValue = ref(5);
 const cartValue = ref(2);

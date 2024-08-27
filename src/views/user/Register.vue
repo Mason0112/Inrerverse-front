@@ -1,7 +1,15 @@
 <template>
     <div class="container">
 
-        <Vueform size="md" :display-errors="false" ref="form$" :endpoint="false">
+    <div class="row">
+      <div class="col-lg-10 col-xl-9 mx-auto">
+        <div class="card flex-row my-5 border-0 shadow rounded-3 overflow-hidden">
+          <div class="card-img-left d-none d-md-flex">
+            <!-- Background image for card set in CSS! -->
+          </div>
+          <div class="card-body p-4 p-sm-5">
+
+            <Vueform size="md" :display-errors="false" ref="form$" :endpoint="false">
             <StaticElement name="register_title" content="註冊" tag="h1" />
             <StaticElement name="divider" tag="hr" />
             <!-- <GroupElement name="container" description="Make sure it matches your legal name">
@@ -54,16 +62,6 @@
                     label: 12,
                     wrapper: 12,
                 }" />
-            <!-- <SelectElement name="state" :search="true" :native="false" input-type="search" autocomplete="disabled"
-                placeholder="State" items="/json/states.json" :conditions="[
-                    [
-                        'country',
-                        'in',
-                        [
-                            'US',
-                        ],
-                    ],
-                ]" /> -->
 
             <TextElement name="country" placeholder="請輸入國籍" rules="required" :columns="{
                 container: 6,
@@ -91,11 +89,17 @@
             
             <TextElement name="gender" placeholder="性別" rules="required" />
 
-            <CheckboxElement name="terms" text="I accept the Terms & Conditions & Privacy Policy" rules="accepted" />
+            <!-- <CheckboxElement name="terms" text="I accept the Terms & Conditions & Privacy Policy" rules="accepted" /> -->
             <StaticElement name="divider_1" tag="hr" />
             <ButtonElement name="register" button-label="註冊" :full="true" size="lg" @click="register" :submits="true" />
         </Vueform>
+ 
+          </div>
+        </div>
+      </div>
     </div>
+
+  </div>
 </template>
 
 <script setup>
@@ -136,4 +140,16 @@ function register() {
 
 </script>
 
-<style></style>
+<style scoped>
+.card-img-left {
+  width: 45%;
+  /* Link to your background image using in the property below! */
+  background: scroll center url('https://source.unsplash.com/WEQbe2jBg40/414x512');
+  background-size: cover;
+}
+
+.btn-google {
+  color: white;
+  background-color: #ea4335;
+}
+</style>
