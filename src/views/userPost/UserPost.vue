@@ -15,6 +15,7 @@
 
                         <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
                     </div>
+                    <PostComment></PostComment>
                 </div>
                 
             </div>
@@ -28,6 +29,7 @@ import {onMounted, ref } from "vue";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import UpdatePostModal from "./updatePostModal.vue";
+import PostComment from "./PostComment.vue";
 
 const userStore = useUserStore();
 const userId = userStore.userId;
