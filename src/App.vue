@@ -1,24 +1,20 @@
 <template>
     <div>
       <navbar></navbar>
-      <!-- <navbarTest></navbarTest> -->
-  <div>
-    <!-- <navbar></navbar> -->
-    <navbarTest></navbarTest>
-
-  </div>
-  <RouterView></RouterView>
+      <navbarTest></navbarTest>
+    </div>
+    <div>
+    <RouterView></RouterView>
+    </div>
 </template>
 
 <script setup>
 import navbar from './views/navbar.vue';
 import navbarTest from './views/navbarTest.vue';
 
-
-
-  import 'bootstrap/dist/css/bootstrap.min.css';
-  import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-  import 'tocas/dist/tocas.min.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import 'tocas/dist/tocas.min.css'
 
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';

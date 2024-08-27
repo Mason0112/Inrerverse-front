@@ -7,10 +7,8 @@ import NotFound from "@/views/result/NotFound.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/user/Register.vue";
 import Notification from "@/views/user/Notification.vue";
-import category from "@/views/Category/category.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
 import UserPost from "@/views/userPost/UserPost.vue";
-import Product from "@/views/Product/Product.vue";
 import Friend from "@/views/friend/Friend.vue";
 import Profile from "@/views/user/Profile.vue";
 import ProfileTest from "@/views/test/ProfileTest.vue";
@@ -31,29 +29,19 @@ const routes = [
     { path: "/user/register", name: "register-link", component: Register },
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/user/notification", name: "notification-link", component: Notification },
-<<<<<<< HEAD
-<<<<<<< HEAD
-    { path: "/product/category", name: "product-category", component: category},
+    { path: "/product/category", name: "product-category", component: Category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost", name: "user-post-link", component: UserPost},
-    { path: "/product/product", name: "product-product", component: Product}
     
-
-=======
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },
-    { path: "/personal", name: "personal-link", component: PersonalModalTest }
+    { path: "/personal", name: "personal-link", component: PersonalModalTest },
 
-    
->>>>>>> origin/Nicole
-=======
-    { path: "/product/category", name: "product-category", component: Category},
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
     { path: "/cart", name: "cart-user", component: UserCart }
      
->>>>>>> Mason
 ]
 
 const router = createRouter({
