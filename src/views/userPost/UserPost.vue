@@ -19,7 +19,7 @@
                     <div v-if="onePost.comments && onePost.comments.length> 0" >
             <h4>留言：</h4>
             <div v-for="comment in onePost.comments" :key="comment.id" class="comment">
-              <p>{{ comment.user.nickname }}: {{ comment.comment }}</p>
+              <p>{{ comment.user?.nickname || '未知用戶' }}: {{ comment.comment }}</p>
             </div>
             </div>
                     <!-- 留言輸入框 -->
@@ -29,7 +29,6 @@
                     @comment-added="handleCommentAdded(onePost.id, $event)"
                     ></PostComment>
                 </div>
-                
             </div>
         </div>
         <updatePostModal ref="updatePostModal" :post="selectedPost" @update:onePost="handlePostUpdate"></updatePostModal>
@@ -45,6 +44,7 @@ import PostComment from "./PostComment.vue";
 
 const userStore = useUserStore();
 const userId = userStore.userId;
+const userNickname=userStore.nickname
 //初始化
 const updatePostModal =ref(null);
 const selectedPost=ref(null)
@@ -97,6 +97,8 @@ function handleCommentAdded(postId, newComment){
         if(!postList.value[postIndex].comments){
             postList.value[postIndex].comments=[]
         }
+        //更新留言後保留user.nickname
+        newComment.user = newComment.user || {nickname: userNickname}
         postList.value[postIndex].comments.push(newComment)
     }
 }

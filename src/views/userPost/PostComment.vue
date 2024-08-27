@@ -31,6 +31,7 @@
   
   const userStore = useUserStore();
   let userId = userStore.userId;
+  let userNickname=userStore.nickname
 
   async function addComment() {
     if(!commentText.value.trim()) return;
@@ -45,7 +46,14 @@
   }
   try {
     const response = await axios.post('/postComment', commentData)
-    const newComment = response.data
+    let newComment = response.data
+    //確保新留言包含user.nickname
+    if(!newComment.user || !newComment.user.nickname){
+      newComment.user = {
+        id: userId,
+        nickname: userNickname
+      }
+    }
     emit('comment-added', newComment)
     commentText.value='' //清空輸入框
   } catch (error) {
