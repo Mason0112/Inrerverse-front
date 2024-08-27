@@ -14,7 +14,7 @@
         <div class="ts-grid thumbnail-grid">
           <div class="column" v-for="(photo, index) in productPhotos" :key="photo.id">
             <div class="ts-image thumbnail" @click="setCurrentImage(index)" :class="{ active: currentImageIndex === index }">
-              <img :src="getPhotoUrl(photo)" :alt="product.name"/>
+              <img :src="getPhotoUrl(photo.id)" :alt="product.name"/>
             </div>
           </div>
         </div>
@@ -22,17 +22,20 @@
       <div class="column is-9-wide product-info">
         <h1 class="ts-header is-huge">{{ product.name }}</h1>
         <p class="ts-text is-large price">NT$ {{ product.price }}</p>
-        <p class="ts-text">顏色：{{ product.color }}</p>
-        <div class="ts-divider"></div>
+        <div class="ts-grid">
+          <div class="column is-8-wide">
+          </div>
+          <div class="column is-8-wide">
+            
+          </div>
+        </div>
         <div class="ts-grid">
           <div class="column is-8-wide">
             <div class="ts-input is-fluid">
               <input type="number" v-model.number="vol" min="1" :max="100">
             </div>
           </div>
-        </div>
-        <div class="ts-grid has-top-spaced">
-          <div class="column is-16-wide">
+          <div class="column is-8-wide">
             <button class="ts-button is-fluid is-positive" @click="addToCart" :disabled="!isValidInput">
               加入購物車
             </button>
@@ -40,7 +43,7 @@
         </div>
         <div class="ts-box is-segment has-top-spaced-large">
           <div class="ts-content">
-            <h3 class="ts-header">商品說明</h3>
+            <h3 class="ts-header">商品說明:</h3>
             <p class="ts-text">{{ product.description }}</p>
           </div>
         </div>
@@ -55,15 +58,18 @@ import { ref, onMounted, computed } from 'vue'
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 
+const userStore = useUserStore();
 const route = useRoute();
 const product = ref(null);
 const vol = ref(1);
 const currentImageIndex = ref(0);
 const productPhotos = ref([]);
 
+
+
 const currentImageUrl = computed(() => {
   if (productPhotos.value.length > 0) {
-    return getPhotoUrl(productPhotos.value[currentImageIndex.value]);
+    return getPhotoUrl(productPhotos.value[currentImageIndex.value].id);
   }
   return '';
 });
@@ -94,18 +100,23 @@ function getProductPhotos(productId) {
   });
 }
 
-function getPhotoUrl(photo) {
-  return `/interverse/products/${product.value.id}/photos/${photo.id}`;
+function getPhotoUrl(photoId) {
+  return `http://localhost:8080/interverse/products/${product.value.id}/${photoId}`;
 }
 
 function addToCart() {
-  if (!isValidInput.value) return;
-
-  const request = {
+  if (!isValidInput.value) return;  
+  console.log(userStore.userId);
+  console.log(product.value.id);
+  console.log(vol.value);
+  let request = {
     "usersId": userStore.userId,
     "productsId": product.value.id,
     "vol": vol.value
   };
+
+  console.log(request);
+  
 
   axiosapi.post("/cart/add", request).then(function (productResponse) {
     console.log("加入購物車成功", productResponse);
@@ -130,5 +141,120 @@ function setCurrentImage(index) {
 </script>
 
 <style scoped>
-/* 樣式保持不變 */
+.product-details {
+  padding: 20px;
+}
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.main-image {
+  width: 100%;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
+}
+
+.main-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.carousel-button:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.carousel-button.prev {
+  left: 10px;
+}
+
+.carousel-button.next {
+  right: 10px;
+}
+
+.thumbnail-grid {
+  margin-top: 10px;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.thumbnail.active {
+  border-color: #0074d9;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.product-info {
+  padding-left: 20px;
+}
+
+.price {
+  color: #e53935;
+  font-weight: bold;
+}
+
+.ts-select, .ts-input {
+  margin-bottom: 10px;
+}
+
+.ts-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.ts-button:hover {
+  background-color: #45a049;
+}
+
+.ts-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
 </style>

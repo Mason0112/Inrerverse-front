@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+
 import Home from "@/views/Home.vue";
 import Forbidden from "@/views/result/Forbidden.vue";
 import NotFound from "@/views/result/NotFound.vue";
@@ -11,6 +12,9 @@ import Category from "@/views/Category/category.vue";
 import Product from "@/views/Product/Product.vue";
 import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
+import UserCart from "@/views/Cart/UserCart.vue";
+
+
 
 const routes = [
     { path: "/", name: "home-link", component: Home },
@@ -23,12 +27,16 @@ const routes = [
     { path: "/product/category", name: "product-category", component: Category},
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
-    { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail }
+    { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
+    { path: "/cart", name: "cart-user", component: UserCart }
+     
 ]
 
 const router = createRouter({
     history: createWebHistory(),
     routes: routes
 })
+
+
 
 export default router;

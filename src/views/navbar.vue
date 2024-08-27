@@ -27,6 +27,9 @@
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'product-cart' }">加入購物車頁面</RouterLink>
           </li>
+          <li class="nav-item" v-if="userStore.isLoggedIn">
+            <RouterLink class="nav-link" :to="{ name: 'cart-user' }">購物車頁面</RouterLink>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
