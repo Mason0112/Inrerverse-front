@@ -1,7 +1,7 @@
 <template>
 
     <div class="card">
-        <img class="card-img-top" :src="`${path}/products/${product.id}/firstphoto`" :alt="product.name">
+        <img class="card-img-top" :src="`${path}/products/${product.id}/latestphoto`" :alt="product.name">
         <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
             <div class="card-text text-danger text-end">NT$ {{ product.price }}</div>

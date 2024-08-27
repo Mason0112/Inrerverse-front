@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
+
 import Home from "@/views/Home.vue";
 import Forbidden from "@/views/result/Forbidden.vue";
 import NotFound from "@/views/result/NotFound.vue";
@@ -14,6 +15,12 @@ import Friend from "@/views/friend/Friend.vue";
 import Profile from "@/views/user/Profile.vue";
 import ProfileTest from "@/views/test/ProfileTest.vue";
 import PersonalModalTest from "@/views/test/PersonalModalTest.vue";
+import Category from "@/views/Category/category.vue";
+import Product from "@/views/Product/Product.vue";
+import CartProductList from "@/views/Cart/CartProductList.vue";
+import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
+import UserCart from "@/views/Cart/UserCart.vue";
+
 
 
 const routes = [
@@ -24,6 +31,7 @@ const routes = [
     { path: "/user/register", name: "register-link", component: Register },
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/user/notification", name: "notification-link", component: Notification },
+<<<<<<< HEAD
 <<<<<<< HEAD
     { path: "/product/category", name: "product-category", component: category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
@@ -38,11 +46,21 @@ const routes = [
 
     
 >>>>>>> origin/Nicole
+=======
+    { path: "/product/category", name: "product-category", component: Category},
+    { path: "/product/product", name: "product-product", component: Product },
+    { path: "/product/Cart", name: "product-cart", component: CartProductList },
+    { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
+    { path: "/cart", name: "cart-user", component: UserCart }
+     
+>>>>>>> Mason
 ]
 
 const router = createRouter({
     history: createWebHistory(),
     routes: routes
 })
+
+
 
 export default router;
