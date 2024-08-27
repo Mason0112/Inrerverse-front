@@ -4,24 +4,23 @@
       <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
         <div class="card border-0 shadow rounded-3 my-5">
           <div class="card-body p-4 p-sm-5">
+            <h2><b>登入</b></h2>
+            <p>還沒有帳號嗎？
+              <RouterLink class="bold-link" :to="{ name: 'register-link' }"> 點我註冊</RouterLink>
+            </p>
+            <a class="btn btn-outline-dark w-100" href="#">
+                    <span class="d-flex justify-content-center align-items-center">
+                      <img class="avatar me-2" src="../assets/google-icon.svg" alt="Image Description">
+                      使用google登入
+                    </span>
+                  </a>
+            <hr />
 
             <Vueform :display-errors="false" ref="form$" :endpoint="false">
-              <StaticElement name="register_title" content="登入" tag="h1" />
-              <StaticElement name="divider" tag="hr" />
               <TextElement name="accountNumber" label="帳號" rules="required" />
               <TextElement name="password" input-type="password" label="密碼" rules="required"/>
               <ButtonElement name="login" button-label="登入" align="center" size="lg" @click="login" :submits="true"/>
             </Vueform>
-
-            <hr class="my-4" />
-              <div class="d-grid mb-2">
-                <button
-                  class="btn btn-google text-uppercase fw-bold"
-                  type="submit"
-                >
-                  <font-awesome-icon :icon="['fab', 'google']" /> 使用google登入
-                </button>
-              </div>
           </div>
 
         </div>
@@ -79,9 +78,18 @@ function login() {
 }
 </script>
 
-<style>
-.btn-google {
-  color: white;
-  background-color: grey;
+<style scoped>
+.bold-link {
+  font-weight: bold;
+  color: black;
+  text-decoration: none;
+}
+
+.avatar {
+    position: relative;
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: .3125rem;
 }
 </style>

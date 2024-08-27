@@ -54,6 +54,15 @@
                 <li class="nav-item" role="presentation">
                   <button
                     class="nav-link"
+                    :class="{ active: activeTab === 'wallet' }"
+                    @click="activeTab = 'wallet'"
+                  >
+                    錢包
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button
+                    class="nav-link"
                     :class="{ active: activeTab === 'profile' }"
                     @click="activeTab = 'profile'"
                   >
@@ -100,7 +109,7 @@ import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 
-const activeTab = ref("profile");
+const activeTab = ref("wallet");
 
 const userStore = useUserStore();
 let userId = userStore.userId;
@@ -151,7 +160,6 @@ function callFind() {
 }
 
 const selectedFile = ref(null);
-const uploadRef = ref(null);
 function handleChange({ file }) {
   // 当选择文件时触发
   selectedFile.value = file;

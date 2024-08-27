@@ -17,16 +17,17 @@
 
     <template v-else>
   <div class="list border-bottom d-flex justify-content-between align-items-center" v-for="friend in filteredFriends" :key="friend.user2Id">
-    <div class="d-flex align-items-center">
-      <!-- <img :src="friend.photo" alt="Friend's photo" class="friend-photo mr-3" /> -->
+    <div class="d-flex align-items-center" @click="showModal = true">
+      <img :src="friend.photo" alt="Friend's photo" class="friend-photo mr-3 me-2 mx-2" />
       <div class="d-flex flex-column">
         <span>{{ friend.accountNumber }}</span>
-        <small>{{ friend.age }} 歲</small>
+        <small>{{ friend.nickname }}</small>
       </div>
     </div>
-    <button class="btn btn-danger btn-sm" @click="deleteFriend(friend.user2Id)">刪除好友</button>
+    <button class="btn btn-outline-danger btn-sm" @click="deleteFriend(friend.user2Id)">刪除好友</button>
   </div>
 </template>
+
   </div>
 </template>
 
@@ -34,6 +35,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+
 
 const userStore = useUserStore();
 const userId = userStore.userId;
@@ -45,7 +47,7 @@ const searchTerm = ref('');
 const filteredFriends = computed(() => {
   return friends.value.filter(friend => 
     friend.accountNumber.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    friend.age.toString().includes(searchTerm.value)
+    friend.nickname.includes(searchTerm.value)
   );
 });
 
@@ -68,18 +70,18 @@ async function fetchFriends() {
 async function fetchUserDetails(friendsData) {
   try {
     const userRequests = friendsData.map(friend => axios.get(`/user/secure/${friend.user2Id}`));
-    // const photoRequests = friendsData.map(friend => axios.get(`/user/secure/profile-photo/${friend.user2Id}`));
+    const photoRequests = friendsData.map(friend => axios.get(`/user/secure/profile-photo/${friend.user2Id}`));
     
     const [userResponses, photoResponses] = await Promise.all([
       Promise.all(userRequests),
-      // Promise.all(photoRequests)
+      Promise.all(photoRequests)
     ]);
     
     friends.value = friendsData.map((friend, index) => ({
       ...friend,
       accountNumber: userResponses[index].data.accountNumber,
-      age: userResponses[index].data.age,
-      // photo: photoResponses[index].data
+      nickname: userResponses[index].data.nickname,
+      photo: photoResponses[index].data
     }));
   } catch (error) {
     console.error('Error fetching user details:', error);
