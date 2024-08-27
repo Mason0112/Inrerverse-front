@@ -1,5 +1,5 @@
 <template>
-    <!-- <n-space vertical>
+    <n-space vertical>
       <n-input
         v-model:comment="comment"
         type="textarea"
@@ -10,7 +10,7 @@
         </n-button>
 
       
-    </n-space> -->
+    </n-space>
   </template>
   
   <script setup>
