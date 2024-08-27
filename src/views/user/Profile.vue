@@ -1,6 +1,14 @@
 <template>
   <div class="container mt-4">
-    <div class="main-content">
+
+    <div v-if="isLoading" class="loading-indicator">
+      <!-- 這裡可以使用一個加載動畫或者簡單的文字 -->
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">加載中…</span>
+      </div>
+    </div>
+
+    <div v-else class="main-content">
       <div class="row gutters">
 
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
@@ -121,6 +129,8 @@ const activeTab = ref("wallet");
 const userStore = useUserStore();
 let userId = userStore.userId;
 
+const isLoading = ref(true);
+
 let accountNumber = ref('');
 let email = ref('');
 let nickname = ref('');
@@ -137,33 +147,29 @@ onMounted(function () {
 });
 
 function callFind() {
-  axios
-    .get(`/user/secure/${userId}`)
-    .then(function (response) {
-      console.log("response", response);
-      accountNumber.value = response.data.accountNumber;
-      email.value = response.data.email;
-      nickname.value = response.data.nickname;
-      phoneNumber.value = response.data.phoneNumber;
-      country.value = response.data.country;
-      city.value = response.data.city;
-      age.value = response.data.age;
-      gender.value = response.data.gender;
-      bio.value = response.data.bio;
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
+  isLoading.value = true;
+  Promise.all([
+    axios.get(`/user/secure/${userId}`),
+    axios.get(`/user/secure/profile-photo/${userId}`)
+  ]).then(([userResponse, photoResponse]) => {
+    // 處理用戶數據
+    accountNumber.value = userResponse.data.accountNumber;
+    email.value = userResponse.data.email;
+    nickname.value = userResponse.data.nickname;
+    phoneNumber.value = userResponse.data.phoneNumber;
+    country.value = userResponse.data.country;
+    city.value = userResponse.data.city;
+    age.value = userResponse.data.age;
+    gender.value = userResponse.data.gender;
+    bio.value = userResponse.data.bio;
 
-  axios
-    .get(`/user/secure/profile-photo/${userId}`)
-    .then(function (response) {
-      console.log("response", response);
-      photo.value = response.data;
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
+    // 處理照片數據
+    photo.value = photoResponse.data;
+  }).catch((error) => {
+    console.log("error", error);
+  }).finally(() => {
+    isLoading.value = false;
+  });
 }
 
 const selectedFile = ref(null);
@@ -245,13 +251,6 @@ async function uploadPhoto() {
   text-align: center;
 }
 
-.user-avatar img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 15px;
-}
-
 .about-section {
   text-align: center;
   margin-top: 20px;
@@ -280,6 +279,21 @@ async function uploadPhoto() {
   padding-right: 15px;
 }
 
+.user-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar img,
+.default-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
 .default-avatar {
   background-color: #ccc;
   color: #fff;
@@ -288,10 +302,12 @@ async function uploadPhoto() {
   align-items: center;
   font-size: 20px;
   font-weight: bold;
+}
 
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 15px;
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>

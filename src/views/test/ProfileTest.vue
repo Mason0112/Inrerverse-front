@@ -9,7 +9,7 @@
     <aside class="sidebar">
       <ul>
         <li><RouterLink :to="{ name: 'friend-link' }">我的好友</RouterLink></li>
-        <li>News</li>
+        <li><RouterLink :to="{ name: 'wallet-link' }">我的錢包</RouterLink></li>
         <li>Chats</li>
         <li class="active">Profile</li>
         <li>Settings</li>

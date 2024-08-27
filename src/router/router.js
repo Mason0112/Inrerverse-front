@@ -18,7 +18,7 @@ import Product from "@/views/Product/Product.vue";
 import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
-
+import WalletTest from "@/views/test/WalletTest.vue";
 
 
 const routes = [
@@ -36,6 +36,7 @@ const routes = [
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
+    { path: "/wallet", name: "wallet-link", component: WalletTest },
 
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
