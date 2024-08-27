@@ -1,46 +1,54 @@
 <template>
     <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
         
-        <div v-for="onePost in postList" :key="onePost.id" class="item"  @click="showId(onePost)">
+        <div v-for="onePost in postList" :key="onePost.id" class="item">
                 <div class="container">
-                <div> {{ formatDate(onePost.added) }}</div>
+                    <div> {{ formatDate(onePost.added) }}</div>
+                    <div>{{ onePost.user.nickname }}</div>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
                     {{ onePost.content }}
                 </n-ellipsis>
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
 
-                        <button class="btn btn-outline-secondary btn-sm">編輯</button>
-                        <button class="btn btn-outline-danger btn-sm">刪除</button>
-                    </div>
-                </div>
+                        <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
 
+                        <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
+                    </div>
+                    <PostComment></PostComment>
+                </div>
+                
             </div>
         </div>
+        <updatePostModal ref="updatePostModal" :post="selectedPost" @update:onePost="handlePostUpdate"></updatePostModal>
     </n-infinite-scroll>
 </template>
 
 <script setup>
-import { defineComponent, onMounted, ref } from "vue";
+import {onMounted, ref } from "vue";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
+import UpdatePostModal from "./updatePostModal.vue";
+import PostComment from "./PostComment.vue";
 
 const userStore = useUserStore();
 const userId = userStore.userId;
-const content = ref('')
-const added = ref('')
+//初始化
+const updatePostModal =ref(null);
+const selectedPost=ref(null)
+
 const postList = ref([])
 onMounted(function(){
     showUserPostList(userId)
 })
 
-function showId(onePost) {
-    if (onePost.user) {
-        console.log(onePost.user.id);
-    } else {
-        console.log('User is undefined');
-    }
-}
+// function showId(onePost) {
+//     if (onePost.user) {
+//         console.log(onePost.user.id);
+//     } else {
+//         console.log('User is undefined');
+//     }
+// }
 
 function showUserPostList(userId) {
     axios.get(`/userPost/showUserAllPost/${userId}`)
@@ -59,15 +67,49 @@ const handleLoad = () => {
     count.value += 1;
 };
 
+// const onePost={
+//     id:0,
+//     content:'',
+//     user:{
+//         id:0
+//     }
+
+// }
+
+
 //修改post
 function updatePost(onePost){
     onePost.value={
-        id,
-        content,
+            id : onePost.id,
+            content : onePost.content,
         
+        }
+        selectedPost.value={...onePost}
+        console.log(selectedPost.value)
+    updatePostModal.value.showModal();
+}
+
+// 即時更新貼文
+function handlePostUpdate(updatePost){
+    const index = postList.value.findIndex(post => post.id=== updatePost.id);
+    if(index !== -1){
+        postList.value[index]=updatePost
     }
 }
 
+function deletePost(onePost){
+    confirm("確定要刪除嗎");
+    
+    if(true){
+        axios.delete(`/userPost/${onePost.id}`)
+        .then(response=>{
+            console.log(onePost.id)
+            })
+        .catch(error => {
+            console.error("Error fetching user posts:", error);
+        })
+    }
+}
 
 //格式化時間
 function formatDate(dateString) {
