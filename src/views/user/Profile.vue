@@ -6,7 +6,14 @@
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
           <div class="profile-section">
             <div class="user-avatar">
-              <img :src="`${photo}`" alt="User Photo" />
+              <!-- <img :src="`${photo}`" alt="User Photo" /> -->
+
+              <div v-if="photo">
+                <img :src="`${photo}`" :alt="nickname || 'User Photo'"/>
+              </div>
+              <div v-else class="default-avatar">
+                {{ (nickname || 'Unknown').charAt(0) }}
+              </div>
 
               <n-upload ref="upload" :default-upload="false" :on-change="handleChange">
                 <n-button>修改大頭照</n-button>
@@ -271,5 +278,20 @@ async function uploadPhoto() {
 .gutters > .col-md-6 {
   padding-left: 15px;
   padding-right: 15px;
+}
+
+.default-avatar {
+  background-color: #ccc;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
 }
 </style>

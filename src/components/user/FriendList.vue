@@ -11,23 +11,27 @@
       </div>
     </div>
 
-    <div v-else-if="filteredFriends.length === 0" class="text-center my-3">
+    <template v-else-if="friends.length > 0">
+      <div class="list border-bottom d-flex justify-content-between align-items-center" v-for="friend in filteredFriends" :key="friend.user2Id">
+        <div class="d-flex align-items-center" @click="showModal = true">
+          <div v-if="friend.photo" class="friend-photo mr-3 me-2 mx-2">
+            <img :src="friend.photo" :alt="friend.nickname || 'Friend'"/>
+          </div>
+          <div v-else class="friend-photo mr-3 me-2 mx-2 default-avatar">
+            {{ (friend.nickname || 'Unknown').charAt(0) }}
+          </div>
+          <div class="d-flex flex-column">
+            <span>{{ friend.accountNumber || 'Unknown' }}</span>
+            <small>{{ friend.nickname || 'Unknown' }}</small>
+          </div>
+        </div>
+        <button class="btn btn-outline-danger btn-sm" @click="deleteFriend(friend.user2Id)">刪除好友</button>
+      </div>
+    </template>
+
+    <div v-else class="text-center my-3">
       朋友列表是空的。
     </div>
-
-    <template v-else>
-  <div class="list border-bottom d-flex justify-content-between align-items-center" v-for="friend in filteredFriends" :key="friend.user2Id">
-    <div class="d-flex align-items-center" @click="showModal = true">
-      <img :src="friend.photo" alt="Friend's photo" class="friend-photo mr-3 me-2 mx-2" />
-      <div class="d-flex flex-column">
-        <span>{{ friend.accountNumber }}</span>
-        <small>{{ friend.nickname }}</small>
-      </div>
-    </div>
-    <button class="btn btn-outline-danger btn-sm" @click="deleteFriend(friend.user2Id)">刪除好友</button>
-  </div>
-</template>
-
   </div>
 </template>
 
@@ -46,8 +50,8 @@ const searchTerm = ref('');
 
 const filteredFriends = computed(() => {
   return friends.value.filter(friend => 
-    friend.accountNumber.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    friend.nickname.includes(searchTerm.value)
+    (friend.accountNumber || '').toLowerCase().includes(searchTerm.value.toLowerCase()) ||
+    (friend.nickname || '').includes(searchTerm.value)
   );
 });
 
@@ -70,7 +74,10 @@ async function fetchFriends() {
 async function fetchUserDetails(friendsData) {
   try {
     const userRequests = friendsData.map(friend => axios.get(`/user/secure/${friend.user2Id}`));
-    const photoRequests = friendsData.map(friend => axios.get(`/user/secure/profile-photo/${friend.user2Id}`));
+    const photoRequests = friendsData.map(friend => 
+      axios.get(`/user/secure/profile-photo/${friend.user2Id}`)
+        .catch(() => ({ data: null })) // 如果獲取頭像失敗，返回 null
+    );
     
     const [userResponses, photoResponses] = await Promise.all([
       Promise.all(userRequests),
@@ -85,6 +92,13 @@ async function fetchUserDetails(friendsData) {
     }));
   } catch (error) {
     console.error('Error fetching user details:', error);
+    // 即使出錯，也設置 friends.value，以便顯示已獲取的資料
+    friends.value = friendsData.map(friend => ({
+      ...friend,
+      accountNumber: 'Unknown',
+      nickname: 'Unknown',
+      photo: null
+    }));
   }
 }
 
@@ -169,6 +183,22 @@ async function deleteFriend(friendId) {
   width: 50px;
   height: 50px;
   border-radius: 50%;
+  overflow: hidden;
+}
+
+.friend-photo img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+.default-avatar {
+  background-color: #ccc;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>
