@@ -15,7 +15,19 @@
 
                         <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
                     </div>
-                    <PostComment></PostComment>
+                    <!-- 留言 -->
+                    <div v-if="onePost.comments && onePost.comments.length> 0" >
+            <h4>留言：</h4>
+            <div v-for="comment in onePost.comments" :key="comment.id" class="comment">
+              <p>{{ comment.user.nickname }}: {{ comment.comment }}</p>
+            </div>
+            </div>
+                    <!-- 留言輸入框 -->
+                    <!-- 把屬性傳給子元件 -->
+                    <PostComment 
+                    :postId="onePost.id" 
+                    @comment-added="handleCommentAdded(onePost.id, $event)"
+                    ></PostComment>
                 </div>
                 
             </div>
@@ -50,16 +62,45 @@ onMounted(function(){
 //     }
 // }
 
-function showUserPostList(userId) {
+// 渲染post
+function showUserPostList(userId, postId) {
     axios.get(`/userPost/showUserAllPost/${userId}`)
         .then(response => {
             postList.value = response.data;
-            console.log(postList.value);
+            postList.value.forEach(post => {
+                fetchComments(post.id)
+            })
         })
         .catch(error => {
             console.error("Error fetching user posts:", error);
         });
 }
+
+//渲染comment
+function fetchComments(postId){
+    axios.get(`/postComment/${postId}`)
+    .then(response => {
+        const postIndex = postList.value.findIndex(post => post.id=== postId);
+        if(postIndex !==-1){
+            postList.value[postIndex].comments = response.data
+        }
+    })
+    .catch(error => {
+        console.error(`Error fetching comments for post ${postId}:`, error);
+    })
+}
+
+//即時更新comment
+function handleCommentAdded(postId, newComment){
+    const postIndex = postList.value.findIndex(post => post.id === postId);
+    if(postIndex !== -1){
+        if(!postList.value[postIndex].comments){
+            postList.value[postIndex].comments=[]
+        }
+        postList.value[postIndex].comments.push(newComment)
+    }
+}
+
 
 //載入更多
 const count = ref(6);
@@ -103,7 +144,8 @@ function deletePost(onePost){
     if(true){
         axios.delete(`/userPost/${onePost.id}`)
         .then(response=>{
-            console.log(onePost.id)
+            postList.value = postList.value.filter(post => post.id!==onePost.id)
+            console.log(`Post with id ${onePost.id} deleted`)
             })
         .catch(error => {
             console.error("Error fetching user posts:", error);
@@ -147,5 +189,9 @@ function formatDate(dateString) {
     }
     .formatted-content {
     white-space: pre-wrap; /* 保留换行符和空格 */
+    }
+
+    .comment{
+        border: 1px solid black;
     }
 </style>
