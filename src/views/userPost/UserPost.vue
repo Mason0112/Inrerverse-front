@@ -15,7 +15,7 @@
                 </div>
                     <!-- 留言 -->
                     <div v-if="onePost.comments && onePost.comments.length> 0" >
-                        <h6>留言：</h6>
+                        <h6>評論區：</h6>
                         <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
                             <div>
                                 <div v-if="editingCommentId === oneComment.id">
@@ -26,7 +26,7 @@
                                 <p v-else>
                                     <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
                                     <span>{{ oneComment.comment }}</span>
-                                    <span class="commentAdded">{{ oneComment.added }}</span>
+                                    <span class="commentAdded">{{ formatDate(oneComment.added) }}</span>
                                     <span class="commemtUD">
                                         <span v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId">
                                             <n-button dashed @click="editComment(oneComment)">編輯</n-button>
