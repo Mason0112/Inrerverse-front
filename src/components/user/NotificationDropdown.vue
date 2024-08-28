@@ -17,7 +17,11 @@
   
   <script setup>
   import { ref } from 'vue';
-  import axios from 'axios';
+  import axios from "@/plugins/axios";
+  import useUserStore from "@/stores/userstore";
+
+  const userStore = useUserStore();
+  let userId = userStore.userId;
   
   const notifications = ref([]);
   const dropdownVisible = ref(false);
@@ -28,7 +32,7 @@
       const response = await axios.get('/api/notifications'); // 调用你的 API
       notifications.value = response.data; // 假设返回的数组格式为 [{ message: '...' }, ...]
     } catch (error) {
-      console.error('获取通知失败:', error);
+      console.error(error);
     }
   }
   

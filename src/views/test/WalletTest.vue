@@ -1,186 +1,202 @@
 <template>
-    <div class="wallet-container">
-      <!-- 儲值按鈕 -->
-      <div class="wallet-header">
-        <button class="btn-recharge">儲值</button>
-      </div>
-  
-      <!-- 錢包信用區塊 -->
-      <div class="wallet-credit">
-        <div class="credit-section">
-          <span class="label">總計</span>
-          <span class="amount">NT$209</span>
+  <div class="wallet-container">
+    <h1>我的錢包</h1>
+    
+    <div class="balance-info">
+      <h2>錢包餘額 <span class="info-icon" @click="showBalanceInfo">?</span></h2>
+      <div class="balance-grid">
+        <div class="balance-item">
+          <h3>總計</h3>
+          <p class="amount">NT${{ totalBalance }}</p>
         </div>
-        <div class="credit-section">
-          <span class="label">不可提領的SHEIN餘額</span>
-          <span class="amount">0</span>
-          <small>僅適用於Interverse消費</small>
+        <div class="balance-item">
+          <h3>不可提現的SHEIN餘額</h3>
+          <p class="amount">{{ nonWithdrawableBalance }}</p>
+          <p class="note">僅適用於SHEIN購買</p>
         </div>
-        <div class="credit-section">
-          <span class="label">可提領的SHEIN餘額</span>
-          <span class="amount">NT$209</span>
-          <button class="btn-withdraw">提取存款</button>
-        </div>
-      </div>
-  
-      <!-- 錢包歷史區塊 -->
-      <div class="wallet-history">
-        <table>
-          <thead>
-            <tr>
-              <th>日期</th>
-              <th>類型</th>
-              <th>訂單號</th>
-              <th>消費金額</th>
-              <th>狀態</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2024/06/29 22:25:52</td>
-              <td>購物</td>
-              <td>GSHNHD220BONJ59</td>
-              <td class="negative">-NT$545</td>
-              <td>已完成</td>
-            </tr>
-            <tr>
-              <td>2024/06/28 11:30:10</td>
-              <td>退款</td>
-              <td>GSHNHQ22F00181C</td>
-              <td class="positive">+NT$754</td>
-              <td>已完成</td>
-            </tr>
-          </tbody>
-        </table>
-  
-        <!-- 頁碼區塊 -->
-        <div class="pagination">
-          <span>共1頁</span>
+        <div class="balance-item">
+          <h3>可提現的SHEIN餘額</h3>
+          <p class="amount">NT${{ withdrawableBalance }}</p>
+          <button @click="withdraw" class="withdraw-btn">提取存款</button>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  
-  // 這裡你可以使用 Composition API 來處理數據
-  </script>
-  
-  <style scoped>
-  /* 全局樣式 */
-  .wallet-container {
-    max-width: 600px;
-    margin: 0 auto;
-    font-family: Arial, sans-serif;
-  }
-  
-  /* 儲值按鈕樣式 */
-  .wallet-header {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-  }
-  
-  .btn-recharge {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  .btn-recharge:hover {
-    background-color: #0056b3;
-  }
-  
-  /* 錢包信用樣式 */
-  .wallet-credit {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    background-color: #f8f9fa;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-  }
-  
-  .credit-section {
-    text-align: center;
-  }
-  
-  .label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
-  
-  .amount {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
-  
-  small {
-    color: #6c757d;
-    font-size: 12px;
-  }
-  
-  /* 提取存款按鈕樣式 */
-  .btn-withdraw {
-    background-color: #343a40;
-    color: white;
-    border: none;
-    padding: 4px 8px;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 12px;
-  }
-  
-  .btn-withdraw:hover {
-    background-color: #23272b;
-  }
-  
-  /* 錢包歷史樣式 */
-  .wallet-history {
-    background-color: white;
-    padding: 16px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-  }
-  
-  th, td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
-  }
-  
-  th {
-    background-color: #f1f3f5;
-  }
-  
-  .negative {
-    color: #dc3545;
-  }
-  
-  .positive {
-    color: #28a745;
-  }
-  
-  /* 頁碼樣式 */
-  .pagination {
-    text-align: center;
-    margin-top: 16px;
-    font-size: 14px;
-    color: #6c757d;
-  }
-  </style>
-  
+
+    <div class="transaction-history">
+      <h2>錢包歷史 <span class="link" @click="showAllTransactions">查看我們</span></h2>
+      <table>
+        <thead>
+          <tr>
+            <th>日期</th>
+            <th>類型</th>
+            <th>訂單號</th>
+            <th>消費金額</th>
+            <th>狀態</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(transaction, index) in transactions" :key="index">
+            <td>{{ transaction.date }}</td>
+            <td>{{ transaction.type }}</td>
+            <td>{{ transaction.orderId }}</td>
+            <td :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
+              {{ formatAmount(transaction.amount) }}
+            </td>
+            <td>{{ transaction.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="pagination">
+        <span>共1頁</span>
+        <button class="page-btn active">1</button>
+      </div>
+    </div>
+
+    <button @click="topUp" class="top-up-btn">儲值</button>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed } from 'vue';
+
+const totalBalance = ref(209);
+const nonWithdrawableBalance = ref(0);
+const withdrawableBalance = computed(() => totalBalance.value - nonWithdrawableBalance.value);
+
+const transactions = ref([
+  { date: '2024/06/29 22:25:52', type: '購物', orderId: 'GSHNHD22B00NJ59', amount: -545, status: '已完成' },
+  { date: '2024/06/28 11:30:10', type: '退款', orderId: 'GSHNHO22F00181C', amount: 754, status: '已完成' },
+]);
+
+const formatAmount = (amount) => {
+  return amount > 0 ? `+NT$${amount}` : `-NT$${Math.abs(amount)}`;
+};
+
+const showBalanceInfo = () => {
+  alert('這裡顯示餘額的詳細信息');
+};
+
+const showAllTransactions = () => {
+  alert('這裡顯示所有交易歷史');
+};
+
+const withdraw = () => {
+  alert('處理提款邏輯');
+};
+
+const topUp = () => {
+  alert('處理儲值邏輯');
+};
+</script>
+
+<style scoped>
+.wallet-container {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+.balance-info {
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.balance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.balance-item {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+}
+
+.amount {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #0066cc;
+}
+
+.withdraw-btn, .top-up-btn {
+  background-color: #0066cc;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+.transaction-history {
+  margin-top: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: right;
+}
+
+.page-btn {
+  background-color: #f2f2f2;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background-color: #0066cc;
+  color: white;
+}
+
+.info-icon, .link {
+  color: #0066cc;
+  cursor: pointer;
+}
+
+.note {
+  font-size: 0.8em;
+  color: #666;
+}
+
+.top-up-btn {
+  display: block;
+  margin: 20px auto;
+  font-size: 1.2em;
+  padding: 15px 30px;
+}
+</style>
