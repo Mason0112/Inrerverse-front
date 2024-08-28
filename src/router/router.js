@@ -18,6 +18,7 @@ import Product from "@/views/Product/Product.vue";
 import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
+import Payment from "@/views/Order/Payment.vue";
 
 
 
@@ -32,16 +33,14 @@ const routes = [
     { path: "/product/category", name: "product-category", component: Category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost", name: "user-post-link", component: UserPost},
-    
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
-
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
-    { path: "/cart", name: "cart-user", component: UserCart }
-     
+    { path: "/cart", name: "cart-user", component: UserCart },
+    { path: "/order/payment", name: "order-payment", component: Payment }
 ]
 
 const router = createRouter({
