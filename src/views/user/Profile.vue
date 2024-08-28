@@ -109,7 +109,7 @@
                   :birthday="birthday"
                   :gender="gender"
                   :bio="bio"
-                  @update-success="handleProfileUpdateSuccess"
+                  @update-success="callFind"
                   ></ProfileForm>
                 </div>
                 <div v-if="activeTab === 'friends'" class="tab-pane active">
