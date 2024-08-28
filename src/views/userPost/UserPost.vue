@@ -23,14 +23,17 @@
                                     <n-button @click="saveComment(oneComment)">保存</n-button>
                                     <n-button @click="cancelEdit">取消</n-button>
                                 </div>
-                                <p v-else>{{ oneComment.user?.nickname || '未知用戶' }}: {{ oneComment.comment }}
+                                <p v-else>
+                                    <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
+                                    <span>{{ oneComment.comment }}</span>
+                                    <span class="commentAdded">{{ oneComment.added }}</span>
                                     <span class="commemtUD">
-                                        <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId">
-                                                <n-button dashed @click="editComment(oneComment)">編輯</n-button>
-                                                <span><font-awesome-icon :icon="['fas', 'trash']" /></span>
-                                            </div>
+                                        <span v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId">
+                                            <n-button dashed @click="editComment(oneComment)">編輯</n-button>
+                                            <n-button dashed @click="deleteComment(oneComment, onePost.id)"><font-awesome-icon :icon="['fas', 'trash']" /></n-button>
+                                        </span>
                                     </span>
-                                    </p>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -47,11 +50,13 @@
 </template>
 
 <script setup>
-import {onMounted, ref } from "vue";
+import {onMounted, ref, inject } from "vue";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import UpdatePostModal from "./updatePostModal.vue";
 import PostComment from "./PostComment.vue";
+import { useMessage } from 'naive-ui'
+
 
 const userStore = useUserStore();
 const userId = userStore.userId;
@@ -61,6 +66,7 @@ const updatePostModal =ref(null);
 const selectedPost=ref(null)
 const editingCommentId=ref(null)
 const editedComment =ref(null)
+const message=useMessage()
 
 const postList = ref([])
 onMounted(function(){
@@ -189,6 +195,29 @@ async function saveComment(oneComment) {
     }
 }
 
+async function deleteComment(oneComment, postId){
+    if (window.confirm("確定要刪除嗎")){
+        try{await axios.delete(`/postComment/${oneComment.id}`)
+
+            // 如果找到了Post（即 postIndex 不等於 -1），則使用 filter 方法從該Post的評論列表中移除被刪除的評論。
+            const postIndex = postList.value.findIndex(post => post.id === postId)
+            console.log(postIndex)
+            if(postIndex !== -1){
+                postList.value[postIndex].comments= postList.value[postIndex].comments.filter(comment => comment.id !== oneComment.id)
+                console.log(postList.value)
+            }
+            message.success('評論已成功刪除')
+        }catch(error){
+            message.error("刪除評論時發生錯誤:")
+            console.error("刪除評論時發生錯誤:", error)
+        }
+    }    
+}
+
+
+    
+
+
 //格式化時間
 function formatDate(dateString) {
     if (!dateString) return '無效日期'; // 提供默認值或處理無效情況
@@ -233,5 +262,9 @@ function formatDate(dateString) {
     .commemtUD{
         display: flex;
         justify-content: flex-end;
+    }
+    .commentAdded{
+        font-size: 0.8em;
+        float: right;
     }
 </style>
