@@ -1,27 +1,39 @@
 <template>
     <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
-        
         <div v-for="onePost in postList" :key="onePost.id" class="item">
-                <div class="container">
-                    <div> {{ formatDate(onePost.added) }}</div>
-                    <div>{{ onePost.user.nickname }}</div>
+            <div class="container">
+                <div> {{ formatDate(onePost.added) }}</div>
+                <div>{{ onePost.user.nickname }}</div>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
                     {{ onePost.content }}
                 </n-ellipsis>
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
-
                         <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
-
                         <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
                     </div>
+                </div>
                     <!-- 留言 -->
                     <div v-if="onePost.comments && onePost.comments.length> 0" >
-            <h4>留言：</h4>
-            <div v-for="comment in onePost.comments" :key="comment.id" class="comment">
-              <p>{{ comment.user?.nickname || '未知用戶' }}: {{ comment.comment }}</p>
-            </div>
-            </div>
+                        <h6>留言：</h6>
+                        <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
+                            <div>
+                                <div v-if="editingCommentId === oneComment.id">
+                                    <textarea v-model="editedComment" :placeholder="oneComment.comment"></textarea class="editcomment">
+                                    <n-button @click="saveComment(oneComment)">保存</n-button>
+                                    <n-button @click="cancelEdit">取消</n-button>
+                                </div>
+                                <p v-else>{{ oneComment.user?.nickname || '未知用戶' }}: {{ oneComment.comment }}
+                                    <span class="commemtUD">
+                                        <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId">
+                                                <n-button dashed @click="editComment(oneComment)">編輯</n-button>
+                                                <span><font-awesome-icon :icon="['fas', 'trash']" /></span>
+                                            </div>
+                                    </span>
+                                    </p>
+                            </div>
+                        </div>
+                    </div>
                     <!-- 留言輸入框 -->
                     <!-- 把屬性傳給子元件 -->
                     <PostComment 
@@ -30,7 +42,6 @@
                     ></PostComment>
                 </div>
             </div>
-        </div>
         <updatePostModal ref="updatePostModal" :post="selectedPost" @update:onePost="handlePostUpdate"></updatePostModal>
     </n-infinite-scroll>
 </template>
@@ -48,19 +59,13 @@ const userNickname=userStore.nickname
 //初始化
 const updatePostModal =ref(null);
 const selectedPost=ref(null)
+const editingCommentId=ref(null)
+const editedComment =ref(null)
 
 const postList = ref([])
 onMounted(function(){
     showUserPostList(userId)
 })
-
-// function showId(onePost) {
-//     if (onePost.user) {
-//         console.log(onePost.user.id);
-//     } else {
-//         console.log('User is undefined');
-//     }
-// }
 
 // 渲染post
 function showUserPostList(userId, postId) {
@@ -92,13 +97,17 @@ function fetchComments(postId){
 
 //即時更新comment
 function handleCommentAdded(postId, newComment){
+    //在 postList 中尋找 ID 等於 postId 的貼文。findIndex 方法會返回該貼文在陣列中的索引。如果沒有找到，返回 -1    
     const postIndex = postList.value.findIndex(post => post.id === postId);
+    // 如果找到了對應的貼文
     if(postIndex !== -1){
+        // 如果該貼文尚未有留言，則初始化為空陣列
         if(!postList.value[postIndex].comments){
             postList.value[postIndex].comments=[]
         }
-        //更新留言後保留user.nickname
+        // 更新留言後保留 user.nickname，如果 newComment.user 不存在，則使用預設的 userNickname
         newComment.user = newComment.user || {nickname: userNickname}
+        // 將新留言添加到對應貼文的留言列表中
         postList.value[postIndex].comments.push(newComment)
     }
 }
@@ -155,6 +164,31 @@ function deletePost(onePost){
     }
 }
 
+function editComment(oneComment){
+    editingCommentId.value = oneComment.id
+    editedComment.value = oneComment.comment
+}
+
+function cancelEdit(){
+    editingCommentId.value = null;
+    editedComment.value = ''
+}
+
+async function saveComment(oneComment) {
+    try{
+        const response = await axios.put(`/postComment/${oneComment.id}`, {newComment:editedComment.value})
+    //更新前端畫面
+    oneComment.comment = editedComment.value
+
+    //重置編輯狀態
+    editingCommentId.value = null
+    editedComment.value=''
+    }catch(error){
+        console.error('更新評論失敗', error)
+        //可以添加錯誤處理邏輯 (顯示錯誤提示)
+    }
+}
+
 //格式化時間
 function formatDate(dateString) {
     if (!dateString) return '無效日期'; // 提供默認值或處理無效情況
@@ -195,5 +229,9 @@ function formatDate(dateString) {
 
     .comment{
         border: 1px solid black;
+    }
+    .commemtUD{
+        display: flex;
+        justify-content: flex-end;
     }
 </style>
