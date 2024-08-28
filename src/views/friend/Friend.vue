@@ -1,34 +1,55 @@
 <template>
-  <h1>我的好友們</h1>
   <div class="container mt-5">
-    <div class="row d-flex justify-content-center">
-      <div class="col-md-10">
-        <div class="card">
-          <div class="input-box">
-            <input type="text" class="form-control" v-model="searchTerm" @input="filterFriends" />
-            <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="input-icon" />
-          </div>
-          
-          <div v-if="loading" class="text-center my-3">
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
+    <h1 class="text-center">好友列表</h1>
+    <div class="card">
+      <div class="input-box">
+        <input
+          type="text"
+          class="form-control"
+          v-model="searchTerm"
+          @input="filterFriends"
+          placeholder="搜尋好友"
+        />
+        <font-awesome-icon
+          :icon="['fas', 'magnifying-glass']"
+          class="input-icon"
+        />
+      </div>
 
-          <div v-else-if="filteredFriends.length === 0" class="text-center my-3">
-            No friends found.
-          </div>
-
-          <template v-else>
-            <div class="list border-bottom" v-for="friend in filteredFriends" :key="friend.user2Id">
-              <div class="d-flex flex-column ml-3">
-                <span>{{ friend.accountNumber }}</span>
-                <small>{{ friend.age }} 歲</small>
-              </div>
-            </div>
-          </template>
+      <div v-if="loading" class="text-center my-3">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">加載中…</span>
         </div>
       </div>
+
+      <template v-else-if="friends.length > 0">
+        <div
+          class="list border-bottom d-flex justify-content-between align-items-center"
+          v-for="friend in filteredFriends"
+          :key="friend.user2Id"
+        >
+          <div class="d-flex align-items-center">
+            <div v-if="friend.photo" class="friend-photo mr-3 me-2 mx-2">
+              <img :src="friend.photo" :alt="friend.nickname || 'Friend'" />
+            </div>
+            <div v-else class="friend-photo mr-3 me-2 mx-2 default-avatar">
+              {{ (friend.nickname || "Unknown").charAt(0) }}
+            </div>
+            <div class="d-flex flex-column">
+              <span>{{ friend.accountNumber || "Unknown" }}</span>
+              <small>{{ friend.nickname || "Unknown" }}</small>
+            </div>
+          </div>
+          <button
+            class="btn btn-outline-danger btn-sm"
+            @click="deleteFriend(friend.user2Id)"
+          >
+            刪除好友
+          </button>
+        </div>
+      </template>
+
+      <div v-else class="text-center my-3">朋友列表是空的。</div>
     </div>
   </div>
 </template>
@@ -43,12 +64,15 @@ const userId = userStore.userId;
 
 const friends = ref([]);
 const loading = ref(true);
-const searchTerm = ref('');
+const searchTerm = ref("");
 
 const filteredFriends = computed(() => {
-  return friends.value.filter(friend => 
-    friend.accountNumber.toLowerCase().includes(searchTerm.value.toLowerCase()) ||
-    friend.age.toString().includes(searchTerm.value)
+  return friends.value.filter(
+    (friend) =>
+      (friend.accountNumber || "")
+        .toLowerCase()
+        .includes(searchTerm.value.toLowerCase()) ||
+      (friend.nickname || "").includes(searchTerm.value)
   );
 });
 
@@ -70,24 +94,59 @@ async function fetchFriends() {
 
 async function fetchUserDetails(friendsData) {
   try {
-    const requests = friendsData.map(friend => axios.get(`/user/secure/${friend.user2Id}`));
-    const responses = await Promise.all(requests);
-    
+    const userRequests = friendsData.map((friend) =>
+      axios.get(`/user/secure/${friend.user2Id}`)
+    );
+    const photoRequests = friendsData.map(
+      (friend) =>
+        axios
+          .get(`/user/secure/profile-photo/${friend.user2Id}`)
+          .catch(() => ({ data: null })) // 如果獲取頭像失敗，返回 null
+    );
+
+    const [userResponses, photoResponses] = await Promise.all([
+      Promise.all(userRequests),
+      Promise.all(photoRequests),
+    ]);
+
     friends.value = friendsData.map((friend, index) => ({
       ...friend,
-      accountNumber: responses[index].data.accountNumber,
-      age: responses[index].data.age
+      accountNumber: userResponses[index].data.accountNumber,
+      nickname: userResponses[index].data.nickname,
+      photo: photoResponses[index].data,
     }));
   } catch (error) {
-    console.error('Error fetching user details:', error);
+    console.error("Error fetching user details:", error);
+    // 即使出錯，也設置 friends.value，以便顯示已獲取的資料
+    friends.value = friendsData.map((friend) => ({
+      ...friend,
+      accountNumber: "Unknown",
+      nickname: "Unknown",
+      photo: null,
+    }));
   }
 }
 
 function filterFriends() {
   // 這個函數可以留空，因為我們使用了計算屬性 filteredFriends
 }
-</script>
 
+async function deleteFriend(friendId) {
+  if (confirm("確定要刪除這個好友嗎？")) {
+    try {
+      await axios.get(`/friend/switch-status/${userId}/${friendId}`);
+      // 從列表中移除該好友
+      friends.value = friends.value.filter(
+        (friend) => friend.user2Id !== friendId
+      );
+      alert("好友已成功刪除");
+    } catch (error) {
+      console.error("刪除好友時發生錯誤:", error);
+      alert("刪除好友失敗，請稍後再試");
+    }
+  }
+}
+</script>
 
 <style scoped>
 .input-icon {
@@ -145,5 +204,28 @@ function filterFriends() {
 
 .list small {
   color: #dedddd;
+}
+
+.friend-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.friend-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
+  background-color: #ccc;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
 }
 </style>

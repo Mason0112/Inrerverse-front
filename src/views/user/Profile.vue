@@ -157,10 +157,6 @@ onMounted(function () {
   callFind();
 });
 
-function handleProfileUpdateSuccess() {
-  callFind();
-}
-
 function callFind() {
   isLoading.value = true;
   Promise.all([
