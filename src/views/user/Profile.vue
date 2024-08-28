@@ -100,7 +100,17 @@
                 <div v-if="activeTab === 'profile'" class="tab-pane active">
                   <h3>個人資料</h3>
                   <!-- Profile Section -->
-                  <ProfileForm></ProfileForm>
+                  <ProfileForm
+                  :email="email"
+                  :nickname="nickname"
+                  :phoneNumber="phoneNumber"
+                  :country="country"
+                  :city="city"
+                  :birthday="birthday"
+                  :gender="gender"
+                  :bio="bio"
+                  @update-success="handleProfileUpdateSuccess"
+                  ></ProfileForm>
                 </div>
                 <div v-if="activeTab === 'friends'" class="tab-pane active">
                   <h3>好友列表</h3>
@@ -137,6 +147,7 @@ let nickname = ref('');
 let phoneNumber = ref('');
 let country = ref('');
 let city = ref('');
+let birthday = ref('');
 let age = ref('');
 let gender = ref('');
 let photo = ref('');
@@ -145,6 +156,10 @@ let bio = ref('');
 onMounted(function () {
   callFind();
 });
+
+function handleProfileUpdateSuccess() {
+  callFind();
+}
 
 function callFind() {
   isLoading.value = true;
@@ -160,6 +175,7 @@ function callFind() {
     country.value = userResponse.data.country;
     city.value = userResponse.data.city;
     age.value = userResponse.data.age;
+    birthday.value = userResponse.data.birthday;
     gender.value = userResponse.data.gender;
     bio.value = userResponse.data.bio;
 
@@ -214,6 +230,7 @@ async function uploadPhoto() {
       console.log("error", error);
     });
 }
+
 </script>
 
 <style scoped>
