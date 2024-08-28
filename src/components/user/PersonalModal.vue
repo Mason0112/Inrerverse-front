@@ -42,8 +42,6 @@
 import { ref } from 'vue';
 const showModal = ref(false);
 
-const props = defineProps(["showModal"]);
-
 </script>
     
 <style>
