@@ -66,9 +66,7 @@ const props = defineProps({
 const emit = defineEmits(['update-success']);
 
 function updateProfile() {
-
     let request = {
-
         email: email.value,
         nickname: nickname.value,
         phoneNumber: phoneNumber.value,
@@ -85,7 +83,7 @@ function updateProfile() {
             console.log("response", response);
 
             if (response.data.success) {
-                //成功邏輯
+                //成功的邏輯
                 emit('update-success');
             }
         })
@@ -95,11 +93,10 @@ function updateProfile() {
 }
 
 function cancelUpdate() {
-
+    // TODO
 }
 
 </script>
-
 
 <style scope>
 .update-form {

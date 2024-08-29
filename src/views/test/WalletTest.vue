@@ -1,202 +1,142 @@
 <template>
-  <div class="wallet-container">
-    <h1>我的錢包</h1>
-    
-    <div class="balance-info">
-      <h2>錢包餘額 <span class="info-icon" @click="showBalanceInfo">?</span></h2>
-      <div class="balance-grid">
-        <div class="balance-item">
-          <h3>總計</h3>
-          <p class="amount">NT${{ totalBalance }}</p>
+  <div class="container mt-4">
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <h2>錢包餘額</h2>
+      </div>
+      <div class="col-md-6 text-end">
+        <h2>${{ totalBalance.toFixed(2) }}</h2>
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col-md-12 text-end">
+        <button class="btn btn-primary me-2" @click="showDepositModal = true">儲值</button>
+        <button class="btn btn-secondary" @click="showWithdrawModal = true">提現</button>
+      </div>
+    </div>
+    <div class="list-group">
+      <div v-for="transaction in transactions" :key="transaction.id" class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-1">{{ transaction.description }}</h5>
+            <small>{{ transaction.category }} - {{ transaction.date }}</small>
+          </div>
+          <div class="text-end">
+            <h5 :class="transaction.amount > 0 ? 'text-success' : 'text-danger'">
+              $NTD {{ Math.abs(transaction.amount).toFixed(2) }}
+            </h5>
+            <button class="btn btn-sm btn-link" @click="toggleDetails(transaction)">
+              {{ transaction.showDetails ? '收起' : '顯示更多' }}
+            </button>
+          </div>
         </div>
-        <div class="balance-item">
-          <h3>不可提現的SHEIN餘額</h3>
-          <p class="amount">{{ nonWithdrawableBalance }}</p>
-          <p class="note">僅適用於SHEIN購買</p>
-        </div>
-        <div class="balance-item">
-          <h3>可提現的SHEIN餘額</h3>
-          <p class="amount">NT${{ withdrawableBalance }}</p>
-          <button @click="withdraw" class="withdraw-btn">提取存款</button>
+        <div v-if="transaction.showDetails" class="mt-3">
+          <p>交易ID: {{ transaction.id }}</p>
+          <p>備註: {{ transaction.note }}</p>
         </div>
       </div>
     </div>
 
-    <div class="transaction-history">
-      <h2>錢包歷史 <span class="link" @click="showAllTransactions">查看我們</span></h2>
-      <table>
-        <thead>
-          <tr>
-            <th>日期</th>
-            <th>類型</th>
-            <th>訂單號</th>
-            <th>消費金額</th>
-            <th>狀態</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(transaction, index) in transactions" :key="index">
-            <td>{{ transaction.date }}</td>
-            <td>{{ transaction.type }}</td>
-            <td>{{ transaction.orderId }}</td>
-            <td :class="{ 'positive': transaction.amount > 0, 'negative': transaction.amount < 0 }">
-              {{ formatAmount(transaction.amount) }}
-            </td>
-            <td>{{ transaction.status }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div class="pagination">
-        <span>共1頁</span>
-        <button class="page-btn active">1</button>
+    <!-- 儲值 Modal -->
+    <div class="modal" tabindex="-1" :class="{ 'd-block': showDepositModal }">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">儲值</h5>
+            <button type="button" class="btn-close" @click="showDepositModal = false"></button>
+          </div>
+          <div class="modal-body">
+            <input v-model="depositAmount" type="number" class="form-control" placeholder="請輸入儲值金額">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="showDepositModal = false">取消</button>
+            <button type="button" class="btn btn-primary" @click="deposit">確認儲值</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <button @click="topUp" class="top-up-btn">儲值</button>
+    <!-- 提現 Modal -->
+    <div class="modal" tabindex="-1" :class="{ 'd-block': showWithdrawModal }">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">提現</h5>
+            <button type="button" class="btn-close" @click="showWithdrawModal = false"></button>
+          </div>
+          <div class="modal-body">
+            <input v-model="withdrawAmount" type="number" class="form-control" placeholder="請輸入提現金額">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="showWithdrawModal = false">取消</button>
+            <button type="button" class="btn btn-primary" @click="withdraw">確認提現</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 
-const totalBalance = ref(209);
-const nonWithdrawableBalance = ref(0);
-const withdrawableBalance = computed(() => totalBalance.value - nonWithdrawableBalance.value);
-
 const transactions = ref([
-  { date: '2024/06/29 22:25:52', type: '購物', orderId: 'GSHNHD22B00NJ59', amount: -545, status: '已完成' },
-  { date: '2024/06/28 11:30:10', type: '退款', orderId: 'GSHNHO22F00181C', amount: 754, status: '已完成' },
+  { id: 1, description: 'Apple iPhone 6, 16 GB', category: 'Electronics', date: '12 July, 2015', amount: -650.00, note: '購買新手機', showDetails: false },
+  { id: 2, description: 'Funds Added', category: 'Deposit', date: '13 July, 2015', amount: 900.00, note: '薪資入帳', showDetails: false },
+  { id: 3, description: 'Engine Bill', category: 'Automotive', date: '11 July, 2015', amount: -84.96, note: '汽車維修費用', showDetails: false },
+  { id: 4, description: 'Mega Image SRL', category: 'Groceries', date: '10 July, 2015', amount: -97.75, note: '週末採購', showDetails: false },
 ]);
 
-const formatAmount = (amount) => {
-  return amount > 0 ? `+NT$${amount}` : `-NT$${Math.abs(amount)}`;
+const totalBalance = computed(() => {
+  return transactions.value.reduce((sum, transaction) => sum + transaction.amount, 0);
+});
+
+const toggleDetails = (transaction) => {
+  transaction.showDetails = !transaction.showDetails;
 };
 
-const showBalanceInfo = () => {
-  alert('這裡顯示餘額的詳細信息');
-};
+const showDepositModal = ref(false);
+const showWithdrawModal = ref(false);
+const depositAmount = ref(0);
+const withdrawAmount = ref(0);
 
-const showAllTransactions = () => {
-  alert('這裡顯示所有交易歷史');
+const deposit = () => {
+  if (depositAmount.value > 0) {
+    transactions.value.unshift({
+      id: transactions.value.length + 1,
+      description: 'Deposit',
+      category: 'Deposit',
+      date: new Date().toLocaleDateString(),
+      amount: parseFloat(depositAmount.value),
+      note: '儲值',
+      showDetails: false
+    });
+    showDepositModal.value = false;
+    depositAmount.value = 0;
+  }
 };
 
 const withdraw = () => {
-  alert('處理提款邏輯');
-};
-
-const topUp = () => {
-  alert('處理儲值邏輯');
+  if (withdrawAmount.value > 0 && withdrawAmount.value <= totalBalance.value) {
+    transactions.value.unshift({
+      id: transactions.value.length + 1,
+      description: 'Withdrawal',
+      category: 'Withdrawal',
+      date: new Date().toLocaleDateString(),
+      amount: -parseFloat(withdrawAmount.value),
+      note: '提現',
+      showDetails: false
+    });
+    showWithdrawModal.value = false;
+    withdrawAmount.value = 0;
+  } else {
+    alert('提現金額無效或餘額不足');
+  }
 };
 </script>
 
 <style scoped>
-.wallet-container {
-  font-family: Arial, sans-serif;
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-h1, h2 {
-  color: #333;
-}
-
-.balance-info {
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.balance-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.balance-item {
-  background-color: white;
-  border-radius: 8px;
-  padding: 15px;
-  text-align: center;
-}
-
-.amount {
-  font-size: 1.5em;
-  font-weight: bold;
-  color: #0066cc;
-}
-
-.withdraw-btn, .top-up-btn {
-  background-color: #0066cc;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1em;
-  margin-top: 10px;
-}
-
-.transaction-history {
-  margin-top: 30px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th, td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: left;
-}
-
-th {
-  background-color: #f2f2f2;
-}
-
-.positive {
-  color: green;
-}
-
-.negative {
-  color: red;
-}
-
-.pagination {
-  margin-top: 20px;
-  text-align: right;
-}
-
-.page-btn {
-  background-color: #f2f2f2;
-  border: 1px solid #ddd;
-  padding: 5px 10px;
-  margin-left: 5px;
-  cursor: pointer;
-}
-
-.page-btn.active {
-  background-color: #0066cc;
-  color: white;
-}
-
-.info-icon, .link {
-  color: #0066cc;
-  cursor: pointer;
-}
-
-.note {
-  font-size: 0.8em;
-  color: #666;
-}
-
-.top-up-btn {
-  display: block;
-  margin: 20px auto;
-  font-size: 1.2em;
-  padding: 15px 30px;
+.modal {
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>

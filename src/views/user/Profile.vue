@@ -97,6 +97,11 @@
 
               <!-- Tabs Content -->
               <div class="tab-content mt-3">
+                <div v-if="activeTab === 'wallet'" class="tab-pane active">
+                  <h3>我的錢包</h3>
+                  <!-- Wallet Section -->
+                  <WalletTest></WalletTest>
+                </div>
                 <div v-if="activeTab === 'profile'" class="tab-pane active">
                   <h3>個人資料</h3>
                   <!-- Profile Section -->
@@ -129,6 +134,7 @@
 <script setup>
 import ProfileForm from "@/components/user/ProfileForm.vue";
 import FriendList from "@/views/test/FriendList.vue";
+import WalletTest from "../test/WalletTest.vue";
 
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
