@@ -29,16 +29,16 @@
           :key="friend.user2Id"
         >
           <div class="d-flex align-items-center">
-            <div v-if="friend.photo" class="friend-photo mr-3 me-2 mx-2">
+            <div class="friend-photo mr-3 me-2 mx-2" @click="openModal(friend)">
               <img
+                v-if="friend.photo"
                 :src="friend.photo"
                 :alt="friend.nickname || 'Friend'"
-                @click="showModal = true"
                 style="cursor: pointer"
               />
-            </div>
-            <div v-else class="friend-photo mr-3 me-2 mx-2 default-avatar">
-              {{ (friend.nickname || "無").charAt(0) }}
+              <div v-else class="default-avatar">
+                {{ getDefaultAvatar(friend) }}
+              </div>
             </div>
             <div class="d-flex flex-column">
               <span>{{ friend.nickname || "無" }}</span>
@@ -51,69 +51,18 @@
           >
             刪除好友
           </button>
-          <!-- Modal -->
-          <div
-            class="modal fade"
-            tabindex="-1"
-            :class="{ show: showModal }"
-            :style="{ display: showModal ? 'block' : 'none' }"
-            @click.self="showModal = false"
-          >
-            <div class="modal-dialog modal-zoom">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">會員詳細資訊</h5>
-                  <button
-                    type="button"
-                    class="btn-close"
-                    @click="showModal = false"
-                  ></button>
-                </div>
-                <div class="modal-body text-center">
-                  <img
-                    :src="friend.photo"
-                    :alt="friend.nickname || 'Friend'"
-                    width="140"
-                    height="140"
-                    class="rounded-circle mb-3"
-                  />
-                  <h3 class="media-heading">
-                    {{ friend.nickname || "無" }}
-                  </h3>
-                  <span class="badge rounded-pill text-bg-primary badge-margin"
-                    ><font-awesome-icon :icon="['fas', 'location-dot']" />
-                    {{ friend.country || "未知" }}</span
-                  >
-                  <span class="badge rounded-pill text-bg-primary badge-margin"
-                    ><font-awesome-icon :icon="['fas', 'cake-candles']" />
-                    {{ friend.age || "0" }}歲</span
-                  >
-                  <span class="badge rounded-pill text-bg-primary badge-margin"
-                    ><font-awesome-icon :icon="['fas', 'venus-mars']" />
-                    {{ friend.gender || "未知" }}</span
-                  >
-                  <hr />
-                  <p class="text-left">
-                    <strong>個人簡介: </strong><br />{{ friend.bio || "" }}
-                  </p>
-                </div>
-                <div class="modal-footer">
-                  <button
-                    type="button"
-                    class="btn btn-secondary"
-                    @click="showModal = false"
-                  >
-                    I've heard enough about Joe
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </template>
 
       <div v-else class="text-center my-3">朋友列表是空的。</div>
     </div>
+
+    <AvatarModal
+      v-if="selectedFriend"
+      :friend="selectedFriend"
+      @close="closeModal"
+    />
+
   </div>
 </template>
 
@@ -121,6 +70,7 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import AvatarModal from "@/components/user/AvatarModal.vue";
 
 const userStore = useUserStore();
 const userId = userStore.userId;
@@ -129,7 +79,7 @@ const friends = ref([]);
 const loading = ref(true);
 const searchTerm = ref("");
 
-const showModal = ref(false);
+const selectedFriend = ref(null);
 
 const filteredFriends = computed(() => {
   return friends.value.filter(
@@ -137,7 +87,9 @@ const filteredFriends = computed(() => {
       (friend.accountNumber || "")
         .toLowerCase()
         .includes(searchTerm.value.toLowerCase()) ||
-      (friend.nickname || "").includes(searchTerm.value)
+      (friend.nickname || "")
+        .toLowerCase()
+        .includes(searchTerm.value.toLowerCase())
   );
 });
 
@@ -179,6 +131,7 @@ async function fetchUserDetails(friendsData) {
       accountNumber: userResponses[index].data.accountNumber,
       nickname: userResponses[index].data.nickname,
       country: userResponses[index].data.country,
+      city: userResponses[index].data.city,
       age: userResponses[index].data.age,
       gender: userResponses[index].data.gender,
       bio: userResponses[index].data.bio,
@@ -193,15 +146,12 @@ async function fetchUserDetails(friendsData) {
       nickname: "無",
       age: "",
       country: "",
+      city: "",
       gender: "",
       bio: "",
       photo: null,
     }));
   }
-}
-
-function filterFriends() {
-  // 這個函數可以留空，因為我們使用了計算屬性 filteredFriends
 }
 
 async function deleteFriend(friendId) {
@@ -214,11 +164,24 @@ async function deleteFriend(friendId) {
       );
       alert("好友已成功刪除");
     } catch (error) {
-      console.error("刪除好友時發生錯誤:", error);
+      console.error(error);
       alert("刪除好友失敗，請稍後再試");
     }
   }
 }
+// Modal
+function openModal(friend) {
+  selectedFriend.value = friend;
+}
+
+function closeModal() {
+  selectedFriend.value = null;
+}
+
+function getDefaultAvatar(friend) {
+  return (friend.accountNumber || friend.nickname || "無").charAt(0).toUpperCase();
+}
+
 </script>
 
 <style scoped>
@@ -300,39 +263,8 @@ async function deleteFriend(friendId) {
   align-items: center;
   font-size: 20px;
   font-weight: bold;
-}
-
-/* 使 modal 居中对齐 */
-.modal-dialog {
-  margin-top: 10%;
-}
-
-/* 修复 Bootstrap 样式冲突 */
-.modal.show {
-  display: block !important;
-}
-
-/* 定义放大动画 */
-@keyframes zoomIn {
-  0% {
-    transform: scale(0.7);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* 应用动画到 modal */
-.modal-zoom {
-  animation: zoomIn 0.4s ease forwards;
-  transform-origin: center center;
-}
-
-/* 移除遮罩背景的默认样式 */
-.modal-backdrop {
-  display: none;
+  width: 100%;
+  height: 100%;
 }
 
 .badge-margin {

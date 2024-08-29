@@ -128,7 +128,7 @@
 
 <script setup>
 import ProfileForm from "@/components/user/ProfileForm.vue";
-import FriendList from "@/components/user/FriendList.vue";
+import FriendList from "@/views/test/FriendList.vue";
 
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
