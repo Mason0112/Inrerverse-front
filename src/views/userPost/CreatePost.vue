@@ -50,7 +50,7 @@ const handleChange = (options) => {
 // 提交
 async function submit() {
   try {
-    //貼文
+  //axios.post 返回一個 Promise，所以使用 await 來等待請求完成並獲取回應。
   const postResponse = await axios.post('/userPost', {
     content:content.value,
     user:{
@@ -59,12 +59,16 @@ async function submit() {
   }) 
   const postId = postResponse.data.id
   
-  //圖片
+  //遍歷 fileList.value 中的每個檔案。
   for(const file of fileList.value){
+    //創建一個 FormData 物件，用於處理檔案上傳
     const formData = new FormData();
+    //formData.append('file', file.file);: 將檔案添加到FormData 物件中，file.file 是檔案本身。
     formData.append('file', file.file);
+    //將之前獲取的 postId 添加到 FormData 中，用於將圖片與指定的貼文關聯。
     formData.append('postId', postId)
 
+    //使用 axios 發送 POST 請求到 /postPhoto，並附上 formData，Content-Type 設為 multipart/form-data，以便處理檔案上傳。
     await axios.post('/postPhoto', formData,{
       headers:{
         'Content-Type': 'multipart/form-data'
@@ -75,6 +79,7 @@ async function submit() {
   //清空內容
   content.value='';
   fileList.value=[];
+  // 如果 upload.value 存在，調用其 clear 方法來清除上傳控件中的檔案（假設 upload 是一個檔案上傳控件）。
   if(upload.value){
     upload.value.clear()
   }

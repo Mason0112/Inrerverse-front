@@ -125,16 +125,6 @@ const handleLoad = () => {
     count.value += 1;
 };
 
-// const onePost={
-//     id:0,
-//     content:'',
-//     user:{
-//         id:0
-//     }
-
-// }
-
-
 //修改post
 function updatePost(onePost){
     onePost.value={
