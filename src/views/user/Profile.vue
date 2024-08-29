@@ -2,7 +2,6 @@
   <div class="container mt-4">
 
     <div v-if="isLoading" class="loading-indicator">
-      <!-- 這裡可以使用一個加載動畫或者簡單的文字 -->
       <div class="spinner-border" role="status">
         <span class="visually-hidden">加載中…</span>
       </div>
@@ -10,24 +9,21 @@
 
     <div v-else class="main-content">
       <div class="row gutters">
-
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
           <div class="profile-section">
+            
             <div class="user-avatar">
-              <!-- <img :src="`${photo}`" alt="User Photo" /> -->
-
               <div v-if="photo">
                 <img :src="`${photo}`" :alt="userData.nickname || 'User Photo'"/>
               </div>
               <div v-else class="default-avatar">
                 {{ (userData.nickname || 'Unknown').charAt(0) }}
               </div>
-
               <n-upload ref="upload" :default-upload="false" :on-change="handleChange">
                 <n-button>修改大頭照</n-button>
               </n-upload>
-
             </div>
+
             <hr />
             <h5>{{ userData.nickname }}</h5>
             <table class="profile-info">

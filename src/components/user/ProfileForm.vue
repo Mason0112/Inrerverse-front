@@ -50,7 +50,7 @@ import useUserStore from "@/stores/userstore";
 const form$ = ref(null);
 
 const userStore = useUserStore();
-let userId = userStore.userId;
+const userId = userStore.userId;
 
 const props = defineProps({
   email: String,

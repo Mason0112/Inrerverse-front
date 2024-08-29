@@ -21,7 +21,7 @@
   import useUserStore from "@/stores/userstore";
 
   const userStore = useUserStore();
-  let userId = userStore.userId;
+  const userId = userStore.userId;
   
   const notifications = ref([]);
   const dropdownVisible = ref(false);
