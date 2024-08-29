@@ -41,6 +41,9 @@
           </p>
         </div>
         <div class="modal-footer">
+          <!-- <button type="button" class="btn btn-primary" @click="$emit('close')">
+            前往 @ {{ friend.accountNumber }} 的個人首頁
+          </button> -->
           <button type="button" class="btn btn-secondary" @click="$emit('close')">
             關閉
           </button>

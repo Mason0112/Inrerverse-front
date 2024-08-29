@@ -80,15 +80,6 @@
                     個人資料
                   </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link"
-                    :class="{ active: activeTab === 'friends' }"
-                    @click="activeTab = 'friends'"
-                  >
-                    好友們
-                  </button>
-                </li>
               </ul>
 
               <!-- Tabs Content -->
@@ -96,7 +87,7 @@
                 <div v-if="activeTab === 'wallet'" class="tab-pane active">
                   <h3>我的錢包</h3>
                   <!-- Wallet Section -->
-                  <WalletTest></WalletTest>
+                  <Wallet></Wallet>
                 </div>
                 <div v-if="activeTab === 'profile'" class="tab-pane active">
                   <h3>個人資料</h3>
@@ -105,11 +96,6 @@
                   v-bind="userData"
                   @update-success="callFind"
                   ></ProfileForm>
-                </div>
-                <div v-if="activeTab === 'friends'" class="tab-pane active">
-                  <h3>好友列表</h3>
-                  <!-- Friends Section -->
-                  <FriendList></FriendList>
                 </div>
               </div>
             </div>
@@ -122,8 +108,7 @@
 
 <script setup>
 import ProfileForm from "@/components/user/ProfileForm.vue";
-import FriendList from "@/views/test/FriendList.vue";
-import WalletTest from "../test/WalletTest.vue";
+import Wallet from "@/components/user/Wallet.vue";
 
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";

@@ -19,7 +19,7 @@ import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import WalletTest from "@/views/test/WalletTest.vue";
-import Wallet from "@/views/user/Wallet.vue";
+import Wallet from "@/components/user/Wallet.vue";
 
 
 const routes = [
