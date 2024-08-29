@@ -17,10 +17,10 @@
               <!-- <img :src="`${photo}`" alt="User Photo" /> -->
 
               <div v-if="photo">
-                <img :src="`${photo}`" :alt="nickname || 'User Photo'"/>
+                <img :src="`${photo}`" :alt="userData.nickname || 'User Photo'"/>
               </div>
               <div v-else class="default-avatar">
-                {{ (nickname || 'Unknown').charAt(0) }}
+                {{ (userData.nickname || 'Unknown').charAt(0) }}
               </div>
 
               <n-upload ref="upload" :default-upload="false" :on-change="handleChange">
@@ -29,34 +29,34 @@
 
             </div>
             <hr />
-            <h5>{{ nickname }}</h5>
+            <h5>{{ userData.nickname }}</h5>
             <table class="profile-info">
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'envelope']" /></td>
-                <td>{{ email }}</td>
+                <td>{{ userData.email }}</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'phone']" /></td>
-                <td>{{ phoneNumber }}</td>
+                <td>{{ userData.phoneNumber }}</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'location-dot']" /></td>
-                <td>{{ country }} , {{ city }}</td>
+                <td>{{ userData.country }} , {{ userData.city }}</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'cake-candles']" /></td>
-                <td>{{ age }} 歲</td>
+                <td>{{ userData.age }} 歲</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'venus-mars']" /></td>
-                <td>{{ gender }}</td>
+                <td>{{ userData.gender }}</td>
               </tr>
             </table>
           </div>
 
           <div class="about-section">
             <h5>關於我</h5>
-            <p>{{ bio }}</p>
+            <p>{{ userData.bio }}</p>
           </div>
 
         </div>
@@ -106,14 +106,7 @@
                   <h3>個人資料</h3>
                   <!-- Profile Section -->
                   <ProfileForm
-                  :email="email"
-                  :nickname="nickname"
-                  :phoneNumber="phoneNumber"
-                  :country="country"
-                  :city="city"
-                  :birthday="birthday"
-                  :gender="gender"
-                  :bio="bio"
+                  v-bind="userData"
                   @update-success="callFind"
                   ></ProfileForm>
                 </div>
@@ -143,21 +136,12 @@ import useUserStore from "@/stores/userstore";
 const activeTab = ref("wallet");
 
 const userStore = useUserStore();
-let userId = userStore.userId;
+const userId = userStore.userId;
+
+const userData = ref({});
+const photo = ref('');
 
 const isLoading = ref(true);
-
-let accountNumber = ref('');
-let email = ref('');
-let nickname = ref('');
-let phoneNumber = ref('');
-let country = ref('');
-let city = ref('');
-let birthday = ref('');
-let age = ref('');
-let gender = ref('');
-let photo = ref('');
-let bio = ref('');
 
 onMounted(function () {
   callFind();
@@ -170,16 +154,7 @@ function callFind() {
     axios.get(`/user/secure/profile-photo/${userId}`)
   ]).then(([userResponse, photoResponse]) => {
     // 處理用戶數據
-    accountNumber.value = userResponse.data.accountNumber;
-    email.value = userResponse.data.email;
-    nickname.value = userResponse.data.nickname;
-    phoneNumber.value = userResponse.data.phoneNumber;
-    country.value = userResponse.data.country;
-    city.value = userResponse.data.city;
-    age.value = userResponse.data.age;
-    birthday.value = userResponse.data.birthday;
-    gender.value = userResponse.data.gender;
-    bio.value = userResponse.data.bio;
+    userData.value = userResponse.data;
 
     // 處理照片數據
     photo.value = photoResponse.data;
