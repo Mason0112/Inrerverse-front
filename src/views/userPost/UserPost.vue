@@ -5,7 +5,23 @@
                 <div> {{ formatDate(onePost.added) }}</div>
                 <div>{{ onePost.user.nickname }}</div>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
-                    {{ onePost.content }}
+                    <p>
+                        {{ onePost.content }}
+                    </p>
+                    <!-- photo -->
+                    <n-carousel
+                    v-if="onePost.photos && onePost.photos.length > 0"
+                    direction="vertical"
+                    dot-placement="right"
+                    mousewheel
+                    style="width: 100%; height: 240px"
+                    >
+                        <img
+                        v-for="onePhoto in onePost.photos"
+                        :key="onePhoto.id"
+                        :src="onePhoto.url" 
+                        :alt="onePhoto.name">
+                    </n-carousel>
                 </n-ellipsis>
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
@@ -74,12 +90,13 @@ onMounted(function(){
 })
 
 // 渲染post
-function showUserPostList(userId, postId) {
+function showUserPostList(userId) {
     axios.get(`/userPost/showUserAllPost/${userId}`)
         .then(response => {
             postList.value = response.data;
             postList.value.forEach(post => {
                 fetchComments(post.id)
+                // fetchPhoto(post.id)
             })
         })
         .catch(error => {
@@ -100,6 +117,20 @@ function fetchComments(postId){
         console.error(`Error fetching comments for post ${postId}:`, error);
     })
 }
+
+//渲染PostPhoto
+// function fetchPhoto(postId){
+//     axios.get(`/postPhoto/${postId}`)
+//     .then(response=>  {
+//         const postIndex = postList.value.findIndex(post => post.id === postId);
+//         if(postIndex !== -1){
+//             postList.value[postIndex].photos = response.data
+//         }
+//     })
+//     .catch(error => {
+//         console.error(`Error fetching photos for post ${postId}:`, error)
+//     })
+// }
 
 //即時更新comment
 function handleCommentAdded(postId, newComment){
@@ -256,5 +287,11 @@ function formatDate(dateString) {
     .commentAdded{
         font-size: 0.8em;
         float: right;
+    }
+    /* 輪播圖 */
+    .carousel-img {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
     }
 </style>
