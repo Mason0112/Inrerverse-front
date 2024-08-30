@@ -132,6 +132,7 @@ const userStore = useUserStore();
 function logout() {
   userStore.resetStore();
   axios.defaults.headers.authorization = '';
+  axios.defaults.headers.common['X-User-ID'] = '';
 }
 
 </script>

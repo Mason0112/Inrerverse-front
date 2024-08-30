@@ -19,6 +19,9 @@
             <Vueform :display-errors="false" ref="form$" :endpoint="false">
               <TextElement name="accountNumber" label="帳號" rules="required" />
               <TextElement name="password" input-type="password" label="密碼" rules="required"/>
+
+              <div>{{ message }}</div>
+
               <ButtonElement name="login" button-label="登入" align="center" size="lg" @click="login" :submits="true"/>
             </Vueform>
           </div>
@@ -62,6 +65,9 @@ function login() {
 
         // 把JWT塞到axios的headers裡
         axios.defaults.headers.authorization = "Bearer " + response.data.token;
+
+        // 把userId塞到axios的headers裡
+        axios.defaults.headers.common['X-User-ID'] = response.data.uuid;
 
         // 轉址到首頁
         router.push("/");

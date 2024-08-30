@@ -134,6 +134,8 @@ function callFind() {
     axios.get(`/user/secure/${userId}`),
     axios.get(`/user/secure/profile-photo/${userId}`)
   ]).then(([userResponse, photoResponse]) => {
+
+    console.log("response", userResponse);
     // 處理用戶數據
     userData.value = userResponse.data;
 
