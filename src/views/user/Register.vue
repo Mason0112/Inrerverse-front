@@ -17,24 +17,6 @@
             >
               <StaticElement name="register_title" content="註冊" tag="h1" />
               <StaticElement name="divider" tag="hr" />
-              <!-- <GroupElement name="container" description="Make sure it matches your legal name">
-                <TextElement name="first_name" placeholder="First name" :columns="{
-                    container: 6,
-                    label: 12,
-                    wrapper: 12,
-                }" field-name="First name" :rules="[
-            'required',
-            'max:255',
-        ]" />
-                <TextElement name="last_name" placeholder="Last name" :columns="{
-                    container: 6,
-                    label: 12,
-                    wrapper: 12,
-                }" field-name="Last name" :rules="[
-            'required',
-            'max:255',
-        ]" />
-            </GroupElement> -->
 
               <TextElement
                 name="accountNumber"

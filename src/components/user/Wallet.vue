@@ -89,6 +89,9 @@ function callFind() {
     axios.get(`/user/secure/${userId}`),
     axios.get(`/transaction/${userId}`)
   ]).then(([userResponse, transactionResponse]) => {
+    console.log(userResponse.data)
+    console.log(transactionResponse.data)
+
     userData.value = userResponse.data;
     transactionData.value = transactionResponse.data.sort((a, b) => new Date(b.added) - new Date(a.added));
   }).catch((error) => {

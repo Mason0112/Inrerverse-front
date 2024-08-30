@@ -20,6 +20,7 @@ import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import WalletTest from "@/views/test/WalletTest.vue";
 import Wallet from "@/components/user/Wallet.vue";
+import FormTest from "@/views/test/FormTest.vue";
 
 
 const routes = [
@@ -39,6 +40,7 @@ const routes = [
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
     { path: "/walletTest", name: "walletTest-link", component: WalletTest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
+    { path: "/form", name: "form-link", component: FormTest },
 
 
     { path: "/product/product", name: "product-product", component: Product },
