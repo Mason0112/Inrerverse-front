@@ -18,6 +18,10 @@ import Product from "@/views/Product/Product.vue";
 import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
+import ClubList from "@/views/club/ClubList.vue";
+import ClubDetail from "@/views/club/ClubDetail.vue";
+import clubForm from "@/views/club/clubForm.vue";
+import ClubForm from "@/views/club/clubForm.vue";
 
 
 
@@ -32,7 +36,10 @@ const routes = [
     { path: "/product/category", name: "product-category", component: Category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost", name: "user-post-link", component: UserPost},
-    
+    { path: "/club/all", name: "club-all-link", component: ClubList},
+    { path: "/club/:id", name:"club-detail-link", component:ClubDetail},
+    { path: "/club/new", name:"club-form-link", component:ClubForm},
+
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
