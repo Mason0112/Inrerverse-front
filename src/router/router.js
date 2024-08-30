@@ -20,8 +20,8 @@ import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import ClubList from "@/views/club/ClubList.vue";
 import ClubDetail from "@/views/club/ClubDetail.vue";
-import clubForm from "@/views/club/clubForm.vue";
 import ClubForm from "@/views/club/clubForm.vue";
+import ClubEdit from "@/views/club/ClubEdit.vue";
 
 
 
@@ -39,6 +39,7 @@ const routes = [
     { path: "/club/all", name: "club-all-link", component: ClubList},
     { path: "/club/:id", name:"club-detail-link", component:ClubDetail},
     { path: "/club/new", name:"club-form-link", component:ClubForm},
+    { path: "/club/:id/edit",name:"club-edit-link", component:ClubEdit},
 
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },
@@ -48,7 +49,6 @@ const routes = [
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
     { path: "/cart", name: "cart-user", component: UserCart }
-     
 ]
 
 const router = createRouter({
