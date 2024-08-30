@@ -80,11 +80,11 @@
 
       <TextareaElement name="bio" label="自介" :default="bio" />
       <ButtonElement
-      name="register"
-      button-label="更新"
-      size="lg"
-      :submits="true"
-      @click="updateProfile"
+        name="register"
+        button-label="更新"
+        size="lg"
+        :submits="true"
+        @click="updateProfile"
       />
       <ButtonElement
         name="cancel"
@@ -144,10 +144,29 @@ function updateProfile() {
       if (response.data.success) {
         //成功的邏輯
         emit("update-success");
+      } else {
+        
+        Object.keys(form$.value.data).forEach((key) => {
+          form$.value.el$(key).messageBag.clear();
+        });
+        // 處理後端返回的錯誤訊息
+
+        if (Array.isArray(response.data.messages)) {
+          response.data.messages.forEach((message) => {
+            if (message.includes("email")) {
+              formInstance.el$("email").messageBag.append(message, "error");
+            } else if (message.includes("電話")) {
+              formInstance
+                .el$("phoneNumber")
+                .messageBag.append(message, "error");
+            }
+          });
+        }
       }
     })
     .catch(function (error) {
       console.log("error", error);
+      formInstance.el$("email").messageBag.append("更新失敗，請稍後再試。");
     });
 }
 
@@ -155,6 +174,10 @@ function cancelUpdate() {
   if (form$.value) {
     form$.value.reset();
   }
+  // 清除所有錯誤訊息
+  Object.keys(form$.value.data).forEach((key) => {
+    form$.value.el$(key).messageBag.clear();
+  });
 }
 </script>
 
