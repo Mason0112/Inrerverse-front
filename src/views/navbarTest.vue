@@ -15,7 +15,7 @@
             <RouterLink class="nav-link" :to="{ name: 'login-link' }">登入</RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'form-link' }">測試</RouterLink>
+            <RouterLink class="nav-link" :to="{ name: 'wallet-link' }">測試</RouterLink>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"

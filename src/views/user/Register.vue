@@ -55,6 +55,19 @@
                 rules="required"
               />
 
+              <RadiogroupElement
+                name="gender"
+                view="tabs"
+                :items="[
+                  { value: '男', label: '男' },
+                  { value: '女', label: '女' },
+                  { value: '其他', label: '其他' },
+                  { value: '不透漏', label: '不透漏' },
+                ]"
+                label="性別"
+                :rules="['required']"
+              />
+
               <PhoneElement
                 name="phoneNumber"
                 placeholder="請輸入電話號碼"
@@ -64,7 +77,7 @@
                 :unmask="true"
               />
 
-              <SelectElement
+              <!-- <SelectElement
                 name="country1"
                 :search="true"
                 :native="false"
@@ -77,7 +90,7 @@
                   label: 12,
                   wrapper: 12,
                 }"
-              />
+              /> -->
 
               <TextElement
                 name="country"
@@ -108,20 +121,6 @@
                 display-format="YYYY-MM-DD"
               />
 
-              <!-- <RadiogroupElement
-                name="gender"
-                :items="[
-                  { value: 'male', label: '男' },
-                  { value: 'female', label: '女' },
-                  { value: 'other', label: '其他' },
-                ]"
-                label="性別"
-                :rules="['required']"
-              /> -->
-
-
-              <TextElement name="gender" placeholder="性別" rules="required" />
-
               <!-- <CheckboxElement name="terms" text="I accept the Terms & Conditions & Privacy Policy" rules="accepted" /> -->
               <StaticElement name="divider_1" tag="hr" />
               <ButtonElement
@@ -149,16 +148,18 @@ const form$ = ref(null);
 const router = useRouter();
 
 function register() {
+  const formInstance = form$.value;
+  
   let request = {
-    accountNumber: accountNumber.value,
-    password: password.value,
-    email: email.value,
-    nickname: nickname.value,
-    phoneNumber: phoneNumber.value,
-    country: country.value,
-    city: city.value,
-    birthday: birthday.value,
-    gender: gender.value,
+    accountNumber: formInstance.data.accountNumber,
+    password: formInstance.data.password,
+    email: formInstance.data.email,
+    nickname: formInstance.data.nickname,
+    phoneNumber: formInstance.data.phoneNumber,
+    country: formInstance.data.country,
+    city: formInstance.data.city,
+    birthday: formInstance.data.birthday,
+    gender: formInstance.data.gender,
   };
 
   console.log(request);
