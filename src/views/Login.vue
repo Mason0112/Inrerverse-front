@@ -66,8 +66,8 @@ function login() {
         // 把JWT塞到axios的headers裡
         axios.defaults.headers.authorization = "Bearer " + response.data.token;
 
-        // 把userId塞到axios的headers裡
-        axios.defaults.headers.common['X-User-ID'] = response.data.uuid;
+        // 把id塞到axios的headers裡
+        axios.defaults.headers.common['X-User-ID'] = response.data.id;
 
         // 轉址到首頁
         router.push("/");

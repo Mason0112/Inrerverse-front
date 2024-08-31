@@ -26,8 +26,8 @@ if (userStore.token) {
   axios.defaults.headers.authorization = `Bearer ${userStore.token}`;
 }
 
-if(userStore.auth) {
-  axios.defaults.headers.common['X-User-ID'] = userStore.auth;
+if(userStore.userId) {
+  axios.defaults.headers.common['X-User-ID'] = userStore.userId;
 }
 
 </script>
