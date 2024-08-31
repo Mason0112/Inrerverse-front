@@ -22,6 +22,9 @@
                         :src="onePhoto.base64Photo" 
                         :alt="onePhoto.name">
                     </n-carousel>
+                    <div>
+                        <font-awesome-icon :icon="['far', 'heart']" />
+                    </div>
                 </n-ellipsis>
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
@@ -96,7 +99,6 @@ function showUserPostList(userId) {
             postList.value = response.data;
             postList.value.forEach(post => {
                 fetchComments(post.id)
-                // fetchPhoto(post.id)
             })
         })
         .catch(error => {
