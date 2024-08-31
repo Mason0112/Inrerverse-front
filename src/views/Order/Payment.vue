@@ -47,8 +47,8 @@
     products.value = JSON.parse(localStorage.getItem('checkoutProducts') || '[]');
     total.value = Number(localStorage.getItem('checkoutTotal') || '0');
   
-    console.log(products.value);
-    console.log(total.value);
+    console.log("物件",products.value);
+    console.log("總金額",total.value);
   });
 
   watch(selectedPayment, (newValue) => {
@@ -67,8 +67,8 @@
 
   
   function proceedToCheckout (){
-    console.log(status.value);
-    console.log(paymentMethod.value);
+    console.log("status",status.value);
+    console.log("payment",paymentMethod.value);
     order.value = {   "paymentMethod"   : 1, 
                 "status": 1, 
                 "userId": 1
