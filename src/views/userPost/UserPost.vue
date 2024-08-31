@@ -19,7 +19,7 @@
                         <img
                         v-for="onePhoto in onePost.photos"
                         :key="onePhoto.id"
-                        :src="`/@fs/${onePhoto.url}`" 
+                        :src="onePhoto.base64Photo" 
                         :alt="onePhoto.name">
                     </n-carousel>
                 </n-ellipsis>
