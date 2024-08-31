@@ -9,7 +9,7 @@ import Register from "@/views/user/Register.vue";
 import Notification from "@/views/user/Notification.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
 import UserPost from "@/views/userPost/UserPost.vue";
-import Friend from "@/views/friend/Friend.vue";
+import Friend from "@/views/user/Friend.vue";
 import Profile from "@/views/user/Profile.vue";
 import ProfileTest from "@/views/test/ProfileTest.vue";
 import PersonalModalTest from "@/views/test/PersonalModalTest.vue";
@@ -20,6 +20,8 @@ import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import WalletTest from "@/views/test/WalletTest.vue";
 import Wallet from "@/components/user/Wallet.vue";
+import stripeTest from "@/views/test/stripeTest.vue";
+import Payment from "@/views/user/Payment.vue";
 
 
 const routes = [
@@ -39,7 +41,8 @@ const routes = [
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
     { path: "/walletTest", name: "walletTest-link", component: WalletTest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
-
+    { path: "/stripe", name: "stripe-link", component: stripeTest },
+    { path: "/payment", name: "payment-link", component: Payment },
 
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },

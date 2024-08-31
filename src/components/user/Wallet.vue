@@ -31,7 +31,6 @@
           </div>
           <n-collapse>
             <n-collapse-item title="詳細信息">
-              <p>交易ID: {{ transaction.id }}</p>
               <p>支付方式: {{ transaction.paymentMethod }}</p>
               <p>備註: {{ transaction.transactionNo }}</p>
             </n-collapse-item>
