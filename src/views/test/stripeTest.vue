@@ -1,21 +1,34 @@
 <template>
+    <div  class="payment-form">
     <form @submit.prevent="handleSubmit" id="payment-form">
-        <div>
-            <label for="amount">儲值金額</label>
-            <input type="number" id="amount" v-model="amount" value="200">
+        <h2>Stripe付款</h2>
+        <div class="card-icons">
+            <font-awesome-icon :icon="['fab', 'cc-visa']" />
+            <font-awesome-icon :icon="['fab', 'cc-mastercard']" />
+            <font-awesome-icon :icon="['fab', 'cc-amex']" />
+            <font-awesome-icon :icon="['fab', 'cc-discover']" />
+            <font-awesome-icon :icon="['fab', 'cc-jcb']" />
         </div>
-        <div>
-            <label for="card-element">
-                金融卡資訊
-            </label>
+        <div class="form-group">
+            <label>儲值金額</label>
+            <div class="amount">$ {{ amount }}</div>
+        </div>
+        <div class="form-group">
+            <label for="name">金融卡姓名</label>
+            <input type="text" id="name" />
+        </div>
+        <div class="form-group">
+            <label for="card-element">金融卡資訊</label>
             <div id="card-element">
                 <!-- A Stripe Element will be inserted here. -->
             </div>
             <!-- Used to display form errors. -->
             <div id="card-errors" role="alert">{{ cardErrors }}</div>
         </div>
-        <button type="submit">儲值</button>
+        <button type="submit">儲值 ${{ amount }}</button>
     </form>
+
+</div>
 </template>
 
 <script setup>
@@ -34,26 +47,23 @@ const stripe = ref(null)
 const card = ref(null)
 const cardErrors = ref('')
 
-
 onMounted(async () => {
     // 載入 Stripe
     stripe.value = await loadStripe('pk_test_51PtkQIP1MEI3D9bvY2dSwQeGWfXWl8LBLP4XBXtnU6BwrpECvUVbn4Jn7OwXbNgUuOYRwhIt0LGwNYwY6ZVZ0DTx005c4jRv46')
-    const elements = stripe.value.elements()
+    const elements = stripe.value.elements();
 
     // 定義樣式
     const style = {
         base: {
-            color: "#32325d",
-            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-            fontSmoothing: "antialiased",
-            fontSize: "16px",
-            "::placeholder": {
-                color: "#aab7c4"
+            fontSize: '16px',
+            color: '#32325d',
+            '::placeholder': {
+                color: '#aab7c4'
             }
         },
         invalid: {
-            color: "#fa755a",
-            iconColor: "#fa755a"
+            color: '#fa755a',
+            iconColor: '#fa755a'
         }
     }
     // 創建 card 元素
@@ -88,14 +98,14 @@ const handleSubmit = async () => {
 
 const stripeTokenHandler = async (token) => {
     try {
-        // 首先处理支付
+        // 先處理支付
         const chargeResponse = await axios.post('/transaction/charge', {
             token: token.id,
             amount: amount.value * 100
         });
         console.log('Payment successful:', chargeResponse.data);
 
-        // 支付成功后，添加交易记录
+        // 支付成功後，將交易紀錄寫進資料庫
         const addTransactionResponse = await axios.post('/transaction/add', {
             transactionNo: chargeResponse.data,
             status: 1,
@@ -107,7 +117,7 @@ const stripeTokenHandler = async (token) => {
         });
         console.log('Transaction added:', addTransactionResponse.data);
 
-        // 所有操作成功后，重定向到用户资料页面
+        // 重新導回profile頁面
         router.push('/user/profile');
 
     } catch (error) {
@@ -128,56 +138,69 @@ const stripeTokenHandler = async (token) => {
 </script>
 
 <style scoped>
-/* 整體表單樣式 */
-#payment-form {
+.payment-form {
     max-width: 400px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 50px;
 }
 
-/* 標籤樣式 */
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.card-icons {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card-icons svg {  /* 更新為svg選擇器 */
+    font-size: 24px;
+    margin: 0 5px;
+    color: #6772e5;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
 label {
     display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: #333;
+    margin-bottom: 5px;
+    color: #6b7c93;
+    font-weight: 300;
 }
 
-/* 輸入框樣式 */
-input[type="number"] {
+input, .amount, #card-element {
     width: 100%;
     padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
+    border: 1px solid #e6e6e6;
     border-radius: 4px;
     font-size: 16px;
 }
 
-/* Stripe Element 容器樣式 */
-#card-element {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: white;
-    margin-bottom: 20px;
+.amount {
+    background-color: #f6f9fc;
+    color: #32325d;
+    font-weight: 500;
 }
 
-/* 錯誤訊息樣式 */
 #card-errors {
-    color: #dc3545;
+    color: #fa755a;
     font-size: 14px;
     margin-top: 10px;
 }
 
-/* 提交按鈕樣式 */
-button[type="submit"] {
+button {
     width: 100%;
     padding: 12px;
-    background-color: #007bff;
-    color: white;
+    background-color: #5ee7df;
+    color: #fff;
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -185,7 +208,12 @@ button[type="submit"] {
     transition: background-color 0.3s ease;
 }
 
-button[type="submit"]:hover {
-    background-color: #0056b3;
+button:hover {
+    background-color: #4cc3bb;
+}
+
+button:disabled {
+    background-color: #b5b5b5;
+    cursor: not-allowed;
 }
 </style>

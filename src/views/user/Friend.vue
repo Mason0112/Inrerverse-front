@@ -71,9 +71,13 @@ import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import AvatarModal from "@/components/user/AvatarModal.vue";
+import { useMessage, useDialog } from 'naive-ui';
 
 const userStore = useUserStore();
 const userId = userStore.userId;
+
+const message = useMessage();
+const dialog = useDialog();
 
 const friends = ref([]);
 const loading = ref(true);
@@ -155,20 +159,27 @@ async function fetchUserDetails(friendsData) {
 }
 
 async function deleteFriend(friendId) {
-  if (confirm("確定要刪除這個好友嗎？")) {
-    try {
-      await axios.get(`/friend/switch-status/${userId}/${friendId}`);
-      // 從列表中移除該好友
-      friends.value = friends.value.filter(
-        (friend) => friend.user2Id !== friendId
-      );
-      alert("好友已成功刪除");
-    } catch (error) {
-      console.error(error);
-      alert("刪除好友失敗，請稍後再試");
+  dialog.warning({
+    title: '刪除好友',
+    content: '確定要刪除這個好友嗎？',
+    positiveText: '確定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await axios.get(`/friend/switch-status/${userId}/${friendId}`);
+        // 從列表中移除該好友
+        friends.value = friends.value.filter(
+          (friend) => friend.user2Id !== friendId
+        );
+        message.success('好友已成功刪除');
+      } catch (error) {
+        console.error(error);
+        message.error('刪除好友失敗，請稍後再試');
+      }
     }
-  }
+  });
 }
+
 // Modal
 function openModal(friend) {
   selectedFriend.value = friend;

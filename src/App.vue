@@ -1,14 +1,16 @@
 <template>
   <n-config-provider>
-    <n-message-provider>
-      <div>
-        <navbar></navbar>
-        <navbarTest></navbarTest>
-      </div>
-      <div>
-        <RouterView></RouterView>
-      </div>
-    </n-message-provider>
+    <n-dialog-provider>
+      <n-message-provider>
+        <div>
+          <navbar></navbar>
+          <navbarTest></navbarTest>
+        </div>
+        <div>
+          <RouterView></RouterView>
+        </div>
+      </n-message-provider>
+    </n-dialog-provider>
   </n-config-provider>
 </template>
 
@@ -19,7 +21,7 @@ import navbarTest from './views/navbarTest.vue';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'tocas/dist/tocas.min.css'
-import { NConfigProvider, NMessageProvider } from 'naive-ui'
+import { NConfigProvider, NMessageProvider, NDialogProvider } from 'naive-ui'
 
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
