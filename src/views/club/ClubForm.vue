@@ -130,6 +130,7 @@
         }
       });
       console.log('Club created:', response.data);
+      alert('俱樂部創建成功，您已自動加入該俱樂部！');
       router.push({ name: 'club-all-link' });
     } catch (error) {
       console.error('Error creating club:', error);

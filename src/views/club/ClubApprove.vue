@@ -4,7 +4,7 @@
         <div class="flex justify-between items-center mb-4">
           <h1 class="text-2xl font-bold">我創建的俱樂部</h1>
           <router-link 
-            :to="{ name: 'club-approve-link' }"
+            :to="{ name: 'club-form-link' }"
             class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
           >
             新增俱樂部
