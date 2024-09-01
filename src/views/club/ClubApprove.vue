@@ -2,9 +2,9 @@
     <div class="container mx-auto p-4 flex justify-center">
       <div class="w-full max-w-4xl">
         <div class="flex justify-between items-center mb-4">
-          <h1 class="text-2xl font-bold">社團列表</h1>
+          <h1 class="text-2xl font-bold">我創建的俱樂部</h1>
           <router-link 
-            :to="{ name: 'club-form-link' }"
+            :to="{ name: 'club-approve-link' }"
             class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
           >
             新增俱樂部
@@ -26,7 +26,8 @@
                 <th class="px-4 py-2 text-center">社團名稱</th>
                 <th class="px-4 py-2 text-center">公開</th>
                 <th class="px-4 py-2 text-center">允許</th>
-                <th class="px-4 py-2 text-center">操作</th>
+                <th class="px-4 py-2 text-center">編輯</th>
+                <th class="px-4 py-2 text-center">審核</th>
               </tr>
             </thead>
             <tbody>
@@ -57,10 +58,19 @@
                 <td class="px-4 py-2 text-center">{{ club.isPublic === 1 ? '是' : '否' }}</td>
                 <td class="px-4 py-2 text-center">{{ club.isAllowed === 1 ? '是' : '否' }}</td>
                 <td class="px-4 py-2 text-center">
-            <button @click="joinClub(club)" class="bg-green-500 hover:bg-green-700 text-black font-bold py-2 px-4 rounded">
-              加入俱樂部
-            </button>
+                  <router-link 
+                    :to="{ name: 'club-edit-link', params: { id: club.id } }"
+                    class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
+                  >
+                    編輯
+                  </router-link>
                 </td>
+               
+                <td>
+                    <router-link 
+                    :to="{ name: 'club-approve2-link', params: { id: club.id } }" 
+                    class="btn">管理成員</router-link>
+                  </td>
               </tr>
             </tbody>
           </table>
@@ -79,14 +89,13 @@
   const error = ref(null);
   const userStore = useUserStore();
   
-  const fetchClubs = async () => {
+  const fetchMyClubs = async () => {
     try {
-        console.log( userStore.userId);
-      const response = await axios.get('/clubs/all');
+      const response = await axios.get(`/clubs/my-clubs?userId=${userStore.userId}`);
       clubs.value = response.data;
       loading.value = false;
     } catch (err) {
-      console.error('Error fetching clubs:', err);
+      console.error('Error fetching my clubs:', err);
       error.value = err.message;
       loading.value = false;
     }
@@ -97,27 +106,5 @@
     return `${import.meta.env.VITE_API_URL}/clubs/photo/${photoName}`;
   };
   
-  const joinClub = async (club) => {
-  const clubMemberDTO = {
-    clubId: club.id,
-    userId: userStore.userId,
-    status: club.isPublic === 1 ? 1 : 0  // 如果 isPublic 為 1，status 設為 1，否則為 0
-  };
-  console.log(clubMemberDTO);
-  try {
-    const response = await axios.post('/clubMember', clubMemberDTO);
-    if (club.isPublic === 1) {
-      alert('已成功加入俱樂部！');
-    } else {
-      alert('已成功提交申請！等待審核中。');
-    }
-  } catch (error) {
-    console.error('Error joining club:', error);
-    alert('無法加入俱樂部，請稍後再試。');
-  }
-};
-
-  onMounted(fetchClubs);
-
+  onMounted(fetchMyClubs);
   </script>
-  

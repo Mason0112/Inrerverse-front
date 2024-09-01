@@ -22,6 +22,9 @@
             <RouterLink class="nav-link" :to="{ name: 'club-all-link' }">俱樂部</RouterLink>
           </li>
           <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'club-approve-link' }">俱樂部審核</RouterLink>
+          </li>
+          <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'product-category' }">類別頁面</RouterLink>
           </li>
           <li class="nav-item">

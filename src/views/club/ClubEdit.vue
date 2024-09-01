@@ -39,6 +39,19 @@
             <option :value="0">否</option>
           </select>
         </div>
+  
+        <div class="mb-4">
+          <label class="block text-gray-700 text-sm font-bold mb-2" for="photo">
+            照片
+          </label>
+          <input type="file" @change="handleFileUpload" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="photo">
+        </div>
+  
+        <div v-if="photoPreview" class="mb-4 flex justify-center">
+          <div class="w-12 h-12 overflow-hidden rounded-md">
+            <img :src="photoPreview" alt="照片預覽" class="object-cover w-full h-full">
+          </div>
+        </div>
         
         <div class="flex items-center justify-between">
           <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
@@ -69,6 +82,8 @@
   const loading = ref(true);
   const hasPermission = ref(false);
   const errorMessage = ref('');
+  const photoFile = ref(null);
+  const photoPreview = ref(null);
   
   const clubId = route.params.id;
   
@@ -76,9 +91,28 @@
     clubName: '',
     description: '',
     isPublic: 1,
-    isAllowed: 1, // 添加 isAllowed 字段並設置默認值
-    clubCreator: null
+    isAllowed: 1,
+    clubCreator: { id: null },
+    photo: null
   });
+  
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // 檢查文件大小（例如，限制為 5MB）
+      if (file.size > 5 * 1024 * 1024) {
+        errorMessage.value = '文件大小不能超過 5MB';
+        return;
+      }
+      // 檢查文件類型
+      if (!['image/jpeg', 'image/png', 'image/gif'].includes(file.type)) {
+        errorMessage.value = '只允許上傳 JPG、PNG 或 GIF 格式的圖片';
+        return;
+      }
+      photoFile.value = file;
+      photoPreview.value = URL.createObjectURL(file);
+    }
+  };
   
   const fetchClubDetails = async () => {
     try {
@@ -86,19 +120,15 @@
       club.value = {
         ...response.data,
         isPublic: response.data.isPublic ? 1 : 0,
-        isAllowed: response.data.isAllowed ? 1 : 0
+        isAllowed: response.data.isAllowed ? 1 : 0,
+        clubCreator: { id: response.data.clubCreator }
       };
-      console.log('Club data:', JSON.stringify(club.value, null, 2));
-      
-      const creatorId = Number(club.value.clubCreator);
-      const userId = Number(userStore.userId);
-      
-      console.log('Creator ID:', creatorId, 'Type:', typeof creatorId);
-      console.log('User ID:', userId, 'Type:', typeof userId);
-      
-      hasPermission.value = !isNaN(creatorId) && !isNaN(userId) && creatorId === userId;
-      console.log('Has Permission:', hasPermission.value);
-      
+      if (club.value.photo) {
+        // 只存儲文件名，而不是完整的 URL
+        club.value.photo = club.value.photo.split('/').pop();
+        photoPreview.value = `${import.meta.env.VITE_API_URL}/clubs/photo/${club.value.photo}`;
+      }
+      hasPermission.value = club.value.clubCreator.id === userStore.userId;
       loading.value = false;
     } catch (error) {
       console.error('Error fetching club details:', error);
@@ -113,24 +143,49 @@
       return;
     }
   
-    const updateData = {
-      clubName: club.value.clubName,
-      description: club.value.description,
-      isPublic: club.value.isPublic,
-      isAllowed: club.value.isAllowed, // 添加 isAllowed 到更新數據中
-      clubCreator: { id: club.value.clubCreator }
+    const formData = new FormData();
+  
+    // 确保 clubCreator 是正确的格式
+    const clubData = {
+      ...club.value,
+      clubCreator: { id: club.value.clubCreator.id }
     };
-    console.log('Updating club with data:', JSON.stringify(updateData, null, 2));
+  
+    // 如果沒有新的照片文件，就不包含 photo 字段
+    if (!photoFile.value) {
+      delete clubData.photo;
+    }
+  
+    formData.append('club', new Blob([JSON.stringify(clubData)], {
+      type: 'application/json'
+    }));
+  
+    if (photoFile.value) {
+      formData.append('photo', photoFile.value);
+    }
   
     try {
-      const response = await axios.put(`/clubs/${clubId}/edit`, updateData);
+      const response = await axios.put(`/clubs/${clubId}/edit`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       console.log('Club updated:', response.data);
       router.push({ name: 'club-detail-link', params: { id: clubId } });
     } catch (error) {
       console.error('Error updating club:', error);
-      errorMessage.value = error.response?.data?.message || '更新俱樂部時出錯';
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+        errorMessage.value = `更新失敗: ${JSON.stringify(error.response.data)}`;
+      } else if (error.request) {
+        errorMessage.value = '無法連接到伺服器，請檢查網絡連接';
+      } else {
+        errorMessage.value = `請求設置錯誤: ${error.message}`;
+      }
     }
   };
   
   onMounted(fetchClubDetails);
   </script>
+  
