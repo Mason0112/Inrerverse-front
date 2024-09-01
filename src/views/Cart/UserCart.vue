@@ -94,7 +94,7 @@ function proceedToCheckout() {
   router.push({ name: 'order-payment' });
 }
 </script>
-<style>
+<style scoped>
 body {
     width: 1800px;
     margin: 0 auto;
