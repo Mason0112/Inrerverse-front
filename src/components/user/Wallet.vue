@@ -67,9 +67,11 @@
 import { ref, computed, onMounted } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import { useDepositStore } from '@/stores/depositStore'
 import { useMessage } from 'naive-ui';
 
 const userStore = useUserStore();
+const depositStore = useDepositStore()
 const userId = userStore.userId;
 const message = useMessage();
 
@@ -79,7 +81,7 @@ const transactionData = ref([]);
 const isLoading = ref(true);
 const showDepositModal = ref(false);
 const showWithdrawModal = ref(false);
-const depositAmount = ref(200);
+const depositAmount = ref(0);
 const withdrawAmount = ref(0);
 
 onMounted(callFind);
@@ -149,18 +151,8 @@ const getStatusText = (status) => {
 
 function deposit() {
   if (depositAmount.value > 0) {
-    const newTransaction = {
-      id: Date.now(),
-      paymentMethod: 'Deposit',
-      added: new Date().toISOString(),
-      amount: depositAmount.value,
-      transactionNo: '儲值',
-      status: true
-    };
-    transactionData.value.unshift(newTransaction);
-    userData.value.walletBalance += depositAmount.value;
-    showDepositModal.value = false;
-    depositAmount.value = 0;
+    depositStore.setDepositAmount(depositAmount.value)
+    router.push('/stripe')
   }
 }
 

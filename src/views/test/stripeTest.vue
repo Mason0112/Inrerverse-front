@@ -37,12 +37,15 @@ import { loadStripe } from '@stripe/stripe-js'
 import axios from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 import useUserStore from "@/stores/userstore";
+import { useDepositStore } from '@/stores/depositStore'
 
 const userStore = useUserStore();
 const userId = userStore.userId;
 const router = useRouter()
 
-const amount = ref(200)
+const depositStore = useDepositStore()
+const amount = depositStore.depositAmount
+
 const stripe = ref(null)
 const card = ref(null)
 const cardErrors = ref('')
