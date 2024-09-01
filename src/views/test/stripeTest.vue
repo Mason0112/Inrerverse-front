@@ -97,8 +97,8 @@ const stripeTokenHandler = async (token) => {
 
         // 支付成功后，添加交易记录
         const addTransactionResponse = await axios.post('/transaction/add', {
-            transactionNo: chargeResponse.data, // 假设 charge 响应中包含了 Stripe 的 charge ID
-            status: 'true',
+            transactionNo: chargeResponse.data,
+            status: 1,
             amount: amount.value.toString(),
             paymentMethod: 'Stripe',
             user: {
@@ -113,11 +113,21 @@ const stripeTokenHandler = async (token) => {
     } catch (error) {
         console.error('Operation failed:', error);
         cardErrors.value = 'Operation failed. Please try again.';
+        const addTransactionResponse = await axios.post('/transaction/add', {
+            transactionNo: chargeResponse.data,
+            status: 0,
+            amount: amount.value.toString(),
+            paymentMethod: 'Stripe',
+            user: {
+                id: userId
+            }
+        });
+        console.log('Transaction added:', addTransactionResponse.data);
     }
 };
 </script>
 
-<style>
+<style scoped>
 /* 整體表單樣式 */
 #payment-form {
     max-width: 400px;

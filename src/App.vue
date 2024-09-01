@@ -1,11 +1,15 @@
 <template>
-    <div>
-      <navbar></navbar>
-      <navbarTest></navbarTest>
-    </div>
-    <div>
-    <RouterView></RouterView>
-    </div>
+  <n-config-provider>
+    <n-message-provider>
+      <div>
+        <navbar></navbar>
+        <navbarTest></navbarTest>
+      </div>
+      <div>
+        <RouterView></RouterView>
+      </div>
+    </n-message-provider>
+  </n-config-provider>
 </template>
 
 <script setup>
@@ -15,6 +19,7 @@ import navbarTest from './views/navbarTest.vue';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'tocas/dist/tocas.min.css'
+import { NConfigProvider, NMessageProvider } from 'naive-ui'
 
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
@@ -26,7 +31,7 @@ if (userStore.token) {
   axios.defaults.headers.authorization = `Bearer ${userStore.token}`;
 }
 
-if(userStore.userId) {
+if (userStore.userId) {
   axios.defaults.headers.common['X-User-ID'] = userStore.userId;
 }
 

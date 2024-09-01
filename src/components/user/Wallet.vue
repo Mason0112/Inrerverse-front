@@ -17,15 +17,15 @@
             <span class="date">{{ formatDate(transaction.added) }}</span>
             <div class="right-aligned-content">
               <div class="amount-section">
-                <span class="amount" :class="{ 'negative': transaction.amount < 0, 'failed': !transaction.status }">
+                <span class="amount" :class="{ 'negative': transaction.amount < 0, 'failed': transaction.status === 0 }">
                   {{ transaction.amount < 0 ? '-' : '' }} ${{ Math.abs(transaction.amount) }}
                 </span>
-                <span v-if="transaction.status" class="balance">
+                <span v-if="transaction.status !== 0" class="balance">
                   餘額: ${{ transaction.balance || '0' }}
                 </span>
               </div>
-              <n-tag :type="transaction.status ? 'success' : 'error'" class="status-tag">
-                {{ transaction.status ? '成功' : '失敗' }}
+              <n-tag :type="getStatusType(transaction.status)" class="status-tag">
+                {{ getStatusText(transaction.status) }}
               </n-tag>
             </div>
           </div>
@@ -42,7 +42,7 @@
 
     <n-modal v-model:show="showDepositModal">
       <n-card style="width: 600px" title="儲值" :bordered="false" size="huge" role="dialog" aria-modal="true">
-        <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" />
+        <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="0" step="100"/>
         <template #footer>
           <n-button @click="showDepositModal = false">取消</n-button>
           <n-button type="primary" @click="deposit">確認儲值</n-button>
@@ -52,7 +52,7 @@
 
     <n-modal v-model:show="showWithdrawModal">
       <n-card style="width: 600px" title="提現" :bordered="false" size="huge" role="dialog" aria-modal="true">
-        <n-input-number v-model:value="withdrawAmount" placeholder="請輸入提現金額" />
+        <n-input-number v-model:value="withdrawAmount" placeholder="請輸入提現金額" min="0" step="100"/>
         <template #footer>
           <n-button @click="showWithdrawModal = false">取消</n-button>
           <n-button type="primary" @click="withdraw">確認提現</n-button>
@@ -67,9 +67,11 @@
 import { ref, computed, onMounted } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import { useMessage } from 'naive-ui';
 
 const userStore = useUserStore();
 const userId = userStore.userId;
+const message = useMessage();
 
 const userData = ref({ walletBalance: 0 });
 const transactionData = ref([]);
@@ -77,7 +79,7 @@ const transactionData = ref([]);
 const isLoading = ref(true);
 const showDepositModal = ref(false);
 const showWithdrawModal = ref(false);
-const depositAmount = ref(0);
+const depositAmount = ref(200);
 const withdrawAmount = ref(0);
 
 onMounted(callFind);
@@ -104,7 +106,7 @@ const transactionsWithBalance = computed(() => {
   let balance = userData.value.walletBalance;
   return transactionData.value.map(transaction => {
     const transactionWithBalance = { ...transaction };
-    if (transaction.status) {
+    if (transaction.status ===1 || transaction.status === 2) {
       transactionWithBalance.balance = balance;
       balance -= transaction.amount;
     } else {
@@ -114,7 +116,7 @@ const transactionsWithBalance = computed(() => {
   });
 });
 
-function formatDate(dateString) {
+const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString('zh-TW', {
     year: 'numeric',
@@ -125,7 +127,25 @@ function formatDate(dateString) {
     second: '2-digit',
     hour12: false
   }).replace(/\//g, '-');
-}
+};
+
+const getStatusType = (status) => {
+  switch (status) {
+    case 0: return 'error';
+    case 1: return 'success';
+    case 2: return 'info';
+    default: return 'default';
+  }
+};
+
+const getStatusText = (status) => {
+  switch (status) {
+    case 0: return '失敗';
+    case 1: return '成功';
+    case 2: return '處理中';
+    default: return '未知';
+  }
+};
 
 function deposit() {
   if (depositAmount.value > 0) {
@@ -145,31 +165,57 @@ function deposit() {
 }
 
 function withdraw() {
-  if (withdrawAmount.value > 0 && withdrawAmount.value <= userData.value.walletBalance) {
-    const newTransaction = {
-      id: Date.now(),
-      paymentMethod: 'Withdrawal',
-      added: new Date().toISOString(),
-      amount: -withdrawAmount.value,
-      transactionNo: '提現',
-      status: true
-    };
-    transactionData.value.unshift(newTransaction);
-    userData.value.walletBalance -= withdrawAmount.value;
-    showWithdrawModal.value = false;
-    withdrawAmount.value = 0;
-  } else {
-    alert('提現金額無效或餘額不足');
+  console.log(withdrawAmount)
+  if (withdrawAmount.value <= 0) {
+    message.error('提現金額必須大於零', {
+      closable: true,
+      duration: 5000
+    });
+    return;
   }
-}
 
+  axios.post('/transaction/add', {
+    amount: -withdrawAmount.value,
+    paymentMethod: '提現',
+    status: 2,
+    user: {
+      id: userId
+    }
+  })
+  .then(response => {
+    if (response.status === 201) {  // HttpStatus.CREATED
+      message.success('提現請求已提交，正在處理中', {
+        closable: true,
+        duration: 5000
+      });
+      showWithdrawModal.value = false;
+      withdrawAmount.value = 0;
+      callFind();  // 更新交易列表
+    } else {
+      throw new Error('提現請求失敗');
+    }
+  })
+  .catch(error => {
+    if (error.response && error.response.status === 400) {  // HttpStatus.BAD_REQUEST
+      message.error('餘額不足', {
+        closable: true,
+        duration: 5000
+      });
+    } else {
+      message.error('提現過程中發生錯誤', {
+        closable: true,
+        duration: 5000
+      });
+    }
+  });
+}
 </script>
 
 <style scoped>
 .wallet-container {
   max-width: 800px;
   margin: 0 auto;
-  /* padding: 20px; */
+  padding: 20px;
   font-size: 16px;
 }
 
