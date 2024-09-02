@@ -89,6 +89,7 @@ function getUserCart(request) {
 
 function proceedToCheckout() {
   console.log("前往結帳");
+  //利用localStorage打包資料給下一個頁面
   localStorage.setItem('checkoutProducts', JSON.stringify(products.value));
   localStorage.setItem('checkoutTotal', totalAmount.value);
   router.push({ name: 'order-payment' });

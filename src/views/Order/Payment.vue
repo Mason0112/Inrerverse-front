@@ -34,7 +34,8 @@
   import { onMounted, ref,watch } from 'vue';
   import useUserStore from '@/stores/userstore';
   import axiosapi from '@/plugins/axios';
-  
+  import { useRouter } from 'vue-router';
+
   const products = ref([]);
   const total = ref(0);
   const selectedPayment = ref('');
@@ -42,7 +43,9 @@
   const status = ref(0);
   const paymentMethod = ref(0);
   const userStore = useUserStore();
-  const orderDetails = ref([]);
+  const router = useRouter();
+
+  
 
 
 
@@ -55,7 +58,8 @@
     console.log("總金額",total.value);
 
   });
-
+  //paymentMethod: 1:linePay 2:貨到付款
+  //status 1:等待確認中 2:已付款 3:已取消
 
   watch(selectedPayment, (newValue) => {
       if (newValue === 'linepay') {
@@ -80,16 +84,13 @@
     console.log("payment",paymentMethod.value);
     console.log("總金額2",total.value);
 
-
+    //第一個orderAJAX建立出訂單
     order.value = {   "paymentMethod"   : paymentMethod.value, 
                       "status": status.value, 
                       "userId": userStore.userId,
                       "totalAmount": total.value
     }
 
-    
-   
-    
     console.log("order",order.value);
     axiosapi.post(`/api/orders`,order.value).then(function (orderResponse) {
         console.log("列出order", orderResponse.data.id);
@@ -98,17 +99,22 @@
                           "orderId" :orderResponse.data.id ,
                           "cartItems":products.value
                       }
-        
+        //第二個AJAX把cart的內容轉成order
         return axiosapi.post("/api/orders/create-with-details", request);
     }).then(function (detailResponse){
         console.log("detailResponse",detailResponse);
-        console.log("userId結帳用",userStore.userId)
+        console.log("userId結帳用",userStore.userId);
+        //第三個AJAX清空購物車
         return axiosapi.delete(`/cart/clear/${userStore.userId}`);
-    })
-
-     // 使用完後清除
+    }).then(function(){
+       // 使用完後清除
     localStorage.removeItem('checkoutProducts');
     localStorage.removeItem('checkoutTotal');
+
+
+    router.push({ name: 'user-orders' });
+
+    });
   };
 
 

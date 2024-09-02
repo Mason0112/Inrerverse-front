@@ -12,6 +12,8 @@
 import { ref, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios';
 import CartProductCard from '@/components/Cart/CartProductCard.vue';
+
+
 const products = ref([]);//用AJAX接收進來的全部資料 
 const categories = ref([]);//接資料進來
 

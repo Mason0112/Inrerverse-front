@@ -19,6 +19,7 @@ import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import Payment from "@/views/Order/Payment.vue";
+import UserOrders from "@/views/Order/UserOrders.vue";
 
 
 
@@ -40,7 +41,8 @@ const routes = [
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
     { path: "/cart", name: "cart-user", component: UserCart },
-    { path: "/order/payment", name: "order-payment", component: Payment }
+    { path: "/order/payment", name: "order-payment", component: Payment },
+    { path: "/order/userOrders", name: "user-orders", component: UserOrders }
 ]
 
 const router = createRouter({
