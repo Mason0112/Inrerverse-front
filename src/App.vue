@@ -28,6 +28,7 @@ import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import useAdminStore  from '@/stores/adminStore'
 
+// 初始化應用時設置 axios headers，這是用來在重新整理f5的時候，不會丟失token的方法
 const adminStore = useAdminStore();
 
 if (adminStore.token) {
