@@ -42,7 +42,7 @@
 
     <n-modal v-model:show="showDepositModal">
       <n-card style="width: 600px" title="儲值" :bordered="false" size="huge" role="dialog" aria-modal="true">
-        <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="0" step="100"/>
+        <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="100" step="100"/>
         <template #footer>
           <n-button @click="showDepositModal = false">取消</n-button>
           <n-button type="primary" @click="deposit">確認儲值</n-button>
@@ -66,6 +66,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import axios from "@/plugins/axios";
+import { useRouter } from "vue-router";
 import useUserStore from "@/stores/userstore";
 import { useDepositStore } from '@/stores/depositStore'
 import { useMessage } from 'naive-ui';
@@ -73,6 +74,7 @@ import { useMessage } from 'naive-ui';
 const userStore = useUserStore();
 const depositStore = useDepositStore()
 const userId = userStore.userId;
+const router = useRouter();
 const message = useMessage();
 
 const userData = ref({ walletBalance: 0 });
@@ -81,7 +83,7 @@ const transactionData = ref([]);
 const isLoading = ref(true);
 const showDepositModal = ref(false);
 const showWithdrawModal = ref(false);
-const depositAmount = ref(0);
+const depositAmount = ref(100);
 const withdrawAmount = ref(0);
 
 onMounted(callFind);

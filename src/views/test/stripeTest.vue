@@ -100,24 +100,28 @@ const handleSubmit = async () => {
 }
 
 const stripeTokenHandler = async (token) => {
+    let chargeResponse;
     try {
         // 先處理支付
-        const chargeResponse = await axios.post('/transaction/charge', {
+        chargeResponse = await axios.post('/transaction/charge', {
             token: token.id,
-            amount: amount.value * 100
+            amount: amount * 100
         });
         console.log('Payment successful:', chargeResponse.data);
 
         // 支付成功後，將交易紀錄寫進資料庫
-        const addTransactionResponse = await axios.post('/transaction/add', {
-            transactionNo: chargeResponse.data,
+        const transactionData = {
+            transactionNo: chargeResponse.data, // 確保這個字段名稱正確
             status: 1,
-            amount: amount.value.toString(),
+            amount: amount,
             paymentMethod: 'Stripe',
             user: {
                 id: userId
             }
-        });
+        };
+        console.log('Sending transaction data:', JSON.stringify(transactionData));
+
+        const addTransactionResponse = await axios.post('/transaction/add', transactionData);
         console.log('Transaction added:', addTransactionResponse.data);
 
         // 重新導回profile頁面
@@ -125,24 +129,21 @@ const stripeTokenHandler = async (token) => {
 
     } catch (error) {
         console.error('Operation failed:', error);
-        cardErrors.value = 'Operation failed. Please try again.';
-        const addTransactionResponse = await axios.post('/transaction/add', {
-            transactionNo: chargeResponse.data,
-            status: 0,
-            amount: amount.value.toString(),
-            paymentMethod: 'Stripe',
-            user: {
-                id: userId
-            }
-        });
-        console.log('Transaction added:', addTransactionResponse.data);
+        if (chargeResponse && chargeResponse.data) {
+            // 支付成功但後端處理失敗
+            console.error('Payment succeeded but backend processing failed');
+        } else {
+            // 支付失敗
+            console.error('Payment failed');
+            cardErrors.value = 'Payment failed. Please try again.';
+        }
     }
 };
 </script>
 
 <style scoped>
 .payment-form {
-    max-width: 400px;
+    max-width: 500px;
     margin: 0 auto;
     padding: 20px;
     background-color: #fff;
