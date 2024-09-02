@@ -2,7 +2,7 @@
     <div class="ts-container is-narrow">
       <div class="ts-box is-elevated">
         <div class="ts-content is-tertiary">
-          <h3 class="ts-header is-2">付款方式</h3>
+          <h3 class="ts-header is-2">選擇付款方式</h3>
         </div>
         <div class="ts-content">
           <div class="ts-grid is-2-columns">
@@ -100,12 +100,12 @@
                           "cartItems":products.value
                       }
         //第二個AJAX把cart的內容轉成order
-        return axiosapi.post("/api/orders/create-with-details", request);
+        return axiosapi.post("/api/orders/create-with-details", request)
     }).then(function (detailResponse){
         console.log("detailResponse",detailResponse);
         console.log("userId結帳用",userStore.userId);
         //第三個AJAX清空購物車
-        return axiosapi.delete(`/cart/clear/${userStore.userId}`);
+        return axiosapi.delete(`/cart/clear/${userStore.userId}`)
     }).then(function(){
        // 使用完後清除
     localStorage.removeItem('checkoutProducts');

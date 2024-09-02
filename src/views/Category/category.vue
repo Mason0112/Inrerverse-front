@@ -57,9 +57,9 @@ function getAllCategories() {
 
 
 //Modal start
-const categoryModal =ref(null);//v-model 雙向資料綁定的對象
+const categoryModal =ref(null);
 const isShowButtonInsert = ref(true);
-const category = ref({});
+const category = ref({});//v-model 雙向資料綁定的對象
 function openModal(action, id){
         console.log("openModal",action,id)
         if (action==="insert") {
