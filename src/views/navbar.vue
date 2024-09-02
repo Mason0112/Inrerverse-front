@@ -14,6 +14,7 @@
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'post-create-link' }">新增動態(暫放)</RouterLink>
           </li>
+          <li><a class="nav-link" @click="logoutAdmin()">後台登出(暫放)</a></li>
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'product-cart' }">商城</RouterLink>
           </li>
@@ -102,9 +103,11 @@
 <script setup>
 import { ref } from 'vue';
 import useUserStore from '@/stores/userstore';
+import useAdminStore from '@/stores/adminStore'
 import axios from '@/plugins/axios';
 
 import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
+
 
 const notiValue = ref(5);
 const cartValue = ref(2);
@@ -137,6 +140,13 @@ const userStore = useUserStore();
 
 function logout() {
   userStore.resetStore();
+  axios.defaults.headers.authorization = '';
+  axios.defaults.headers.common['X-User-ID'] = '';
+}
+
+const adminStore = useAdminStore();
+function logoutAdmin() {
+  adminStore.resetStore();
   axios.defaults.headers.authorization = '';
   axios.defaults.headers.common['X-User-ID'] = '';
 }

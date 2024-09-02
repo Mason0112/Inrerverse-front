@@ -20,6 +20,9 @@ import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import WalletTest from "@/views/test/WalletTest.vue";
 import Wallet from "@/components/user/Wallet.vue";
+import AdminRegister from "@/views/admin/AdminRegister.vue";
+import AdminLogin from "@/views/admin/AdminLogin.vue";
+import AdminAuth from "@/views/admin/AdminAuth.vue";
 
 import Payment from "@/views/user/Payment.vue";
 import OrderPayment from "@/views/Order/Payment.vue";
@@ -43,6 +46,10 @@ const routes = [
     { path: "/walletTest", name: "walletTest-link", component: WalletTest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
     { path: "/payment", name: "payment-link", component: Payment },
+    { path: "/admin/register", name: "admin-register-link", component: AdminRegister },
+    { path: "/admin/login", name: "admin-login-link", component: AdminLogin },
+    { path: "/admin/auth", name: "admin-auth-link", component: AdminAuth },
+
 
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },

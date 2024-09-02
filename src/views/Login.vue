@@ -21,8 +21,6 @@
               <TextElement name="accountNumber" label="帳號" rules="required" />
               <TextElement name="password" input-type="password" label="密碼" rules="required"/>
 
-              <div>{{ message }}</div>
-
               <ButtonElement name="login" button-label="登入" align="center" size="lg" @click="login" :submits="true"/>
             </Vueform>
           </div>
@@ -45,9 +43,8 @@ const form$ = ref(null);
 const router = useRouter();
 const userStore = useUserStore();
 
-let message = ref("");
-
 function login() {
+  const formInstance = form$.value;
   let request = {
     accountNumber: accountNumber.value,
     password: password.value,
@@ -76,12 +73,23 @@ function login() {
 
         // 登入失敗的邏輯
       } else {
-        message.value = response.data.message;
+        formInstance
+              .el$("accountNumber")
+              .messageBag.append("您輸入的帳號或密碼錯誤", "error");
+              formInstance
+              .el$("password")
+              .messageBag.append("您輸入的帳號或密碼錯誤", "error");
       }
     })
     // 呼叫失敗的邏輯
     .catch(function (error) {
       console.log("error", error);
+      formInstance
+              .el$("accountNumber")
+              .messageBag.append("您輸入的帳號或密碼錯誤", "error");
+              formInstance
+              .el$("password")
+              .messageBag.append("您輸入的帳號或密碼錯誤", "error");
     });
 }
 </script>
