@@ -3,8 +3,7 @@
     <n-dialog-provider>
       <n-message-provider>
         <div>
-          <navbar></navbar>
-          <navbarTest></navbarTest>
+          <Navbar></Navbar>
         </div>
         <div>
           <RouterView></RouterView>
@@ -15,8 +14,7 @@
 </template>
 
 <script setup>
-import navbar from './views/navbar.vue';
-import navbarTest from './views/navbarTest.vue';
+import Navbar from './views/Navbar.vue';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';

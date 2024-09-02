@@ -1,4 +1,5 @@
 <template>
+  <div class="centered-container">
   <div class="container">
     <div class="row">
       <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
@@ -30,6 +31,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -85,6 +87,15 @@ function login() {
 </script>
 
 <style scoped>
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding-top: 10vh;  /* 添加頂部內邊距 */
+  background-color: #f8f9fa;
+}
+
 .bold-link {
   font-weight: bold;
   color: black;
@@ -97,5 +108,13 @@ function login() {
     width: 1rem;
     height: 1rem;
     border-radius: .3125rem;
+}
+@media (max-width: 576px) {
+  .card-body {
+    padding: 2rem !important;
+  }
+  .centered-container {
+    padding-top: 5vh;  /* 在小屏幕上減少頂部內邊距 */
+  }
 }
 </style>

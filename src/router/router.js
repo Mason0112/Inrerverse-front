@@ -39,7 +39,6 @@ const routes = [
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost", name: "user-post-link", component: UserPost},
     { path: "/friend", name: "friend-link", component: Friend },
-    { path: "/profile", name: "profiletest-link", component: ProfileTest },
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
     { path: "/walletTest", name: "walletTest-link", component: WalletTest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
