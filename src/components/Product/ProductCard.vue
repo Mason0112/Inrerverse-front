@@ -1,16 +1,16 @@
 <template>
 
     <div class="card">
-        <img class="card-img-top" :src="`${path}/products/${product.id}/latestphoto`" :alt="product.name">
+        <img class="card-img-top" :src="`${path}/products/${product.id}/latestphoto`" :alt="product.name" style="height: 300px;">
         <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
             <div class="card-text text-danger text-end">NT$ {{ product.price }}</div>
             <div class="row">
                 <div class="col text-start">
-                    <button type="button" class="btn btn-primary"  @click="emits('openUpdate','update',product.id)">開啟修改</button>
+                    <button type="button" class="btn btn-info"  @click="emits('openUpdate','update',product.id)">開啟修改</button>
                 </div>
                 <div class="col text-end">
-                    <button type="button" class="btn btn-primary" @click="emits('delete',product.id)">刪除</button>
+                    <button type="button" class="btn btn-info" @click="emits('delete',product.id)">刪除</button>
                 </div>
             </div>
         </div>

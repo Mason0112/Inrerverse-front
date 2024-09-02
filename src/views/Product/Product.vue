@@ -2,7 +2,7 @@
     <h3>Product Table</h3>
     <div class="row">
         <div class="col-4">
-            <button type="button" class="btn btn-primary" @click="openModal('insert')">開啟新增</button>
+            <button type="button" class="btn btn-info" @click="openModal('insert')">開啟新增</button>
         </div>
         <div class="col-4">
             <input type="text" placeholder="請輸入產品名稱">
@@ -23,7 +23,7 @@
 
     <div class="row">
         <div class="col-lg-3 col-md-6" v-for=" product in products" :key="product.id">
-            <ProductCard :product="product" @delete="callRemove(product.id)" @open-update="openModal">
+            <ProductCard :product="product" @delete="callRemove(product.id)" @open-update="openModal" style="height: 500px;">
             </ProductCard>
         </div>
     </div>

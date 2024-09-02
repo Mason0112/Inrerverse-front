@@ -1,31 +1,25 @@
 <template>
-    <h3>Category Table</h3>
-    <div class="row">
-        <div class="col-4">
-            <button type="button" class="btn btn-primary" @click="openModal('insert')">開啟新增</button>
-        </div>
-        <div class="col-4">
-            <input type="text" placeholder="請輸入產品名稱">
-        </div>
-        <div class="col-4">
-            下拉選單元件
-        </div>
-    </div>
+    <span style="text-decoration: ">分類管理</span>
+ 
+        <span >
+            <button type="button" class="ts-button " @click="openModal('insert')">開啟新增</button>
+        </span>
+
     <br>
 
     <div class="row">
-        <div class="col-4">分頁
+        <div class="col-4">
 
         </div>
     </div>
     <br>
 
 
-    <div class="row">
-        <div class="col-lg-3 col-md-6" v-for=" category in categories" :key="category.id">
+    <span >
+        <span class="col-lg-3 col-md-6" v-for=" category in categories" :key="category.id">
             <CategoryCard :category="category" @delete="callRemove(category.id)" @open-update="openModal"></CategoryCard>
-        </div>
-    </div>
+        </span>
+    </span>
 
     <CategoryModal ref="categoryModal" 
     v-model:category="category" 
@@ -111,4 +105,11 @@ function callModify(){
 
 </script>
 
-<style></style>
+<style scoped>
+
+.ts-button{
+border: 0;   background-color: var(--ts-primary-400) 
+
+
+}
+</style>

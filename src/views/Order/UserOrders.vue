@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="ts-breadcrumb is-stepped is-divided">
-            <a href="#!" class="item">訂單資訊</a>
+        <div class="ts-breadcrumb is-stepped is-divided" style="justify-content: center;">
+            <h3  class="item"  >訂單資訊</h3>
         </div>
         <div class="cart-container has-top-spaced">
             <div class="cart-list">
@@ -121,4 +121,6 @@ function openModal(order){
 </script>
 
 <style scoped>
+
+
 </style>

@@ -22,7 +22,7 @@
                                 <td>{{ index + 1 }}</td>
                                 <td>
                                     <img :src="`${path}/products/${product.productId}/latestphoto`"
-                                        :alt="product.productName">
+                                        :alt="product.productName" style="cursor: pointer;">
                                 </td>
                                 <td>{{ product.productName }}</td>
                                 <td>NT$ {{ product.price }}</td>
