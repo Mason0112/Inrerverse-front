@@ -20,7 +20,7 @@
       <!-- <p class="mb-2 text-black"><strong>允許：</strong> {{ club.isAllowed ? '是' : '否' }}</p> -->
       <p class="mb-2 text-black"><strong>創建者 ID：</strong> {{ club.clubCreator }}</p>
       
-      <!-- <ClubPhotoAlbum v-if="club" :clubId="club.id" /> -->
+      <ClubPhotoAlbum v-if="club" :clubId="clubId" />
 
       <div class="mt-4">
         <div class="mt-8">

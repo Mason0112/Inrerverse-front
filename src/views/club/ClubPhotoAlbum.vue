@@ -13,7 +13,7 @@
       >
       <button 
         @click="uploadPhoto" 
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
         :disabled="!selectedFile"
       >
         上傳照片
@@ -24,29 +24,25 @@
     <div v-if="photos.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <div v-for="photo in photos" :key="photo.id" class="relative">
         <img 
-          :src="getPhotoUrl(photo.photoName)" 
-          :alt="photo.description || '俱樂部照片'" 
+          :src="getPhotoUrl(photo.id)"
+          :alt="'俱樂部照片'"
           class="w-full h-48 object-cover rounded-lg shadow-md"
           @error="handleImageError"
         >
         <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 rounded-b-lg">
-          <p class="text-sm">上傳者: {{ photo.uploaderName }}</p>
-          <p class="text-xs">{{ formatDate(photo.uploadTime) }}</p>
+          <p class="text-sm">上傳者 ID: {{ photo.uploaderId }}</p>
+          <button 
+            v-if="photo.uploaderId === userStore.userId" 
+            @click="deletePhoto(photo.id)" 
+            class="bg-red-500 hover:bg-red-700 text-black text-xs py-1 px-2 rounded mt-1"
+          >
+            刪除
+          </button>
         </div>
       </div>
     </div>
     <div v-else-if="!loading" class="text-center text-gray-500 my-8">
       尚無相片
-    </div>
-
-    <!-- 載入更多按鈕 -->
-    <div v-if="hasMorePhotos" class="text-center mt-4">
-      <button 
-        @click="loadMorePhotos" 
-        class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded"
-      >
-        載入更多
-      </button>
     </div>
 
     <!-- 錯誤訊息 -->
@@ -70,8 +66,6 @@ const clubId = route.params.id;
 const photos = ref([]);
 const selectedFile = ref(null);
 const error = ref(null);
-const page = ref(1);
-const hasMorePhotos = ref(true);
 const loading = ref(true);
 
 const handleFileChange = (event) => {
@@ -87,47 +81,73 @@ const uploadPhoto = async () => {
   formData.append('uploaderId', userStore.userId);
 
   try {
-    const response = await axios.post('/club-photos', formData, {
+    const response = await axios.post('/clubPhoto/new', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
+    
     photos.value.unshift(response.data);
     selectedFile.value = null;
   } catch (err) {
-    error.value = '上傳照片失敗：' + (err.response?.data || err.message);
+    handleApiError(err, '上傳照片失敗');
   }
 };
 
-const getPhotoUrl = (photoName) => {
-  return `${import.meta.env.VITE_API_URL}/club-photos/${photoName}`;
-};
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleString();
+const getPhotoUrl = (photoId) => {
+  return `${import.meta.env.VITE_API_URL}/clubPhoto/${photoId}`;
 };
 
 const fetchPhotos = async () => {
   try {
     loading.value = true;
-    const response = await axios.get(`/club-photos/${clubId}?page=${page.value}`);
-    photos.value = [...photos.value, ...response.data];
-    hasMorePhotos.value = response.data.length === 10; // 假設每頁 10 張照片
-    page.value++;
+    const response = await axios.get(`/clubPhoto/club/${clubId}`);
+    if (response.data && Array.isArray(response.data)) {
+      photos.value = response.data.map(photo => ({
+        ...photo,
+        url: getPhotoUrl(photo.id)
+      }));
+    } else {
+      error.value = '獲取照片失敗：伺服器回應格式不正確';
+    }
   } catch (err) {
-    error.value = '獲取照片失敗：' + (err.response?.data || err.message);
+    handleApiError(err, '獲取照片失敗');
   } finally {
     loading.value = false;
   }
 };
 
-const loadMorePhotos = () => {
-  fetchPhotos();
+const deletePhoto = async (photoId) => {
+  try {
+    await axios.delete(`/clubPhoto/delete/${photoId}`, {
+      params: { uploaderId: userStore.userId }
+    });
+    photos.value = photos.value.filter(photo => photo.id !== photoId);
+  } catch (err) {
+    handleApiError(err, '刪除照片失敗');
+  }
 };
 
 const handleImageError = (event) => {
-  event.target.src = '/path/to/placeholder-image.jpg'; // 替換為實際的佔位圖片路徑
+  event.target.src = '/path/to/placeholder-image.jpg';
   event.target.alt = '照片無法載入';
+};
+
+const handleApiError = (err, defaultMessage) => {
+  if (err.response) {
+    if (err.response.status === 404) {
+      error.value = '找不到請求的資源，請聯繫管理員';
+    } else if (err.response.status === 500) {
+      error.value = '伺服器內部錯誤，請稍後再試或聯繫管理員';
+    } else {
+      error.value = `${defaultMessage}：${err.response.data || err.message}`;
+    }
+  } else if (err.request) {
+    error.value = '無法連接到伺服器，請檢查您的網絡連接';
+  } else {
+    error.value = `${defaultMessage}：${err.message}`;
+  }
+  console.error('API 錯誤:', err);
 };
 
 onMounted(() => {

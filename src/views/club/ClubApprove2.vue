@@ -14,13 +14,13 @@
           <table v-if="pendingMembers.length > 0" class="min-w-full bg-white mb-4">
             <thead class="bg-gray-100">
               <tr>
-                <th class="px-4 py-2 text-left">用戶 ID</th>
+                <th class="px-4 py-2 text-left">用戶名</th>
                 <th class="px-4 py-2 text-left">操作</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="member in pendingMembers" :key="member.userId" class="border-b">
-                <td class="px-4 py-2">{{ member.userId }}</td>
+                <td class="px-4 py-2">{{ member.userName }}</td>
                 <td class="px-4 py-2">
                   <button @click="approveMember(member.userId)" class="bg-green-500 hover:bg-green-700 text-black font-bold py-1 px-2 rounded mr-2">
                     審核通過
@@ -54,6 +54,7 @@
     try {
       const response = await axios.get(`/clubMember/club/${clubId}/pending-members`);
       pendingMembers.value = response.data;
+      console.log( pendingMembers.value )
       loading.value = false;
     } catch (err) {
       console.error('Error fetching pending members:', err);

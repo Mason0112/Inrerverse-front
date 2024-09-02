@@ -23,7 +23,7 @@
       <ul class="divide-y divide-gray-200">
         <li v-for="member in members" :key="member.userId" class="py-4 flex justify-between items-center">
           <div class="ml-3">
-            <p class="text-sm font-medium text-gray-900">用戶 ID: {{ member.userId }}</p>
+            <p class="text-sm font-medium text-gray-900">用戶名稱: {{ member.userName }}</p>
             <p class="text-sm text-gray-500">加入時間: {{ formatDate(member.added) }}</p>
           </div>
           <button
