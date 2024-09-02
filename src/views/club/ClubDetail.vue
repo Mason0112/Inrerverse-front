@@ -17,10 +17,16 @@
       <h2 class="text-xl font-bold mb-4 text-black">{{ club.clubName }}</h2>
       <p class="mb-2 text-black"><strong>描述：</strong> {{ club.description }}</p>
       <p class="mb-2 text-black"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
-      <p class="mb-2 text-black"><strong>允許：</strong> {{ club.isAllowed ? '是' : '否' }}</p>
+      <!-- <p class="mb-2 text-black"><strong>允許：</strong> {{ club.isAllowed ? '是' : '否' }}</p> -->
       <p class="mb-2 text-black"><strong>創建者 ID：</strong> {{ club.clubCreator }}</p>
       
+      <!-- <ClubPhotoAlbum v-if="club" :clubId="club.id" /> -->
+
       <div class="mt-4">
+        <div class="mt-8">
+        <!-- <h3 class="text-lg font-bold mb-4 text-black">俱樂部成員</h3> -->
+        <ClubMembersList :clubId="clubId" />
+        </div>
         <router-link 
           v-if="isCreator"
           :to="{ name: 'club-edit-link', params: { id: club.id } }"
@@ -79,6 +85,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import ClubMembersList from '@/views/club/ClubMembersList.vue';
+import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
 
 const router = useRouter();
 const route = useRoute();

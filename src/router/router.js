@@ -24,7 +24,8 @@ import ClubForm from "@/views/club/clubForm.vue";
 import ClubEdit from "@/views/club/ClubEdit.vue";
 import ClubApprove from "@/views/club/ClubApprove.vue";
 import ClubApprove2 from "@/views/club/ClubApprove2.vue";
-
+import ClubMy from "@/views/club/ClubMy.vue";
+import ClubPhotoAlbum from "@/views/club/ClubPhotoAlbum.vue";
 
 
 const routes = [
@@ -44,6 +45,8 @@ const routes = [
     { path: "/club/:id/edit",name:"club-edit-link", component:ClubEdit},
     { path: "/clubMember/approve",name:"club-approve-link", component:ClubApprove},
     { path: "/clubMember/approve2/:id",name:"club-approve2-link", component:ClubApprove2},
+    { path: "/clubMember/my-clubs",name:"club-my-link", component:ClubMy},
+    { path: "/club/album",name:"club-album-link", component:ClubPhotoAlbum},
 
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },

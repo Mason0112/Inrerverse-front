@@ -2,13 +2,7 @@
     <div class="container mx-auto p-4 flex justify-center">
       <div class="w-full max-w-4xl">
         <div class="flex justify-between items-center mb-4">
-          <h1 class="text-2xl font-bold">社團列表</h1>
-          <router-link 
-            :to="{ name: 'club-form-link' }"
-            class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
-          >
-            新增俱樂部
-          </router-link>
+          <h1 class="text-2xl font-bold">我加入的俱樂部</h1>
         </div>
         <div v-if="loading" class="text-center py-4">
           <p class="text-xl">加載中...</p>
@@ -16,6 +10,9 @@
         <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
           <strong class="font-bold">錯誤：</strong>
           <span class="block sm:inline">{{ error }}</span>
+        </div>
+        <div v-else-if="clubs.length === 0" class="text-center py-4">
+          <p class="text-xl">您還沒有加入任何俱樂部。</p>
         </div>
         <div v-else>
           <table class="min-w-full bg-white">
@@ -25,8 +22,8 @@
                 <th class="px-4 py-2 text-center">ID</th>
                 <th class="px-4 py-2 text-center">社團名稱</th>
                 <th class="px-4 py-2 text-center">公開</th>
-                <th class="px-4 py-2 text-center">參加</th>
-                <!-- <th class="px-4 py-2 text-center">操作</th> -->
+                <!-- <th class="px-4 py-2 text-center">狀態</th> -->
+                <th class="px-4 py-2 text-center">操作</th>
               </tr>
             </thead>
             <tbody>
@@ -34,11 +31,12 @@
                 <td class="px-4 py-2 text-center">
                   <div class="w-16 h-16 overflow-hidden rounded-md flex justify-center">
                     <img 
-                      v-if="club.photo" 
-                      :src="getPhotoUrl(club.photo)" 
-                      :alt="club.clubName" 
+                      v-if="club.photo && getPhotoUrl(club.photo)"
+                      :src="getPhotoUrl(club.photo)"
+                      :alt="club.clubName"
                       class="object-cover w-full h-full"
                       style="width: 64px; height: 64px;"
+                      @error="handleImageError"
                     >
                     <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center text-xs text-gray-500" style="width: 64px; height: 64px;">
                       無照片
@@ -55,11 +53,14 @@
                   </router-link>
                 </td>
                 <td class="px-4 py-2 text-center">{{ club.isPublic === 1 ? '是' : '否' }}</td>
-                <!-- <td class="px-4 py-2 text-center">{{ club.isAllowed === 1 ? '是' : '否' }}</td> -->
+                <!-- <td class="px-4 py-2 text-center">{{ club.status === 1 ? '已加入' : '待審核' }}</td> -->
                 <td class="px-4 py-2 text-center">
-            <button @click="joinClub(club)" class="bg-green-500 hover:bg-green-700 text-black font-bold py-2 px-4 rounded">
-              加入
-            </button>
+                    <button
+                @click="quitClub(club.id)"
+                class="bg-red-500 hover:bg-red-700 text-black font-bold py-2 px-4 rounded"
+              >
+                退出社團
+              </button>
                 </td>
               </tr>
             </tbody>
@@ -79,45 +80,47 @@
   const error = ref(null);
   const userStore = useUserStore();
   
-  const fetchClubs = async () => {
+  const fetchMyClubs = async () => {
     try {
-        console.log( userStore.userId);
-      const response = await axios.get('/clubs/all');
+      const response = await axios.get(`/clubMember/user/${userStore.userId}/clubs`);
       clubs.value = response.data;
+      console.log('Fetched clubs:', clubs.value);
       loading.value = false;
     } catch (err) {
-      console.error('Error fetching clubs:', err);
-      error.value = err.message;
+      console.error('Error fetching my clubs:', err);
+      error.value = err.response?.data?.message || '獲取俱樂部列表時出錯';
       loading.value = false;
     }
   };
   
   const getPhotoUrl = (photoName) => {
     if (!photoName) return null;
-    return `${import.meta.env.VITE_API_URL}/clubs/photo/${photoName}`;
+    const url = `${import.meta.env.VITE_API_URL}/clubs/photo/${photoName}`;
+    return url;
   };
   
-  const joinClub = async (club) => {
-  const clubMemberDTO = {
-    clubId: club.id,
-    userId: userStore.userId,
-    status: club.isPublic === 1 ? 1 : 0  // 如果 isPublic 為 1，status 設為 1，否則為 0
+  const handleImageError = (event) => {
+    console.error('Image failed to load:', event.target.src);
+    event.target.src = ''; // 設置為空字符串以顯示替代內容
   };
-  console.log(clubMemberDTO);
-  try {
-    const response = await axios.post('/clubMember', clubMemberDTO);
-    if (club.isPublic === 1) {
-      alert('已成功加入俱樂部！');
-    } else {
-      alert('已成功提交申請！等待審核中。');
+  
+  const quitClub = async (clubId) => {
+    console.log('Sending quit request for clubId:', clubId);
+    if (!confirm('確定要退出這個社團嗎？')) {
+      return;
     }
-  } catch (error) {
-    console.error('Error joining club:', error);
-    alert('無法加入俱樂部，請稍後再試。');
-  }
-};
-
-  onMounted(fetchClubs);
-
-  </script>
+    try {
+      await axios.delete(`/clubMember/user/${userStore.userId}/delete/${clubId}`);
+      alert('您已成功退出社團');
+      // 從列表中移除該俱樂部
+      clubs.value = clubs.value.filter(club => club.id !== clubId);
+    } catch (err) {
+      console.error('Error quitting club:', err);
+      alert(err.response?.data?.message || '退出社團時出錯，請稍後再試');
+    }
+  };
   
+  onMounted(() => {
+  console.log('Component mounted, fetching clubs...');
+  fetchMyClubs();
+});  </script>
