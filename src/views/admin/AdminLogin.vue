@@ -48,7 +48,7 @@
 
         if (response.status === 200) {
           //把登入者資訊塞給userStore供不同SFC使用
-          adminStore.setUserId(response.data.id);
+          adminStore.setAdminId(response.data.id);
           adminStore.setAuthority(response.data.authority);
           adminStore.setNickname(response.data.nickname);
           adminStore.setIsLoggedIn(true);

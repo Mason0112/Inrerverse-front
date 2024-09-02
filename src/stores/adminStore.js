@@ -4,14 +4,14 @@ import { defineStore } from 'pinia'
 const admin = defineStore("admin", function() {
 
     // 先宣告欲被儲存在pinia套件內的 變數 和/或 方法
-    const userId = ref('');
+    const adminId = ref('');
     const authority = ref('');
     const nickname = ref('');
     const isLoggedIn = ref(false);
     const token = ref('');
 
-    function setUserId(data){
-        userId.value = data;
+    function setAdminId(data){
+        adminId.value = data;
     }
 
     function setAuthority(data){
@@ -31,7 +31,7 @@ const admin = defineStore("admin", function() {
     }
 
     function resetStore() {
-        userId.value = '';
+        adminId.value = '';
         authority.value = '';
         nickname.value = '';
         isLoggedIn.value = false;
@@ -40,7 +40,7 @@ const admin = defineStore("admin", function() {
 
     // 宣告完後拋出，即可給不同SFC使用
     return {
-        userId, setUserId,
+        adminId, setAdminId,
         authority, setAuthority,
         nickname, setNickname,
         isLoggedIn, setIsLoggedIn,
@@ -51,7 +51,7 @@ const admin = defineStore("admin", function() {
     // 另再宣告要被piniaPluginPersistedstate套件管控在 怎麼樣的storage 和 storage裡面的的paths(只需變數名)
     persist: {
         storage: localStorage,
-        paths: ["userId", "authority", "nickname", "isLoggedIn", "token"]
+        paths: ["adminId", "authority", "nickname", "isLoggedIn", "token"]
     }
 });
 

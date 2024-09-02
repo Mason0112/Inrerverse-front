@@ -57,7 +57,7 @@ function login() {
       // 登入成功的邏輯
       if (response.data.success) {
         //把登入者資訊塞給userStore供不同SFC使用
-        userStore.setUserId(response.data.id);
+        userStore.setAdminId(response.data.id);
         userStore.setNickname(response.data.nickname);
         userStore.setIsLoggedIn(true);
         userStore.setToken(response.data.token);

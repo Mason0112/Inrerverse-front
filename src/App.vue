@@ -3,7 +3,8 @@
     <n-dialog-provider>
       <n-message-provider>
         <div>
-          <Navbar></Navbar>
+          <AdminNavbar v-if="isAdmin"></AdminNavbar>
+          <UserNavbar v-else></UserNavbar>
         </div>
         <div>
           <RouterView></RouterView>
@@ -14,15 +15,32 @@
 </template>
 
 <script setup>
-import Navbar from './views/Navbar.vue';
+import UserNavbar from './views/UserNavbar.vue';
+import AdminNavbar from './views/AdminNavbar.vue';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'tocas/dist/tocas.min.css'
 import { NConfigProvider, NMessageProvider, NDialogProvider } from 'naive-ui'
 
+import { computed } from 'vue'
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
+import useAdminStore  from '@/stores/adminStore'
+
+const adminStore = useAdminStore();
+
+if (adminStore.token) {
+  axios.defaults.headers.authorization = `Bearer ${adminStore.token}`;
+}
+
+if (adminStore.adminId) {
+  axios.defaults.headers.common['X-User-ID'] = adminStore.adminId;
+}
+
+const isAdmin = computed(() => {
+  return adminStore.adminId !== ''
+})
 
 // 初始化應用時設置 axios headers，這是用來在重新整理f5的時候，不會丟失token的方法
 const userStore = useUserStore();
