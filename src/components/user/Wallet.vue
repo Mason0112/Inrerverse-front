@@ -154,7 +154,7 @@ const getStatusText = (status) => {
 function deposit() {
   if (depositAmount.value > 0) {
     depositStore.setDepositAmount(depositAmount.value)
-    router.push('/stripe')
+    router.push('/payment')
   }
 }
 

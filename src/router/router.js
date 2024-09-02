@@ -20,7 +20,7 @@ import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import WalletTest from "@/views/test/WalletTest.vue";
 import Wallet from "@/components/user/Wallet.vue";
-import stripeTest from "@/views/test/stripeTest.vue";
+import stripeTest from "@/views/test/PaymentTest.vue";
 import Payment from "@/views/user/Payment.vue";
 
 
@@ -41,7 +41,6 @@ const routes = [
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
     { path: "/walletTest", name: "walletTest-link", component: WalletTest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
-    { path: "/stripe", name: "stripe-link", component: stripeTest },
     { path: "/payment", name: "payment-link", component: Payment },
 
     { path: "/product/product", name: "product-product", component: Product },
