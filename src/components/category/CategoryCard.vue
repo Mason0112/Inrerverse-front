@@ -25,8 +25,6 @@
 
 .ts-button{
 border: 0;   background-color: var(--ts-primary-400) 
-
-
 }
 
 </style>

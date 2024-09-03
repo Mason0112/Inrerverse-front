@@ -1,34 +1,34 @@
 <template>
-    <div class="ts-container is-narrow">
-      <div class="ts-box is-elevated">
-        <div class="ts-content is-tertiary">
-          <h3 class="ts-header is-2">選擇付款方式</h3>
-        </div>
-        <div class="ts-content">
-          <div class="ts-grid is-2-columns">
-            <label class="ts-radio is-large">
-              <input type="radio" name="payment" value="cod" v-model="selectedPayment" />
-              貨到付款
-            </label>
-            <label class="ts-radio is-large">
-              <input type="radio" name="payment" value="linepay" v-model="selectedPayment" />
-              LinePay
-            </label>
-          </div>
-        </div>
-        <div class="ts-divider"></div>
-        <div class="ts-content">
-          <button 
-            class="ts-button is-fluid is-primary is-large" 
-            @click="proceedToCheckout"
-            :disabled="!selectedPayment"
-          >
-            前往付款
-          </button>
+  <div class="payment-selection">
+    <div class="payment-box">
+      <div class="payment-header">
+        <h3 class="main-title">選擇付款方式</h3>
+      </div>
+      <div class="payment-content">
+        <div class="payment-options">
+          <label class="payment-option">
+            <input type="radio" name="payment" value="cod" v-model="selectedPayment" />
+            貨到付款
+          </label>
+          <label class="payment-option">
+            <input type="radio" name="payment" value="linepay" v-model="selectedPayment" />
+            LinePay
+          </label>
         </div>
       </div>
+      <div class="payment-divider"></div>
+      <div class="payment-footer">
+        <button 
+          class="checkout-button" 
+          @click="proceedToCheckout"
+          :disabled="!selectedPayment"
+        >
+          前往付款
+        </button>
+      </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script setup>
   import { onMounted, ref,watch } from 'vue';
@@ -125,9 +125,92 @@
   </script>
   
   <style scoped>
-  .ts-grid.is-2-columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  </style>
+.payment-selection {
+  background-color: #F8F7FF;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(177, 151, 252, 0.2);
+}
+
+.payment-box {
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.payment-header {
+  background-color: #B197FC;
+  padding: 15px;
+}
+
+.main-title {
+  color: white;
+  margin: 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+.payment-content {
+  padding: 20px;
+}
+
+.payment-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #B197FC;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.payment-option:hover {
+  background-color: #F8F7FF;
+}
+
+.payment-option input[type="radio"] {
+  margin-right: 10px;
+}
+
+.payment-divider {
+  height: 1px;
+  background-color: #dfd6fa;
+  margin: 0 20px;
+}
+
+.payment-footer {
+  padding: 20px;
+}
+
+.checkout-button {
+  width: 100%;
+  background-color: #FCE797;
+  color: #3A3042;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: opacity 0.3s ease;
+}
+
+.checkout-button:hover:not(:disabled) {
+  opacity: 0.8;
+}
+
+.checkout-button:disabled {
+  background-color: #dfd6fa;
+  cursor: not-allowed;
+}
+
+.checkout-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.5);
+}
+</style>

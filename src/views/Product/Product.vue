@@ -1,45 +1,44 @@
 <template>
-    <h3>Product Table</h3>
-    <div class="row">
-        <div class="col-4">
-            <button type="button" class="btn btn-info" @click="openModal('insert')">開啟新增</button>
-        </div>
-        <div class="col-4">
-            <input type="text" placeholder="請輸入產品名稱">
-        </div>
-        <div class="col-4">
+    <div class="product-management">
+    <h3 class="main-title">商品管理</h3>
+    <div class="control-panel">
+      <button type="button" class="ts-button is-primary" @click="openModal('insert')">開啟新增</button>
+      <input type="text" class="ts-input" placeholder="請輸入產品名稱">
+      <select class="ts-select">
+        <option disabled selected>選擇類別</option>
+        <!-- 添加類別選項 -->
+      </select>
+    </div>
+        <!-- <div class="col-4">
             下拉選單元件
+        </div> -->
+        <!-- <br> -->
+        
+        <div class="pagination-container">
+            <!-- 分頁組件 -->
         </div>
-    </div>
-    <br>
-
-    <div class="row">
-        <div class="col-4">分頁
-
+        
+        <div class="product-grid">
+            <div v-for="product in products" :key="product.id" class="product-item">
+                <ProductCard 
+                :product="product" 
+                @delete="callRemove(product.id)" 
+                @open-update="openModal"
+                />
+            </div>
         </div>
+        <ProductModal
+        ref="productModal"
+        v-model:product="product" 
+        :categories="categories"
+        :is-show-button-insert="isShowButtonInsert" 
+        :is-show-category="isShowCategory"
+        @insert="callCreate" 
+        @update="callModify"
+        @fileUpload="handleFileUpload"
+        />
     </div>
-    <br>
-
-
-    <div class="row">
-        <div class="col-lg-3 col-md-6" v-for=" product in products" :key="product.id">
-            <ProductCard :product="product" @delete="callRemove(product.id)" @open-update="openModal" style="height: 500px;">
-            </ProductCard>
-        </div>
-    </div>
-    <ProductModal   ref="productModal"
-                    v-model:product="product" 
-                    :categories="categories"
-                    :is-show-button-insert="isShowButtonInsert" 
-                    :is-show-category="isShowCategory"
-                    @insert="callCreate" 
-                    @update="callModify"
-                    @fileUpload="handleFileUpload">
-    </ProductModal>
-
-
-
-</template>
+    </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -201,4 +200,56 @@ function callRemove(id){
 
 </script>
 
-<style></style>
+<style scoped>
+.product-management {
+  padding: 20px;
+  background-color: var(--background-color);
+}
+
+.main-title {
+  color: var(--primary-color);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.control-panel {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.ts-input, .ts-select {
+  flex: 1;
+}
+
+.pagination-container {
+  margin: 20px 0;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.product-item {
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.product-item:hover {
+  box-shadow: 0 4px 15px rgba(177, 151, 252, 0.2);
+}
+
+@media (max-width: 768px) {
+  .control-panel {
+    flex-direction: column;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-<div class="ts-container product-details" v-if="product">
+  <div class="ts-container product-details" v-if="product">
     <div class="ts-grid">
       <div class="column is-7-wide">
         <div class="carousel-container">
@@ -24,24 +24,17 @@
         <p class="ts-text is-large price">NT$ {{ product.price }}</p>
         <div class="ts-grid">
           <div class="column is-8-wide">
-          </div>
-          <div class="column is-8-wide">
-            
-          </div>
-        </div>
-        <div class="ts-grid">
-          <div class="column is-8-wide">
             <div class="ts-input is-fluid">
               <input type="number" v-model.number="vol" min="1" :max="100">
             </div>
           </div>
           <div class="column is-8-wide">
-            <button class="ts-button is-fluid is-positive" @click="addToCart" :disabled="!isValidInput">
+            <button class="ts-button is-fluid is-primary" @click="addToCart" :disabled="!isValidInput">
               加入購物車
             </button>
           </div>
         </div>
-        <div class="ts-box is-segment has-top-spaced-large">
+        <div class="ts-box is-segment has-top-spaced-large product-description">
           <div class="ts-content">
             <h3 class="ts-header">商品說明:</h3>
             <p class="ts-text">{{ product.description }}</p>
@@ -51,7 +44,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { useRoute } from 'vue-router';
 import { ref, onMounted, computed } from 'vue'
@@ -143,13 +135,14 @@ function setCurrentImage(index) {
 <style scoped>
 .product-details {
   padding: 20px;
+  background-color: var(--background-color);
 }
 
 .carousel-container {
   position: relative;
   overflow: hidden;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(177, 151, 252, 0.2);
 }
 
 .main-image {
@@ -158,7 +151,7 @@ function setCurrentImage(index) {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0;
+  background-color: white;
 }
 
 .main-image img {
@@ -171,17 +164,18 @@ function setCurrentImage(index) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--primary-color);
   color: white;
   border: none;
   padding: 10px 15px;
   font-size: 18px;
   cursor: pointer;
   transition: background-color 0.3s;
+  opacity: 0.7;
 }
 
 .carousel-button:hover {
-  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 1;
 }
 
 .carousel-button.prev {
@@ -203,10 +197,11 @@ function setCurrentImage(index) {
   border: 2px solid transparent;
   border-radius: 4px;
   overflow: hidden;
+  transition: border-color 0.3s;
 }
 
 .thumbnail.active {
-  border-color: #0074d9;
+  border-color: var(--primary-color);
 }
 
 .thumbnail img {
@@ -220,16 +215,19 @@ function setCurrentImage(index) {
 }
 
 .price {
-  color: #e53935;
+  color: var(--primary-color);
   font-weight: bold;
 }
 
-.ts-select, .ts-input {
-  margin-bottom: 10px;
+.ts-input input {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px;
+  width: 100%;
 }
 
-.ts-button {
-  background-color: #4CAF50;
+.ts-button.is-primary {
+  background-color: var(--primary-color);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -238,17 +236,32 @@ function setCurrentImage(index) {
   display: inline-block;
   font-size: 16px;
   margin: 4px 2px;
-  transition-duration: 0.4s;
+  transition: background-color 0.3s, transform 0.1s;
   cursor: pointer;
 }
 
-.ts-button:hover {
-  background-color: #45a049;
+.ts-button.is-primary:hover {
+  background-color: #9F7EFC;
+  transform: translateY(-2px);
 }
 
-.ts-button:disabled {
-  background-color: #cccccc;
+.ts-button.is-primary:disabled {
+  background-color: var(--border-color);
   cursor: not-allowed;
+  transform: none;
+}
+
+.product-description {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.product-description .ts-header {
+  color: var(--primary-color);
+  margin-bottom: 10px;
 }
 
 .fade-enter-active, .fade-leave-active {
@@ -256,5 +269,21 @@ function setCurrentImage(index) {
 }
 .fade-enter, .fade-leave-to {
   opacity: 0;
+}
+
+@media (max-width: 768px) {
+  .ts-grid {
+    flex-direction: column;
+  }
+
+  .column.is-7-wide,
+  .column.is-9-wide {
+    width: 100%;
+  }
+
+  .product-info {
+    padding-left: 0;
+    margin-top: 20px;
+  }
 }
 </style>

@@ -2,7 +2,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <RouterLink class="navbar-brand" :to="{ name: 'home-link' }">InterVerse</RouterLink>
+      <RouterLink class="navbar-brand" :to="{ name: 'home-link' }"><img src="../../public/IMG_7258.jpg" width="80px"></RouterLink>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

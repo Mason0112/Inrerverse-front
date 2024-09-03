@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="ts-breadcrumb is-stepped is-divided" style="justify-content: center;">
-            <h3  class="item"  >訂單資訊</h3>
+            <h3 class="item">訂單資訊</h3>
         </div>
         <div class="cart-container has-top-spaced">
             <div class="cart-list">
@@ -24,7 +24,14 @@
                                 <td>{{ getPaymentMethod(userOrder.paymentMethod) }}</td>
                                 <td>{{ userOrder.totalAmount }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" @click="cancelOrder(userOrder.id,3)">取消訂單</button>
+                                    <button 
+                                        v-if="userOrder.status !== 3"
+                                        type="button" 
+                                        class="btn btn-primary" 
+                                        @click="cancelOrder(userOrder.id,3)"
+                                    >
+                                        取消訂單
+                                    </button>
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-primary" @click="openModal(userOrder.orderDetails)">詳細資料</button>
@@ -37,16 +44,10 @@
         </div>
     </div>
 
-
     <OrderModal
     ref="orderModalRef"
     v-model:order="selectedOrder">
     </OrderModal>
-
-
-
-
-
 </template>
 
 <script setup>
@@ -55,14 +56,10 @@ import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import OrderModal from '@/components/Order/OrderModal.vue';
 
-
 const userStore = useUserStore();
 const userOrders = ref([]);
-const orderModalRef =ref(null);//v-model 雙向資料綁定的對象
+const orderModalRef = ref(null);
 const selectedOrder = ref({});
-
-
-
 
 onMounted(function () {
     console.log("onMounted UserId", userStore.userId);
@@ -113,14 +110,23 @@ function openModal(order){
     selectedOrder.value = order
     console.log("modal傳過來的",order);
     orderModalRef.value.showModal();
-
 }
-
-
-
 </script>
 
 <style scoped>
+.ts-breadcrumb.is-stepped.is-divided {
+  background-color: var(--secondary-color);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
 
+.ts-breadcrumb .item {
+  color: #FFFFFF;
+  font-weight: 700;
+}
 
+.btn-primary {
+  margin-right: 10px;
+}
 </style>

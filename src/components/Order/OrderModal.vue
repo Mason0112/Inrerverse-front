@@ -94,13 +94,14 @@ watch(() => props.order, (newOrder) => {
 
 .modal-content {
     border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(177, 151, 252, 0.2);
     border: none;
+    background-color: var(--background-color);
 }
 
 .modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
+    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
     padding: 1.5rem;
     border-top-left-radius: 15px;
     border-top-right-radius: 15px;
@@ -109,7 +110,11 @@ watch(() => props.order, (newOrder) => {
 .modal-title {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #343a40;
+    color: white;
+}
+
+.btn-close {
+    color: white;
 }
 
 .modal-body {
@@ -118,32 +123,31 @@ watch(() => props.order, (newOrder) => {
     padding: 1.5rem;
 }
 
-.table-responsive {
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
 .ts-table {
     width: 100%;
     margin-bottom: 0;
-    color: #212529;
+    color: var(--text-color);
     border-collapse: separate;
     border-spacing: 0;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(177, 151, 252, 0.1);
 }
 
 .ts-table thead th {
-    background-color: #f1f3f5;
-    color: #495057;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.875rem;
     padding: 1rem;
-    border-bottom: 2px solid #dee2e6;
+    border-bottom: 2px solid var(--border-color);
 }
 
 .ts-table tbody td {
     padding: 1rem;
-    border-bottom: 1px solid #e9ecef;
+    border-bottom: 1px solid var(--border-color);
     transition: background-color 0.3s ease;
 }
 
@@ -152,21 +156,21 @@ watch(() => props.order, (newOrder) => {
 }
 
 .ts-table tbody tr:hover td {
-    background-color: #f8f9fa;
+    background-color: rgba(177, 151, 252, 0.05);
 }
 
 .modal-footer {
-    background-color: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
     padding: 1rem 1.5rem;
     border-bottom-left-radius: 15px;
     border-bottom-right-radius: 15px;
 }
 
 .btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-    color: #fff;
+    background-color: var(--secondary-color);
+    border: none;
+    color: var(--text-color);
     padding: 0.5rem 1rem;
     font-size: 1rem;
     border-radius: 5px;
@@ -174,10 +178,10 @@ watch(() => props.order, (newOrder) => {
 }
 
 .btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
+    background-color: var(--primary-color);
+    color: white;
     transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(177, 151, 252, 0.2);
 }
 
 @media (max-width: 768px) {
