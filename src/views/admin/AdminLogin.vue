@@ -24,15 +24,30 @@
   </template>
   
   <script setup>
-  import { ref } from "vue";
+  import { ref, onMounted } from "vue";
   import axios from "@/plugins/axios";
   import { useRouter } from "vue-router";
   import useAdminStore from "@/stores/adminStore"
   
   const form$ = ref(null);
-  
   const router = useRouter();
   const adminStore = useAdminStore();
+
+  //掛載時直接確認是否有權限參訪頁面
+  async function checkPermission() {
+  try {
+    const response = await axios.get('/admin/void')
+    if (response.status === 200) {
+      console.log('權限檢查:', response.data)
+    }
+  } catch (error) {
+    console.error('權限檢查:', error)
+  }
+}
+
+onMounted(() => {
+  checkPermission()
+})
 
   function login() {
     const formInstance = form$.value;
@@ -44,8 +59,7 @@
       .post("/admin/login", request)
       // 呼叫成功的邏輯
       .then(function (response) {
-        console.log("response", response);
-
+        console.log("response:" + response)
         if (response.status === 200) {
           //把登入者資訊塞給userStore供不同SFC使用
           adminStore.setAdminId(response.data.id);

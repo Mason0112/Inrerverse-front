@@ -37,11 +37,15 @@ import { ref } from "vue";
 import axios from "@/plugins/axios";
 import { useRouter } from "vue-router";
 import useUserStore from "@/stores/userstore";
+import useAdminStore from '@/stores/adminStore'
 
 const form$ = ref(null);
 
 const router = useRouter();
 const userStore = useUserStore();
+const adminStore = useAdminStore();
+
+
 
 function login() {
   const formInstance = form$.value;
@@ -56,8 +60,13 @@ function login() {
       console.log("response", response);
       // 登入成功的邏輯
       if (response.data.success) {
+        //先把其他東西清空
+        adminStore.resetStore();
+        axios.defaults.headers.authorization = "";
+        axios.defaults.headers.common["X-User-ID"] = "";
+
         //把登入者資訊塞給userStore供不同SFC使用
-        userStore.setAdminId(response.data.id);
+        userStore.setUserId(response.data.id);
         userStore.setNickname(response.data.nickname);
         userStore.setIsLoggedIn(true);
         userStore.setToken(response.data.token);

@@ -17,35 +17,48 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               @click="toggleDropdown('product')" aria-expanded="dropdownStates.club">
-              產品管理 <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.club }" />
+              產品管理
+              <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ rotate: dropdownStates.club }" />
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }">
-              <li><RouterLink class="dropdown-item" :to="{ name: 'product-product' }" @click="closeDropdown('product')">產品
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'product-category' }" @click="closeDropdown('product')">類別
-              </RouterLink></li>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ show: dropdownStates.club }">
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'product-product' }" @click="closeDropdown('product')">產品
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'product-category' }" @click="closeDropdown('product')">
+                  類別
+                </RouterLink>
+              </li>
             </ul>
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
               @click="toggleDropdown('settings')" aria-expanded="dropdownStates.settings">
-              勁甫(暫放) <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.settings }" />
+              勁甫(暫放)
+              <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ rotate: dropdownStates.settings }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
-              :class="{ 'show': dropdownStates.settings }">
-              <li><RouterLink class="dropdown-item" :to="{ name: 'post-create-link' }" @click="closeDropdown('settings')">新增動態
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'user-post-link' }" @click="closeDropdown('settings')">動態牆
-              </RouterLink></li>
+              :class="{ show: dropdownStates.settings }">
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'post-create-link' }" @click="closeDropdown('settings')">
+                  新增動態
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'user-post-link' }" @click="closeDropdown('settings')">
+                  動態牆
+                </RouterLink>
+              </li>
             </ul>
           </li>
           <!-- Other items -->
         </ul>
-
+        
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown me-2">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
-              @click="toggleDropdown('person')" aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn">
+              @click="toggleDropdown('person')" aria-expanded="dropdownStates.person" v-show="adminStore.isLoggedIn">
               <font-awesome-icon :icon="['fas', 'user']" /> <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.person }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
@@ -54,39 +67,52 @@
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'friend-link' }" @click="closeDropdown('person')">我的好友列表
               </RouterLink>
+              <RouterLink class="dropdown-item" :to="{ name: 'user-orders' }" @click="closeDropdown('person')">我的訂單紀錄
+              </RouterLink>
               <li><a class="dropdown-item" @click="logoutAdmin(); closeDropdown('person')">登出</a></li>
             </ul>
           </li>
-
-          <li class="nav-item me-2">
-            <n-badge :value="cartValue" :max="15" v-show="userStore.isLoggedIn">
-              <RouterLink class="nav-link" :to="{ name: 'cart-user' }" v-show="userStore.isLoggedIn">
-                <font-awesome-icon :icon="['fas', 'cart-shopping']" />
-              </RouterLink>
-            </n-badge>
-          </li>
-
         </ul>
+
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import useAdminStore from '@/stores/adminStore'
-import axios from '@/plugins/axios';
+import { ref, onMounted } from "vue";
+import useAdminStore from "@/stores/adminStore";
+import axios from "@/plugins/axios";
 
-    const adminStore = useAdminStore();
+const adminStore = useAdminStore();
+
+//掛載時直接確認是否有權限參訪此navbar
+async function checkPermission() {
+  try {
+    const response = await axios.get('/admin/void')
+    if (response.status === 200) {
+      console.log('權限檢查:', response.data)
+    }
+  } catch (error) {
+    adminStore.setAdminId("");
+    console.error('權限檢查:', error)
+  }
+}
+
+onMounted(() => {
+  checkPermission()
+})
+
 function logoutAdmin() {
   adminStore.resetStore();
-  axios.defaults.headers.authorization = '';
-  axios.defaults.headers.common['X-User-ID'] = '';
+  axios.defaults.headers.authorization = "";
+  axios.defaults.headers.common["X-User-ID"] = "";
 }
 
 const dropdownStates = ref({
   product: false,
   settings: false,
-  person: false
+  person: false,
 });
 
 function initializeDropdownState(menu) {
@@ -97,19 +123,19 @@ function initializeDropdownState(menu) {
 
 function toggleDropdown(menu) {
   initializeDropdownState(menu);
-  Object.keys(dropdownStates.value).forEach(key => {
-    dropdownStates.value[key] = key === menu ? !dropdownStates.value[key] : false;
+  Object.keys(dropdownStates.value).forEach((key) => {
+    dropdownStates.value[key] =
+      key === menu ? !dropdownStates.value[key] : false;
   });
-
 }
 
 function closeDropdown(menu) {
   dropdownStates.value[menu] = false;
 }
 </script>
-    
-<style>
-    .arrow {
+
+<style scoped>
+.arrow {
   font-size: 0.75em;
   /* Adjust the size of the arrow */
   transition: transform 0.5s ease;
@@ -153,5 +179,4 @@ function closeDropdown(menu) {
   gap: 4px;
   /* Adjust the gap between the text and the icon */
 }
-
 </style>
