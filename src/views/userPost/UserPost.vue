@@ -23,7 +23,12 @@
                         :alt="onePhoto.name">
                     </n-carousel>
                     <div>
-                        <font-awesome-icon :icon="['far', 'heart']" />
+                        <font-awesome-icon 
+                        :icon="onePost.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+                        @click="toggleLike(onePost)"
+                        :style="{ color: onePost.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+                        />
+                        <span class="like-count">{{ onePost.likeCount || 0 }}</span>
                     </div>
                 </n-ellipsis>
                 <div v-if="onePost.userId !== null">
@@ -93,17 +98,55 @@ onMounted(function(){
 })
 
 // 渲染post
-function showUserPostList(userId) {
-    axios.get(`/userPost/showUserAllPost/${userId}`)
-        .then(response => {
-            postList.value = response.data;
-            postList.value.forEach(post => {
-                fetchComments(post.id)
-            })
-        })
-        .catch(error => {
-            console.error("Error fetching user posts:", error);
+
+async function showUserPostList(userId) {
+    try {
+        const response = await axios.get(`/userPost/showUserAllPost/${userId}`);
+        postList.value = response.data;
+        await Promise.all(postList.value.map(post => fetchComments(post.id)));
+        await checkLikeStatus();
+    } catch (error) {
+        console.error("Error fetching user posts:", error);
+        message.error("Failed to fetch posts");
+    }
+}
+
+// 檢查按讚狀態
+async function checkLikeStatus() {
+    for (const post of postList.value) {
+        try {
+            const response = await axios.get(`/postLike`, {
+                params: { userId: userId, postId: post.id }
+            });
+            post.isLiked = response.data;
+        } catch (error) {
+            console.error('Error checking like status:', error);
+        }
+    }
+}
+
+// 切換按讚狀態
+async function toggleLike(post) {
+    try {
+        await axios.post('/postLike', null, {
+            params: { userId: userId, postId: post.id, type: 1 }
         });
+        post.isLiked = !post.isLiked;
+        post.likeCount = (post.likeCount || 0) + (post.isLiked ? 1 : -1);
+        message.success(post.isLiked ? '已按讚!' : '已取消讚!');
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        message.error('更新按讚狀態失敗');
+    }
+}
+
+async function updateLikeCount(post) {
+    try {
+        const response = await axios.get(`/userPost/${post.id}/likeCount`);
+        post.likeCount = response.data;
+    } catch (error) {
+        console.error('Error fetching like count:', error);
+    }
 }
 
 //渲染comment
@@ -236,6 +279,7 @@ async function deleteComment(oneComment, postId){
         }
     }    
 }
+
 
 
     
