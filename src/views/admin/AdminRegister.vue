@@ -15,7 +15,7 @@
               ref="form$"
               :endpoint="false"
             >
-              <StaticElement name="register_title" content="註冊" tag="h1" />
+              <StaticElement name="register_title" content="新增員工" tag="h1" />
               <StaticElement name="divider" tag="hr" />
 
               <TextElement

@@ -16,11 +16,29 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-              @click="toggleDropdown('product')" aria-expanded="dropdownStates.club">
-              產品管理
-              <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ rotate: dropdownStates.club }" />
+              @click="toggleDropdown('humanresources')" aria-expanded="dropdownStates.humanresources">
+              人資管理
+              <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ rotate: dropdownStates.humanresources }" />
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ show: dropdownStates.club }">
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ show: dropdownStates.humanresources }">
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'admin-register-link' }" @click="closeDropdown('humanresources')">新增員工
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink class="dropdown-item" :to="{ name: 'product-category' }" @click="closeDropdown('humanresources')">
+                  類別
+                </RouterLink>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+              @click="toggleDropdown('product')" aria-expanded="dropdownStates.product">
+              產品管理
+              <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ rotate: dropdownStates.product }" />
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ show: dropdownStates.product }">
               <li>
                 <RouterLink class="dropdown-item" :to="{ name: 'product-product' }" @click="closeDropdown('product')">產品
                 </RouterLink>
@@ -110,6 +128,7 @@ function logoutAdmin() {
 }
 
 const dropdownStates = ref({
+  humanresources: false,
   product: false,
   settings: false,
   person: false,
