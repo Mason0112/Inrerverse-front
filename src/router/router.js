@@ -25,6 +25,7 @@ import AdminHome from "@/views/admin/AdminHome.vue";
 import AdminRegister from "@/views/admin/AdminRegister.vue";
 import AdminLogin from "@/views/admin/AdminLogin.vue";
 import AdminAuth from "@/views/admin/AdminAuth.vue";
+import AdminTransaction from "@/views/admin/AdminTransaction.vue";
 
 import Payment from "@/views/user/Payment.vue";
 import OrderPayment from "@/views/Order/Payment.vue";
@@ -52,6 +53,7 @@ const routes = [
     { path: "/admin/register", name: "admin-register-link", component: AdminRegister },
     { path: "/admin/login", name: "admin-login-link", component: AdminLogin },
     { path: "/admin/auth", name: "admin-auth-link", component: AdminAuth },
+    { path: "/admin/transaction", name: "admin-transaction-link", component: AdminTransaction },
 
 
     { path: "/product/product", name: "product-product", component: Product },

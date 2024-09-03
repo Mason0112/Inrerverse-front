@@ -64,11 +64,14 @@ if (userStore.userId) {
 </script>
 
 <style>
+
 body {
   margin-top: 20px;
   background: #fafafa;
 }
+</style>
 
+<style scoped>
 .app-container {
   display: flex;
 }

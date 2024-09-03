@@ -6,18 +6,23 @@
     </div>
     <nav>
       <RouterLink to="/admin/home" class="nav-item">
-        <font-awesome-icon :icon="['fas', 'house']" />
+        <span class="icon-wrapper me-2">
+          <font-awesome-icon :icon="['fas', 'house']" />
+        </span>
         首頁
       </RouterLink>
       <RouterLink to="/admin/home" class="nav-item">
-        <i class="icon icon-star"></i>
-        Starred
+        <span class="icon-wrapper me-2">
+          <font-awesome-icon :icon="['fas', 'calendar-days']" />
+        </span>
+        待辦事項
       </RouterLink>
       <RouterLink to="/admin/home" class="nav-item">
-        <i class="icon icon-sent"></i>
-        Sent Mail
+        <span class="icon-wrapper me-2">
+          <font-awesome-icon :icon="['fas', 'comments']" />
+        </span>
+        聊天室
       </RouterLink>
-
 
       <div class="dropdown">
         <div class="dropdown-header" @click="toggleCategory('HumanResources')">
@@ -30,7 +35,29 @@
         </div>
         <div v-if="isOpen('HumanResources')" class="dropdown-content">
           <RouterLink to="/admin/register" class="nav-item">
-            新增會員
+            新增員工
+          </RouterLink>
+          <RouterLink to="/admin/register" class="nav-item">
+            Updates
+          </RouterLink>
+          <RouterLink to="/admin/register" class="nav-item">
+            Forums
+          </RouterLink>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <div class="dropdown-header" @click="toggleCategory('Finance')">
+          財務管理
+          <font-awesome-icon
+            :icon="['fas', 'caret-down']"
+            :class="{ 'icon-rotated': isOpen('Finance') }"
+            class="dropdown-icon"
+          />
+        </div>
+        <div v-if="isOpen('Finance')" class="dropdown-content">
+          <RouterLink to="/admin/transaction" class="nav-item">
+            處理中報表
           </RouterLink>
           <RouterLink to="/admin/register" class="nav-item">
             Updates
@@ -62,7 +89,7 @@
 
       <div class="dropdown">
         <div class="dropdown-header" @click="toggleCategory('More')">
-          會員
+          設定
           <font-awesome-icon
             :icon="['fas', 'caret-down']"
             :class="{ 'icon-rotated': isOpen('More') }"
@@ -133,7 +160,6 @@ const toggleCategory = (categoryName) => {
 };
 
 const isOpen = (categoryName) => openCategories.value.has(categoryName);
-
 </script>
 
 <style scoped>
