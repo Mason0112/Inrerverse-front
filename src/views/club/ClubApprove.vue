@@ -25,7 +25,7 @@
                 <th class="px-4 py-2 text-center">ID</th>
                 <th class="px-4 py-2 text-center">社團名稱</th>
                 <th class="px-4 py-2 text-center">公開</th>
-                <th class="px-4 py-2 text-center">允許</th>
+                <!-- <th class="px-4 py-2 text-center">允許</th> -->
                 <th class="px-4 py-2 text-center">編輯</th>
                 <th class="px-4 py-2 text-center">審核</th>
                 <th class="px-4 py-2 text-center">成員列表</th>
@@ -57,7 +57,7 @@
                   </router-link>
                 </td>
                 <td class="px-4 py-2 text-center">{{ club.isPublic === 1 ? '是' : '否' }}</td>
-                <td class="px-4 py-2 text-center">{{ club.isAllowed === 1 ? '是' : '否' }}</td>
+                <!-- <td class="px-4 py-2 text-center">{{ club.isAllowed === 1 ? '是' : '否' }}</td> -->
                 <td class="px-4 py-2 text-center">
                   <router-link 
                     :to="{ name: 'club-edit-link', params: { id: club.id } }"

@@ -18,9 +18,9 @@
       <p class="mb-2 text-black"><strong>描述：</strong> {{ club.description }}</p>
       <p class="mb-2 text-black"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
       <!-- <p class="mb-2 text-black"><strong>允許：</strong> {{ club.isAllowed ? '是' : '否' }}</p> -->
-      <p class="mb-2 text-black"><strong>創建者 ID：</strong> {{ club.clubCreator }}</p>
+      <p class="mb-2 text-black"><strong>創建者：</strong> {{ club.userName }}</p>
       
-      <ClubPhotoAlbum v-if="club" :clubId="clubId" />
+      <ClubPhotoAlbum v-if="club" :clubId="clubId" :isMember="isMember" />
 
       <div class="mt-4">
         <div class="mt-8">
@@ -98,6 +98,7 @@ const error = ref(null);
 const errorMessage = ref('');
 const successMessage = ref('');
 const showDeleteConfirm = ref(false);
+const isMember = ref(false);
 
 const clubId = route.params.id;
 
@@ -114,6 +115,7 @@ const fetchClubDetails = async () => {
   try {
     const response = await axios.get(`/clubs/${clubId}`);
     club.value = response.data;
+    await checkMembership();
     loading.value = false;
   } catch (err) {
     console.error('Error fetching club details:', err);
@@ -137,6 +139,21 @@ const deleteClub = async () => {
     console.error('Error deleting club:', err);
     errorMessage.value = '刪除俱樂部時出錯';
     showDeleteConfirm.value = false;
+  }
+};
+
+const checkMembership = async () => {
+  try {
+    const response = await axios.get(`/clubMember/club/${clubId}/approved-members`);
+    if (response.status === 200) {
+      isMember.value = response.data.some(member => member.userId === userStore.userId);
+    } else {
+      isMember.value = false;
+    }
+  } catch (err) {
+    console.error('Error checking membership:', err);
+    errorMessage.value = '檢查會員資格時出錯';
+    isMember.value = false;
   }
 };
 

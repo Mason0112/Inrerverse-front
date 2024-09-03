@@ -20,12 +20,13 @@ import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import ClubList from "@/views/club/ClubList.vue";
 import ClubDetail from "@/views/club/ClubDetail.vue";
-import ClubForm from "@/views/club/clubForm.vue";
+import ClubForm from "@/views/club/ClubForm.vue";
 import ClubEdit from "@/views/club/ClubEdit.vue";
 import ClubApprove from "@/views/club/ClubApprove.vue";
 import ClubApprove2 from "@/views/club/ClubApprove2.vue";
 import ClubMy from "@/views/club/ClubMy.vue";
 import ClubPhotoAlbum from "@/views/club/ClubPhotoAlbum.vue";
+import EventList from "@/views/Event/EventList.vue";
 
 
 const routes = [
@@ -39,6 +40,7 @@ const routes = [
     { path: "/product/category", name: "product-category", component: Category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost", name: "user-post-link", component: UserPost},
+
     { path: "/club/all", name: "club-all-link", component: ClubList},
     { path: "/club/:id", name:"club-detail-link", component:ClubDetail},
     { path: "/club/new", name:"club-form-link", component:ClubForm},
@@ -47,6 +49,9 @@ const routes = [
     { path: "/clubMember/approve2/:id",name:"club-approve2-link", component:ClubApprove2},
     { path: "/clubMember/my-clubs",name:"club-my-link", component:ClubMy},
     { path: "/club/album",name:"club-album-link", component:ClubPhotoAlbum},
+    
+    { path: "/event/all",name:"event-all-link", component:EventList},
+
 
     { path: "/friend", name: "friend-link", component: Friend },
     { path: "/profile", name: "profiletest-link", component: ProfileTest },
@@ -56,6 +61,7 @@ const routes = [
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
     { path: "/cart", name: "cart-user", component: UserCart }
+    
 ]
 
 const router = createRouter({
