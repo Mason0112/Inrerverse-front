@@ -23,7 +23,8 @@
     "sweetalert2": "^11.12.4",
     "tocas": "^5.0.1",
     "vue": "^3.4.29",
-    "vue-router": "^4.4.3"
+    "vue-router": "^4.4.3",
+    "vuejs-paginate-next": "^1.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

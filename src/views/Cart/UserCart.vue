@@ -22,11 +22,24 @@
                                 <td>{{ index + 1 }}</td>
                                 <td>
                                     <img :src="`${path}/products/${product.productId}/latestphoto`"
-                                        :alt="product.productName">
+                                        :alt="product.productName" style="cursor: pointer;">
                                 </td>
                                 <td>{{ product.productName }}</td>
                                 <td>NT$ {{ product.price }}</td>
-                                <td>{{ product.vol }}</td>
+                                <td>
+                                    <div class="quantity-control">
+                                        <button @click="decrementQuantity(product)" class="ts-button is-fluid is-primary" style="width: 20px;"
+                                        >-</button>
+                                        <input 
+                                            type="number" 
+                                            v-model="product.vol" 
+                                            @change="onQuantityChange(product)"
+                                            class="ts-input is-small"
+                                            min="1"
+                                        >
+                                        <button @click="incrementQuantity(product)" class="ts-button is-fluid is-primary" style="width: 20px;">+</button>
+                                    </div>
+                                </td>
                                 <td>NT$ {{ product.price * product.vol }}</td>
                             </tr>
                         </tbody>
@@ -55,10 +68,9 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref, onMounted, computed,watch  } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
-
 
 const path = import.meta.env.VITE_API_URL;
 const userStore = useUserStore();
@@ -74,7 +86,6 @@ watch(calculateTotalAmount, (newValue) => {
     totalAmount.value = newValue;
 });
 
-
 onMounted(() => {
     console.log(userStore.userId);
     getUserCart(userStore.userId);
@@ -88,13 +99,48 @@ function getUserCart(request) {
 }
 
 function proceedToCheckout() {
-  console.log("前往結帳");
-  //利用localStorage打包資料給下一個頁面
-  localStorage.setItem('checkoutProducts', JSON.stringify(products.value));
-  localStorage.setItem('checkoutTotal', totalAmount.value);
-  router.push({ name: 'order-payment' });
+    console.log("前往結帳");
+    localStorage.setItem('checkoutProducts', JSON.stringify(products.value));
+    localStorage.setItem('checkoutTotal', totalAmount.value);
+    router.push({ name: 'order-payment' });
+}
+
+function onQuantityChange(product) {
+    // Ensure the quantity is at least 1
+    product.vol = Math.max(1, product.vol);
+    // You can implement your AJAX call here to update the server
+    console.log(`Quantity changed for product ${product.productId}: ${product.vol}`);
+    console.log(`userid ${userStore.userId}`);
+    
+    
+    let cartupdate = {
+        "usersId":userStore.userId,
+        "productsId":product.productId,
+        "vol":product.vol
+    }
+
+
+
+    axiosapi.put(`/cart/update`,cartupdate).then(function (Response) {
+        console.log("購物車更新", Response.data);
+    });
+
+
+}
+
+function incrementQuantity(product) {
+    product.vol++;
+    onQuantityChange(product);
+}
+
+function decrementQuantity(product) {
+    if (product.vol > 1) {
+        product.vol--;
+        onQuantityChange(product);
+    }
 }
 </script>
+
 <style scoped>
 body {
     width: 1800px;
@@ -117,5 +163,36 @@ body {
 .ts-table img {
     max-width: 100px;
     height: auto;
+    border-radius: 4px;
+    transition: transform 0.2s;
+}
+
+
+.ts-table img:hover {
+    transform: scale(1.1);
+}
+
+.checkout-summary .ts-box {
+    background-color: var(--background-color);
+    border: 2px solid var(--primary-color);
+}
+
+.checkout-summary .ts-header {
+    color: var(--primary-color);
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+}
+
+.quantity-control input {
+    width: 50px;
+    text-align: center;
+    margin: 0 5px;
+}
+
+.quantity-control button {
+    padding: 0 8px;
 }
 </style>

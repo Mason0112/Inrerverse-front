@@ -5,17 +5,17 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Category</h1>
+          <h1 class="modal-title fs-5" id="exampleModalLabel">分類</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
           <table>
             <tr>
-              <td>Id : </td>
-              <td><input type="text" name="id" :value="category.id" readonly @input="modify('id',$event.target.value)"></td>
+              
+              <td><input type="hidden" name="id" :value="category.id" readonly @input="modify('id',$event.target.value)"></td>
             </tr>
             <tr>
-              <td>Name : </td>
+              <td>名稱 : </td>
               <td><input type="text" name="name" :value="category.name" @input="modify('name',$event.target.value)"></td>
             </tr>
           </table>

@@ -3,13 +3,13 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ category.name }}</h5>
-            <div class="row">
-                <div class="col text-start">
-                    <button type="button" class="btn btn-primary" @click="emits('openUpdate','update',category.id)">開啟修改</button>
-                </div>
-                <div class="col text-end">
-                    <button type="button" class="btn btn-primary" @click="emits('delete',category.id)">刪除</button>
-                </div>
+            <div>
+                <span  style="margin-right: 10px; margin-left: 1050px;">
+                    <button type="button" class="ts-button" @click="emits('openUpdate','update',category.id)">開啟修改</button>
+                </span>
+                <span >
+                    <button type="button" class="ts-button" @click="emits('delete',category.id)">刪除</button>
+                </span>
             </div>
         </div>
     </div>
@@ -21,4 +21,10 @@
     const emits = defineEmits(["openUpdate","delete"]) 
 </script>
 
-<style></style>
+<style scoped>
+
+.ts-button{
+border: 0;   background-color: var(--ts-primary-400) 
+}
+
+</style>
