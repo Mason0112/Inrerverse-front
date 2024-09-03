@@ -3,7 +3,7 @@
     <n-dialog-provider>
       <n-message-provider>
         <div class="app-container" v-if="isAdmin">
-            <SideBarTest></SideBarTest>
+            <AdminSideBar></AdminSideBar>
           <main class="main-content">
             <RouterView></RouterView>
           </main>
@@ -23,8 +23,7 @@
 
 <script setup>
 import UserNavbar from "./views/UserNavbar.vue";
-import AdminNavbar from "./views/test/AdminNavbarTest.vue";
-import SideBarTest from "./views/AdminSideBar.vue";
+import AdminSideBar from "./views/AdminSideBar.vue";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
