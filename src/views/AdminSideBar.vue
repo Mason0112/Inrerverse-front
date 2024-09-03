@@ -9,36 +9,53 @@
         <font-awesome-icon :icon="['fas', 'house']" />
         首頁
       </RouterLink>
-      <RouterLink to="/starred" class="nav-item">
+      <RouterLink to="/admin/home" class="nav-item">
         <i class="icon icon-star"></i>
         Starred
       </RouterLink>
-      <RouterLink to="/sent" class="nav-item">
+      <RouterLink to="/admin/home" class="nav-item">
         <i class="icon icon-sent"></i>
         Sent Mail
       </RouterLink>
 
 
       <div class="dropdown">
-        <div class="dropdown-header" @click="toggleCategory('Categories')">
+        <div class="dropdown-header" @click="toggleCategory('HumanResources')">
           人資管理
           <font-awesome-icon
             :icon="['fas', 'caret-down']"
-            :class="{ 'icon-rotated': isOpen('Categories') }"
+            :class="{ 'icon-rotated': isOpen('HumanResources') }"
             class="dropdown-icon"
           />
         </div>
-        <div v-if="isOpen('Categories')" class="dropdown-content">
+        <div v-if="isOpen('HumanResources')" class="dropdown-content">
           <RouterLink to="/admin/register" class="nav-item">
             新增會員
           </RouterLink>
-          <RouterLink to="/updates" class="nav-item">
-            <i class="icon icon-updates"></i>
+          <RouterLink to="/admin/register" class="nav-item">
             Updates
           </RouterLink>
-          <RouterLink to="/forums" class="nav-item">
-            <i class="icon icon-forums"></i>
+          <RouterLink to="/admin/register" class="nav-item">
             Forums
+          </RouterLink>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <div class="dropdown-header" @click="toggleCategory('Product')">
+          商品管理
+          <font-awesome-icon
+            :icon="['fas', 'caret-down']"
+            :class="{ 'icon-rotated': isOpen('Product') }"
+            class="dropdown-icon"
+          />
+        </div>
+        <div v-if="isOpen('Product')" class="dropdown-content">
+          <RouterLink to="/product/product" class="nav-item">
+            產品頁
+          </RouterLink>
+          <RouterLink to="/product/category" class="nav-item">
+            類別頁
           </RouterLink>
         </div>
       </div>
@@ -53,15 +70,15 @@
           />
         </div>
         <div v-if="isOpen('More')" class="dropdown-content">
-          <RouterLink to="/all-mail" class="nav-item">
+          <RouterLink to="/admin/home" class="nav-item">
             <i class="icon icon-all-mail"></i>
             All Mail
           </RouterLink>
-          <RouterLink to="/social" class="nav-item">
+          <RouterLink to="/admin/home" class="nav-item">
             <i class="icon icon-social"></i>
             Social
           </RouterLink>
-          <RouterLink to="/promo" class="nav-item">
+          <RouterLink to="/admin/home" class="nav-item">
             <i class="icon icon-promo"></i>
             Promo
           </RouterLink>

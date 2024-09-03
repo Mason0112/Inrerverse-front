@@ -23,8 +23,8 @@
 
 <script setup>
 import UserNavbar from "./views/UserNavbar.vue";
-import AdminNavbar from "./views/AdminNavbar.vue";
-import SideBarTest from "./views/test/SideBarTest.vue";
+import AdminNavbar from "./views/test/AdminNavbarTest.vue";
+import SideBarTest from "./views/AdminSideBar.vue";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
