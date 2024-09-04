@@ -119,7 +119,7 @@ const transactionsWithBalance = computed(() => {
     return transactionWithBalance;
   });
 });
-
+// 處理頁面渲染的值
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleString('zh-TW', {
@@ -151,6 +151,7 @@ const getStatusText = (status) => {
   }
 };
 
+// 儲值：取得使用者輸入的值後，直接導向付款頁面
 function deposit() {
   if (depositAmount.value > 0) {
     depositStore.setDepositAmount(depositAmount.value)
@@ -158,6 +159,15 @@ function deposit() {
   }
 }
 
+// 生成唯一交易序號的函數
+const generateTransactionId = () => {
+  const timestamp = new Date().getTime();
+  const random = Math.floor(Math.random() * 1000000);
+  return `TX-${timestamp}-${random}`;
+};
+
+
+// 提款
 function withdraw() {
   console.log(withdrawAmount)
   if (withdrawAmount.value <= 0) {
@@ -168,7 +178,11 @@ function withdraw() {
     return;
   }
 
+  // 新增交易的函數
+  const transactionNo = generateTransactionId();
+  
   axios.post('/transaction/add', {
+    transactionNo: transactionNo,
     amount: -withdrawAmount.value,
     paymentMethod: '提現',
     status: 2,

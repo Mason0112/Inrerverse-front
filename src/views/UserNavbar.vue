@@ -106,6 +106,7 @@ import axios from '@/plugins/axios';
 
 import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
 
+
 const notiValue = ref(5);
 const cartValue = ref(2);
 

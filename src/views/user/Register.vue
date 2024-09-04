@@ -79,9 +79,11 @@
 import { ref } from "vue";
 import axios from "@/plugins/axios";
 import { useRouter } from "vue-router";
+import { useMessage } from 'naive-ui';
 
 const form$ = ref(null);
 const router = useRouter();
+const message = useMessage();
 
 function register() {
   const formInstance = form$.value;
@@ -105,6 +107,10 @@ function register() {
       console.log("response", response);
 
       if (response.data.success) {
+        message.success('註冊成功，請登入', {
+        closable: true,
+        duration: 5000
+      });
         router.push("/login");
       } else {
 
