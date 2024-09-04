@@ -1,114 +1,337 @@
 <template>
-    <h3>Category Table</h3>
-    <div class="row">
-        <div class="col-4">
-            <button type="button" class="btn btn-primary" @click="openModal('insert')">開啟新增</button>
+    <div class="category-management">
+      <h3 class="main-title">分類管理</h3>
+      
+      <!-- 新增分類表單 -->
+      <form @submit.prevent="addCategory" class="add-category-form">
+        <div class="input-group">
+          <input v-model="newCategory" placeholder="輸入新分類名稱" required>
+          <button type="submit" class="add-button">新增分類</button>
         </div>
-        <div class="col-4">
-            <input type="text" placeholder="請輸入產品名稱">
-        </div>
-        <div class="col-4">
-            下拉選單元件
-        </div>
+      </form>
+  
+      <!-- 分類列表 -->
+      <table class="category-table">
+        <thead>
+          <tr>
+            <th>分類名稱</th>
+            <th>
+              操作
+              <div class="operation-label">修改 / 刪除</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="category in paginatedCategories" :key="category.id">
+            <td>
+              <div v-if="editingId === category.id" class="edit-input">
+                <input v-model="editingName" @keyup.enter="updateCategory(category.id)">
+              </div>
+              <span v-else>{{ category.name }}</span>
+            </td>
+            <td class="operation-column">
+              <button v-if="editingId === category.id" @click="updateCategory(category.id)" class="edit-button">
+                <span class="ts-icon is-floppy-disk-icon"></span>
+              </button>
+              <button v-else @click="startEditing(category)" class="edit-button">
+                <span class="ts-icon is-pen-to-square-icon"></span>
+              </button>
+              <button @click="deleteCategory(category.id)" class="delete-button">
+                <span class="ts-icon is-trash-can-icon"></span>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <!-- 分頁 -->
+      <!-- <Paginate
+      v-model="currentPage"
+      :page-count="pageCount"
+      :page-range="3"
+      :margin-pages="1"
+      :click-handler="handlePageChange"
+      :prev-text="'上一頁'"
+      :next-text="'下一頁'"
+      :container-class="'pagination'"
+      :page-class="'page-item'"
+      :page-link-class="'page-link'"
+      :prev-class="'page-item'"
+      :prev-link-class="'page-link'"
+      :next-class="'page-item'"
+      :next-link-class="'page-link'"
+      :active-class="'active'"
+    /> -->
     </div>
-    <br>
-
-    <div class="row">
-        <div class="col-4">分頁
-
-        </div>
-    </div>
-    <br>
-
-
-    <div class="row">
-        <div class="col-lg-3 col-md-6" v-for=" category in categories" :key="category.id">
-            <CategoryCard :category="category" @delete="callRemove(category.id)" @open-update="openModal"></CategoryCard>
-        </div>
-    </div>
-
-    <CategoryModal ref="categoryModal" 
-    v-model:category="category" 
-    :is-show-button-insert="isShowButtonInsert" 
-    @insert="callCreate" 
-    @update="callModify"></CategoryModal>
-
-</template>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-import axiosapi from '@/plugins/axios';
-import CategoryCard from '@/components/category/CategoryCard.vue';
-import CategoryModal from '@/components/category/CategoryModal.vue';
-const categories = ref([]);//接資料進來
-
-
-//進入頁面先做的事情start 把所以種類讀進來
-onMounted(function () {
-    getAllCategories()
-});
-function getAllCategories() {
-    axiosapi.get(`/categories`).then(function(response){
-        console.log("response",response)
-        categories.value = response.data
-    })
+  </template>
+  
+  <script setup>
+  import { ref, onMounted, computed } from 'vue';
+  import axiosapi from '@/plugins/axios';
+  import Paginate from 'vuejs-paginate-next';
+  import Swal from 'sweetalert2';
+  import { useRouter } from 'vue-router';
+  
+  const router = useRouter();
+  
+  const categories = ref([]);
+  const newCategory = ref('');
+  const editingId = ref(null);
+  const editingName = ref('');
+  const currentPage = ref(1);
+  const itemsPerPage = 8;
+  
+  onMounted(async () => {
+    await fetchCategories();
+  });
+  
+  // 分頁
+  const paginatedCategories = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return categories.value.slice(start, end);
+  });
+  
+  function getPageCount() {
+    return Math.ceil(categories.value.length / itemsPerPage);
+  }
+  
+  function handlePageChange(page) {
+    currentPage.value = page;
+  }
+  
+  // 分類操作
+  async function fetchCategories() {
+    try {
+      const response = await axiosapi.get('/categories');
+      categories.value = response.data;
+    } catch (error) {
+      handleApiError(error, '獲取分類失敗');
+    }
+  }
+  
+  async function addCategory() {
+    try {
+      await axiosapi.post('/categories', { name: newCategory.value });
+      newCategory.value = '';
+      await fetchCategories();
+      Swal.fire({
+        title: '成功！',
+        text: '新增成功！',
+        icon: 'success',
+        confirmButtonColor: '#B197FC',
+        confirmButtonText: '確認'
+      });
+    } catch (error) {
+      handleApiError(error, '新增失敗，請重試。');
+    }
+  }
+  
+  function startEditing(category) {
+    editingId.value = category.id;
+    editingName.value = category.name;
+  }
+  
+  async function updateCategory(id) {
+    try {
+      await axiosapi.put(`/categories/${id}`, { name: editingName.value });
+      editingId.value = null;
+      await fetchCategories();
+      Swal.fire({
+        title: '成功！',
+        text: '修改成功！',
+        icon: 'success',
+        confirmButtonColor: '#B197FC',
+        confirmButtonText: '確認'
+      });
+    } catch (error) {
+      handleApiError(error, '修改失敗，請重試。');
+    }
+  }
+  
+  async function deleteCategory(id) {
+    const result = await Swal.fire({
+      title: '確定要刪除這個分類嗎？',
+      text: "此操作無法撤銷！",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#B197FC',
+      cancelButtonColor: '#9e9e9e',
+      confirmButtonText: '是的，刪除它！',
+      cancelButtonText: '取消'
+    });
+  
+    if (result.isConfirmed) {
+      try {
+        await axiosapi.delete(`/categories/${id}`);
+        await fetchCategories();
+        Swal.fire({
+          title: '成功！',
+          text: '刪除成功！',
+          icon: 'success',
+          confirmButtonColor: '#B197FC',
+          confirmButtonText: '確認'
+        });
+      } catch (error) {
+        handleApiError(error, '刪除分類失敗');
+      }
+    }
+  }
+  
+  function handleApiError(error, defaultMessage) {
+    console.error('API Error:', error);
+    let errorMessage = defaultMessage;
+  
+    if (error.response) {
+      if (error.response.status === 403) {
+        errorMessage = '您沒有權限執行此操作';
+        router.push('/secure/login');
+      } else if (error.response.data && error.response.data.message) {
+        errorMessage = error.response.data.message;
+      }
+    }
+  
+    Swal.fire({
+      title: '錯誤',
+      text: errorMessage,
+      icon: 'error',
+      confirmButtonColor: '#B197FC',
+      confirmButtonText: '確認'
+    });
+  }
+  </script>
+  
+  <style scoped>
+.category-management {
+  background-color: #F8F7FF; /* 極淡的紫羅蘭色背景 */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(177, 151, 252, 0.2);
 }
-//進入頁面先做的事情end
 
-
-//Modal start
-const categoryModal =ref(null);//v-model 雙向資料綁定的對象
-const isShowButtonInsert = ref(true);
-const category = ref({});
-function openModal(action, id){
-        console.log("openModal",action,id)
-        if (action==="insert") {
-            isShowButtonInsert.value = true;
-            category.value = { };
-        } else {
-            isShowButtonInsert.value = false;  
-             //有多拿到一個id參數 要做findbyid
-            axiosapi.get(`/categories/${id}`).then(function(response){
-                console.log("response",response)
-                category.value =    {  id:response.data.id,
-                                    name:response.data.name
-                                    };
-               
-            })
-           
-        }
-        categoryModal.value.showModal();
-}
-//Modal end
-
-
-//刪除
-function callRemove(id){
-    console.log("callRemove",id);
-    axiosapi.delete(`/categories/${id}`).then(function(response){
-    })
-}
-//新增
-function callCreate(){
-    console.log("callCreate",category.value);
-    axiosapi.post("/categories", category.value).then(function(response) {
-    })
-    categoryModal.value.hideModal();
-}
-//修改
-function callModify(){
-    //物件
-    console.log("callModify",category.value);
-    //id
-    console.log("callModify",category.value.id);
-
-    axiosapi.put(`/categories/${category.value.id}`, category.value).then(function(response) {
-    })
-    categoryModal.value.hideModal();
+.main-title {
+  text-align: center;
+  color: #B197FC; /* 主色 */
+  margin-bottom: 20px;
+  font-weight: bold;
 }
 
+.add-category-form {
+  margin-bottom: 20px;
+}
 
+.input-group {
+  display: flex;
+}
 
-</script>
+.input-group input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #B197FC; /* 主色邊框 */
+  border-radius: 5px 0 0 5px;
+  color: #3A3042; /* 文字顏色 */
+}
 
-<style></style>
+.add-button {
+  background-color: #FCE797; /* 對比色按鈕 */
+  color: #3A3042; /* 文字顏色 */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 0 5px 5px 0;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.category-table th, .category-table td {
+  border: 1px solid #dfd6fa; /* 主色邊框 */
+  padding: 10px;
+  color: #3A3042; /* 文字顏色 */
+}
+
+.category-table th {
+  background-color: #B197FC; /* 主色表頭 */
+  color: white;
+}
+
+.category-name-column {
+  text-align: left;
+  width: 70%;
+}
+
+.operation-column {
+  text-align: center;
+  width: 30%;
+}
+
+.operation-label {
+  font-size: 0.8em;
+  color: #97C4FC; /* 輔色標籤 */
+  margin-top: 5px;
+}
+
+.operation-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+.edit-button, .delete-button {
+  background-color: #97C4FC; /* 輔色按鈕 */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 1.5px;
+}
+
+.delete-button {
+  background-color: #FCE797; /* 對比色刪除按鈕 */
+  color: #3A3042; /* 文字顏色 */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style-type: none;
+  padding: 0;
+}
+
+.page-item {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #B197FC; /* 主色邊框 */
+  cursor: pointer;
+  border-radius: 5px;
+  color: #B197FC; /* 主色文字 */
+}
+
+.page-item.active {
+  background-color: #B197FC; /* 主色活動頁 */
+  color: white;
+}
+
+/* 懸停效果 */
+.add-button:hover, .edit-button:hover, .delete-button:hover, .page-item:hover {
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+/* 輸入框焦點效果 */
+.input-group input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.5);
+}
+
+/* 按鈕焦點效果 */
+.add-button:focus, .edit-button:focus, .delete-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.5);
+}
+</style>

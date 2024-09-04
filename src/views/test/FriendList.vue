@@ -13,7 +13,7 @@
 
     <template v-else-if="friends.length > 0">
       <div class="list border-bottom d-flex justify-content-between align-items-center" v-for="friend in filteredFriends" :key="friend.user2Id">
-        <div class="d-flex align-items-center" @click="showModal = true">
+        <div class="d-flex align-items-center">
           <div v-if="friend.photo" class="friend-photo mr-3 me-2 mx-2">
             <img :src="friend.photo" :alt="friend.nickname || 'Friend'"/>
           </div>
@@ -39,7 +39,6 @@
 import { ref, onMounted, computed } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
-
 
 const userStore = useUserStore();
 const userId = userStore.userId;

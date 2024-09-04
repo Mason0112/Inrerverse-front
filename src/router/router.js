@@ -9,7 +9,7 @@ import Register from "@/views/user/Register.vue";
 import Notification from "@/views/user/Notification.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
 import UserPost from "@/views/userPost/UserPost.vue";
-import Friend from "@/views/friend/Friend.vue";
+import Friend from "@/views/user/Friend.vue";
 import Profile from "@/views/user/Profile.vue";
 import ProfileTest from "@/views/test/ProfileTest.vue";
 import PersonalModalTest from "@/views/test/PersonalModalTest.vue";
@@ -18,6 +18,12 @@ import Product from "@/views/Product/Product.vue";
 import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
+import WalletTest from "@/views/test/WalletTest.vue";
+import Wallet from "@/components/user/Wallet.vue";
+
+import Payment from "@/views/user/Payment.vue";
+import OrderPayment from "@/views/Order/Payment.vue";
+import UserOrders from "@/views/Order/UserOrders.vue";
 
 
 
@@ -32,16 +38,18 @@ const routes = [
     { path: "/product/category", name: "product-category", component: Category},
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost", name: "user-post-link", component: UserPost},
-    
     { path: "/friend", name: "friend-link", component: Friend },
-    { path: "/profile", name: "profiletest-link", component: ProfileTest },
     { path: "/personal", name: "personal-link", component: PersonalModalTest },
+    { path: "/walletTest", name: "walletTest-link", component: WalletTest },
+    { path: "/wallet", name: "wallet-link", component: Wallet },
+    { path: "/payment", name: "payment-link", component: Payment },
 
     { path: "/product/product", name: "product-product", component: Product },
     { path: "/product/Cart", name: "product-cart", component: CartProductList },
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
-    { path: "/cart", name: "cart-user", component: UserCart }
-     
+    { path: "/cart", name: "cart-user", component: UserCart },
+    { path: "/order/payment", name: "order-payment", component: OrderPayment },
+    { path: "/order/userOrders", name: "user-orders", component: UserOrders }
 ]
 
 const router = createRouter({

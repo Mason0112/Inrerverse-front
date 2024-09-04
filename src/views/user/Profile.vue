@@ -1,54 +1,58 @@
 <template>
   <div class="container mt-4">
-    <div class="main-content">
-      <div class="row gutters">
 
+    <div v-if="isLoading" class="loading-indicator">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">加載中…</span>
+      </div>
+    </div>
+
+    <div v-else class="main-content">
+      <div class="row gutters">
         <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
           <div class="profile-section">
+            
             <div class="user-avatar">
-              <!-- <img :src="`${photo}`" alt="User Photo" /> -->
-
               <div v-if="photo">
-                <img :src="`${photo}`" :alt="nickname || 'User Photo'"/>
+                <img :src="`${photo}`" :alt="userData.nickname || 'User Photo'"/>
               </div>
               <div v-else class="default-avatar">
-                {{ (nickname || 'Unknown').charAt(0) }}
+                {{ (userData.nickname || 'Unknown').charAt(0) }}
               </div>
-
               <n-upload ref="upload" :default-upload="false" :on-change="handleChange">
                 <n-button>修改大頭照</n-button>
               </n-upload>
-
             </div>
+
             <hr />
-            <h5>{{ nickname }}</h5>
+            <h5>{{ userData.nickname }}</h5>
             <table class="profile-info">
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'envelope']" /></td>
-                <td>{{ email }}</td>
+                <td>{{ userData.email }}</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'phone']" /></td>
-                <td>{{ phoneNumber }}</td>
+                <td>{{ userData.phoneNumber }}</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'location-dot']" /></td>
-                <td>{{ country }} , {{ city }}</td>
+                <td>{{ userData.country }} , {{ userData.city }}</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'cake-candles']" /></td>
-                <td>{{ age }} 歲</td>
+                <td>{{ userData.age }} 歲</td>
               </tr>
               <tr>
                 <td><font-awesome-icon :icon="['fas', 'venus-mars']" /></td>
-                <td>{{ gender }}</td>
+                <td>{{ userData.gender }}</td>
               </tr>
             </table>
           </div>
 
           <div class="about-section">
             <h5>關於我</h5>
-            <p>{{ bio }}</p>
+            <p>{{ userData.bio }}</p>
           </div>
 
         </div>
@@ -76,28 +80,22 @@
                     個人資料
                   </button>
                 </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link"
-                    :class="{ active: activeTab === 'friends' }"
-                    @click="activeTab = 'friends'"
-                  >
-                    好友們
-                  </button>
-                </li>
               </ul>
 
               <!-- Tabs Content -->
               <div class="tab-content mt-3">
+                <div v-if="activeTab === 'wallet'" class="tab-pane active">
+                  <h3>我的錢包</h3>
+                  <!-- Wallet Section -->
+                  <Wallet></Wallet>
+                </div>
                 <div v-if="activeTab === 'profile'" class="tab-pane active">
                   <h3>個人資料</h3>
                   <!-- Profile Section -->
-                  <ProfileForm></ProfileForm>
-                </div>
-                <div v-if="activeTab === 'friends'" class="tab-pane active">
-                  <h3>好友列表</h3>
-                  <!-- Friends Section -->
-                  <FriendList></FriendList>
+                  <ProfileForm
+                  v-bind="userData"
+                  @update-success="callFind"
+                  ></ProfileForm>
                 </div>
               </div>
             </div>
@@ -110,7 +108,7 @@
 
 <script setup>
 import ProfileForm from "@/components/user/ProfileForm.vue";
-import FriendList from "@/components/user/FriendList.vue";
+import Wallet from "@/components/user/Wallet.vue";
 
 import { ref, onMounted } from "vue";
 import axios from "@/plugins/axios";
@@ -119,51 +117,35 @@ import useUserStore from "@/stores/userstore";
 const activeTab = ref("wallet");
 
 const userStore = useUserStore();
-let userId = userStore.userId;
+const userId = userStore.userId;
 
-let accountNumber = ref('');
-let email = ref('');
-let nickname = ref('');
-let phoneNumber = ref('');
-let country = ref('');
-let city = ref('');
-let age = ref('');
-let gender = ref('');
-let photo = ref('');
-let bio = ref('');
+const userData = ref({});
+const photo = ref('');
+
+const isLoading = ref(true);
 
 onMounted(function () {
   callFind();
 });
 
 function callFind() {
-  axios
-    .get(`/user/secure/${userId}`)
-    .then(function (response) {
-      console.log("response", response);
-      accountNumber.value = response.data.accountNumber;
-      email.value = response.data.email;
-      nickname.value = response.data.nickname;
-      phoneNumber.value = response.data.phoneNumber;
-      country.value = response.data.country;
-      city.value = response.data.city;
-      age.value = response.data.age;
-      gender.value = response.data.gender;
-      bio.value = response.data.bio;
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
+  isLoading.value = true;
+  Promise.all([
+    axios.get(`/user/secure/${userId}`),
+    axios.get(`/user/secure/profile-photo/${userId}`)
+  ]).then(([userResponse, photoResponse]) => {
 
-  axios
-    .get(`/user/secure/profile-photo/${userId}`)
-    .then(function (response) {
-      console.log("response", response);
-      photo.value = response.data;
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
+    console.log("response", userResponse);
+    // 處理用戶數據
+    userData.value = userResponse.data;
+
+    // 處理照片數據
+    photo.value = photoResponse.data;
+  }).catch((error) => {
+    console.log("error", error);
+  }).finally(() => {
+    isLoading.value = false;
+  });
 }
 
 const selectedFile = ref(null);
@@ -208,6 +190,7 @@ async function uploadPhoto() {
       console.log("error", error);
     });
 }
+
 </script>
 
 <style scoped>
@@ -245,13 +228,6 @@ async function uploadPhoto() {
   text-align: center;
 }
 
-.user-avatar img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 15px;
-}
-
 .about-section {
   text-align: center;
   margin-top: 20px;
@@ -280,6 +256,21 @@ async function uploadPhoto() {
   padding-right: 15px;
 }
 
+.user-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar img,
+.default-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 15px;
+}
+
 .default-avatar {
   background-color: #ccc;
   color: #fff;
@@ -288,10 +279,12 @@ async function uploadPhoto() {
   align-items: center;
   font-size: 20px;
   font-weight: bold;
+}
 
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  margin-bottom: 15px;
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 </style>

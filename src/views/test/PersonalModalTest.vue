@@ -54,18 +54,10 @@
     </div>
   </template>
   
-  <script>
+  <script setup>
   import { ref } from 'vue';
-  
-  export default {
-    setup() {
-      const showModal = ref(false);
-  
-      return {
-        showModal,
-      };
-    },
-  };
+  const showModal = ref(false);
+
   </script>
   
   <style scoped>
