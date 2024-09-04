@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import Navbar from './views/Navbar.vue';
+import Navbar from './views/navbar.vue';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';

@@ -24,6 +24,8 @@ import Wallet from "@/components/user/Wallet.vue";
 import Payment from "@/views/user/Payment.vue";
 import OrderPayment from "@/views/Order/Payment.vue";
 import UserOrders from "@/views/Order/UserOrders.vue";
+import forum from "@/views/forum/forum.vue";
+import createArticle from "@/views/forum/createArticle.vue";
 
 
 
@@ -49,7 +51,10 @@ const routes = [
     { path: "/product/ProductCartDetail/:id", name: "product-cartDetail", component: ShowProductDetail },
     { path: "/cart", name: "cart-user", component: UserCart },
     { path: "/order/payment", name: "order-payment", component: OrderPayment },
-    { path: "/order/userOrders", name: "user-orders", component: UserOrders }
+    { path: "/order/userOrders", name: "user-orders", component: UserOrders },
+    { path: "/club/forum", name: "club-forum", component: forum },
+    { path: "/club/addArticle", name: "club-addArticle", component: createArticle }
+
 ]
 
 const router = createRouter({
