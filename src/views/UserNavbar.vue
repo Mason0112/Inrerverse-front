@@ -150,6 +150,8 @@ function logout() {
 
 
 <style scoped>
+
+
 .arrow {
   font-size: 0.75em;
   /* Adjust the size of the arrow */

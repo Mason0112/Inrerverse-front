@@ -63,26 +63,30 @@ if (userStore.userId) {
 }
 </script>
 
-<style>
+<style >
+
 
 :root {
   --primary-color: #B197FC;
   --secondary-color: #97C4FC;
   --accent-color: #FCB197;
-  --background-color: #F8F7FF;
+  --background-color: #FAFAFA;
   --text-color: #3A3042;
   --light-text-color: #6C6474;
   --border-color: #D4C4FC;
 }
 
+
+
 body {
   margin-top: 20px;
   background: #FAFAFA;
-  background-color: var(--background-color);
+   background-color:  #FAFAFA; 
+   background-color: var(--bs-body-bg);
   color: var(--text-color);
 }
 .ts-box, .modal-content {
-  background-color: #FFFFFF;
+  background-color: #FAFAFA;
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(177, 151, 252, 0.1);
@@ -96,7 +100,7 @@ body {
 
 .ts-table th {
   background-color: var(--primary-color);
-  color: #FFFFFF;
+  color: #FAFAFA;
   padding: 12px;
   font-weight: 600;
 }
@@ -120,7 +124,7 @@ body {
 
 .btn-primary, .ts-button.is-primary {
   background-color: var(--primary-color);
-  color: #FFFFFF;
+  color: #FAFAFA;
 }
 
 .btn-primary:hover, .ts-button.is-primary:hover {
@@ -160,7 +164,7 @@ input[type="text"], input[type="number"], select {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 8px;
-  background-color: #FFFFFF;
+  background-color: #FAFAFA;
   color: var(--text-color);
 }
 
@@ -172,7 +176,7 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 
 .modal-header {
   background-color: var(--primary-color);
-  color: #FFFFFF;
+  color: #FAFAFA;
 }
 
 .modal-footer {
@@ -183,7 +187,7 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
+} 
 
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
