@@ -203,7 +203,7 @@
   
   <style scoped>
 .category-management {
-  background-color: #F8F7FF; /* 極淡的紫羅蘭色背景 */
+  /*background-color: #ffffff; /* 極淡的紫羅蘭色背景 */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(177, 151, 252, 0.2);
