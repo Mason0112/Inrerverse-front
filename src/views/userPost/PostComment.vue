@@ -14,7 +14,7 @@
   </template>
   
   <script setup>
-  import { ref , defineProps, defineEmits} from 'vue'
+  import { ref } from 'vue'
   import axios from '@/plugins/axios'
   import useUserStore from '@/stores/userstore';
 
