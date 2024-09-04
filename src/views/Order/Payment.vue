@@ -99,11 +99,27 @@
                           "orderId" :orderResponse.data.id ,
                           "cartItems":products.value
                       }
+        
+
+
         //第二個AJAX把cart的內容轉成order
         return axiosapi.post("/api/orders/create-with-details", request)
     }).then(function (detailResponse){
-        console.log("detailResponse",detailResponse);
+        console.log("detailResponse",detailResponse.data[0].orderId);
         console.log("userId結帳用",userStore.userId);
+        return axiosapi.get(`/api/orders/${detailResponse.data[0].orderId}`)
+    }).then(function(responseOrder){    
+        console.log("responseOrder",responseOrder.data);
+        
+        
+        return axiosapi.post(`/linePay/pay`,responseOrder.data);
+    }).then(function(linePayResponse){
+      console.log("linePay",linePayResponse);
+      console.log("拿網址",linePayResponse.data.info.paymentUrl.web);
+      window.open(linePayResponse.data.info.paymentUrl.web, '_blank');
+
+
+
         //第三個AJAX清空購物車
         return axiosapi.delete(`/cart/clear/${userStore.userId}`)
     }).then(function(){
