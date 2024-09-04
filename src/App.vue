@@ -64,8 +64,6 @@ if (userStore.userId) {
 </script>
 
 <style >
-
-
 :root {
   --primary-color: #B197FC;
   --secondary-color: #97C4FC;
@@ -76,15 +74,10 @@ if (userStore.userId) {
   --border-color: #D4C4FC;
 }
 
-
-
 body {
-  margin-top: 20px;
-  background: #FAFAFA;
-   background-color:  #FAFAFA; 
-   background-color: var(--bs-body-bg);
   color: var(--text-color);
 }
+
 .ts-box, .modal-content {
   background-color: #FAFAFA;
   border: 1px solid var(--border-color);

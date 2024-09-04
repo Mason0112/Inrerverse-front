@@ -190,7 +190,7 @@ function closeModal() {
 }
 
 function getDefaultAvatar(friend) {
-  return (friend.accountNumber || friend.nickname || "無").charAt(0).toUpperCase();
+  return (friend.accountNumber || "無").charAt(0).toUpperCase();
 }
 
 </script>
