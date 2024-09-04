@@ -16,11 +16,11 @@
                     mousewheel
                     style="width: 100%; height: 240px"
                     >
-                        <img
+                        <n-image
                         v-for="onePhoto in onePost.photos"
                         :key="onePhoto.id"
                         :src="onePhoto.base64Photo" 
-                        :alt="onePhoto.name">
+                        :alt="onePhoto.name"/>
                     </n-carousel>
                     <div>
                         <font-awesome-icon 
@@ -132,7 +132,10 @@ async function toggleLike(post) {
             params: { userId: userId, postId: post.id, type: 1 }
         });
         post.isLiked = !post.isLiked;
-        post.likeCount = (post.likeCount || 0) + (post.isLiked ? 1 : -1);
+        if(post.likeCount=null){
+            post.likeCount=0;
+        }
+        post.likeCount = (post.likeCount) + (post.isLiked ? 1 : 0);
         message.success(post.isLiked ? '已按讚!' : '已取消讚!');
     } catch (error) {
         console.error('Error toggling like:', error);
