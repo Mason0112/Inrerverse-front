@@ -20,6 +20,9 @@
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'club-all-link' }">俱樂部</RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'event-cluball-link' }">社團活動</RouterLink>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
               @click="toggleDropdown('club')" aria-expanded="dropdownStates.club">

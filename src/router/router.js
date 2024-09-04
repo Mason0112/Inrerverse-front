@@ -27,6 +27,9 @@ import ClubApprove2 from "@/views/club/ClubApprove2.vue";
 import ClubMy from "@/views/club/ClubMy.vue";
 import ClubPhotoAlbum from "@/views/club/ClubPhotoAlbum.vue";
 import EventList from "@/views/Event/EventList.vue";
+import EventDetail from "@/views/Event/EventDetail.vue";
+import ClubEvent from "@/views/Event/ClubEvent.vue";
+import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
 
 
 const routes = [
@@ -51,6 +54,10 @@ const routes = [
     { path: "/club/album",name:"club-album-link", component:ClubPhotoAlbum},
     
     { path: "/event/all",name:"event-all-link", component:EventList},
+    { path: "/event/detail/:id",name:"event-detail-link", component:EventDetail},
+    { path: "/event/club/all",name:"event-cluball-link", component:ClubEvent},
+    { path: "/event/club/all",name:"event-addclubevent-link", component:ClubEvent},
+
 
 
     { path: "/friend", name: "friend-link", component: Friend },

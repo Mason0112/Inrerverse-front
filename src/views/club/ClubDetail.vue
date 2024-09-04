@@ -21,7 +21,9 @@
       <p class="mb-2 text-black"><strong>創建者：</strong> {{ club.userName }}</p>
       
       <ClubPhotoAlbum v-if="club" :clubId="clubId" :isMember="isMember" />
-
+       <!-- 添加 ClubEvent 組件 -->
+       <ClubEvent :clubId="clubId"  :isMember="isMember"/>
+       
       <div class="mt-4">
         <div class="mt-8">
         <!-- <h3 class="text-lg font-bold mb-4 text-black">俱樂部成員</h3> -->
@@ -87,6 +89,7 @@ import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import ClubMembersList from '@/views/club/ClubMembersList.vue';
 import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
+import ClubEvent from '../Event/ClubEvent.vue';
 
 const router = useRouter();
 const route = useRoute();
