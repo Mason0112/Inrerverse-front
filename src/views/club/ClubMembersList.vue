@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineProps, defineEmits } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from "@/plugins/axios";
 import useUserStore from '@/stores/userstore';
 

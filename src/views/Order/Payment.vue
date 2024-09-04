@@ -117,11 +117,6 @@
     });
   };
 
-
-
-
-
-
   </script>
   
   <style scoped>
