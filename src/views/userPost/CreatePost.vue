@@ -4,6 +4,9 @@
             type="textarea"
             placeholder="你在想什麼?"
             v-model:value="content"
+            :autosize="{
+            minRows: 3
+            }"
         />
         <n-upload
             ref="upload"
