@@ -42,7 +42,6 @@ import EventList from "@/views/Event/EventList.vue";
 import EventDetail from "@/views/Event/EventDetail.vue";
 import ClubEvent from "@/views/Event/ClubEvent.vue";
 import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
-import AddWorkshopForm from "@/views/Event/AddWorkshopForm.vue";
 
 
 const routes = [
@@ -76,9 +75,7 @@ const routes = [
     { path: "/event/all",name:"event-all-link", component:EventList},
     { path: "/event/detail/:id",name:"event-detail-link", component:EventDetail},
     { path: "/event/club/all",name:"event-cluball-link", component:ClubEvent},
-    { path: "/event/club/new",name:"event-addclubevent-link", component:AddClubEventForm},
-    { path: "/event/workshop/new",name:"event-addWorkshop-link", component:AddWorkshopForm},
-
+    { path: "/event/club/all",name:"event-addclubevent-link", component:ClubEvent},
 
     //暐欣
     { path: "/product/category", name: "product-category", component: Category},
