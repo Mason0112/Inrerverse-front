@@ -94,7 +94,7 @@ const routes = [
     { path: "/club/addArticle", name: "club-addArticle", component: createArticle },
 
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
-    { path: "/post/userPost", name: "user-post-link", component: UserPost}
+    { path: "/post/userPost/:id?", name: "user-post-link", component: UserPost}
 
 ]
 

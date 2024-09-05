@@ -75,6 +75,7 @@
 
 <script setup>
 import {onMounted, ref, inject } from "vue";
+import { useRoute } from "vue-router";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import UpdatePostModal from "./updatePostModal.vue";
@@ -84,6 +85,9 @@ import { useMessage } from 'naive-ui'
 
 const userStore = useUserStore();
 const userId = userStore.userId;
+const userIdUrl = ref();
+const route = useRoute();
+
 const userNickname=userStore.nickname
 //初始化
 const updatePostModal =ref(null);
@@ -94,14 +98,18 @@ const message=useMessage()
 
 const postList = ref([])
 onMounted(function(){
-    showUserPostList(userId)
+    userIdUrl.value = (route.params.id);
+    console.log(userIdUrl.value+'123')
+    showUserPostList()
 })
 
 // 渲染post
 
-async function showUserPostList(userId) {
+async function showUserPostList() {
     try {
-        const response = await axios.get(`/userPost/showUserAllPost/${userId}`);
+        const response = await axios.get(`/userPost/showUserAllPost/${userIdUrl.value}`);
+        console.log(userIdUrl.value)
+        console.log(response.data);
         postList.value = response.data;
         await Promise.all(postList.value.map(post => fetchComments(post.id)));
         await checkLikeStatus();
