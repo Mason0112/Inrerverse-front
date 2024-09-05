@@ -124,7 +124,7 @@ async function fetchUserDetails(friendsData) {
           .get(`/user/secure/profile-photo/${friend.user2Id}`)
           .catch(() => ({ data: null })) // 如果獲取頭像失敗，返回 null
     );
-
+    
     const [userResponses, photoResponses] = await Promise.all([
       Promise.all(userRequests),
       Promise.all(photoRequests),
@@ -132,6 +132,7 @@ async function fetchUserDetails(friendsData) {
 
     friends.value = friendsData.map((friend, index) => ({
       ...friend,
+      id: userResponses[index].data.id,
       accountNumber: userResponses[index].data.accountNumber,
       nickname: userResponses[index].data.nickname,
       country: userResponses[index].data.country,
