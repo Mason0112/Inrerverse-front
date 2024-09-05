@@ -1,13 +1,19 @@
 <template>
   <div class="container mt-4">
-    <div class="row mb-3 align-items-center">
+    <div class="row mb-3">
       <div class="col-md-3">
+        <label class="form-label">
+          <font-awesome-icon :icon="['fas', 'keyboard']" /> 選擇交易類別
+        </label>
         <select v-model="selectedOption" class="form-select" @change="fetchTransactions">
           <option value="all">所有交易</option>
           <option value="handling">處理中交易</option>
         </select>
       </div>
-      <div class="col-md-8">
+      <div class="col-md-7">
+        <label class="form-label">
+          <font-awesome-icon :icon="['fas', 'filter']" /> 篩選日期
+        </label>
         <div class="input-group">
           <input type="date" v-model="startDate" class="form-control">
           <span class="input-group-text">至</span>
@@ -15,10 +21,16 @@
           <button class="btn btn-outline-secondary" @click="clearDates">清空日期</button>
         </div>
       </div>
-      <div class="col-md-1">
-        <button class="btn btn-link text-dark" @click="toggleSortOrder" :title="sortOrderTitle">
-          <font-awesome-icon :icon="sortOrderIcon" />
-        </button>
+      <div class="col-md-2">
+        <label class="form-label">
+          <font-awesome-icon :icon="['fas', 'arrow-down-wide-short']" /> 選擇排序
+        </label>
+        <select v-model="sortOption" class="form-select" @change="applySorting">
+          <option value="dateDesc">日期新到舊</option>
+          <option value="dateAsc">日期舊到新</option>
+          <option value="priceDesc">價格高到低</option>
+          <option value="priceAsc">價格低到高</option>
+        </select>
       </div>
     </div>
     <div v-if="loading" class="text-center">
@@ -64,7 +76,6 @@
         <hr class="summary-divider"/>
         <div class="total-amount"><strong>總金額：</strong> {{ totalAmount }}</div>
       </div>
-
     </div>
   </div>
 </template>
@@ -78,7 +89,7 @@ const startDate = ref('');
 const endDate = ref('');
 const transactions = ref([]);
 const loading = ref(false);
-const sortAscending = ref(false);
+const sortOption = ref('dateDesc');
 
 const dateRangeText = computed(() => {
   if (startDate.value && endDate.value) {
@@ -89,24 +100,25 @@ const dateRangeText = computed(() => {
 
 const sortedTransactions = computed(() => {
   let sorted = [...filteredTransactions.value];
-  sorted.sort((a, b) => {
-    let dateA = new Date(a.added);
-    let dateB = new Date(b.added);
-    return sortAscending.value ? dateA - dateB : dateB - dateA;
-  });
+  switch (sortOption.value) {
+    case 'dateDesc':
+      sorted.sort((a, b) => new Date(b.added) - new Date(a.added));
+      break;
+    case 'dateAsc':
+      sorted.sort((a, b) => new Date(a.added) - new Date(b.added));
+      break;
+    case 'priceDesc':
+      sorted.sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
+      break;
+    case 'priceAsc':
+      sorted.sort((a, b) => parseFloat(a.amount) - parseFloat(b.amount));
+      break;
+  }
   return sorted;
 });
 
-const sortOrderIcon = computed(() => {
-  return sortAscending.value ? ['fas', 'arrow-down-1-9'] : ['fas', 'arrow-down-9-1'];
-});
-
-const sortOrderTitle = computed(() => {
-  return sortAscending.value ? "由舊到新排序" : "由新到舊排序";
-});
-
-const toggleSortOrder = () => {
-  sortAscending.value = !sortAscending.value;
+const applySorting = () => {
+  // 排序已經通過 computed 屬性自動應用
 };
 
 const filteredTransactions = computed(() => {
@@ -198,6 +210,11 @@ onMounted(fetchTransactions);
 </script>
 
 <style scoped>
+.form-label {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
 .transaction-card {
   border: 1px solid #ddd;
   border-radius: 8px;
