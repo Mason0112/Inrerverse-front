@@ -19,10 +19,10 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-              @click="toggleDropdown('club')" aria-expanded="dropdownStates.club">
+            @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')" aria-expanded="dropdownStates.club">
               靖緯(暫放) <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.club }" />
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }">
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }" @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')">
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-all-link' }" @click="closeDropdown('club')">俱樂部
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部審核
@@ -35,11 +35,11 @@
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
-              @click="toggleDropdown('settings')" aria-expanded="dropdownStates.settings">
+            @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')" aria-expanded="dropdownStates.settings">
               勁甫(暫放) <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.settings }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
-              :class="{ 'show': dropdownStates.settings }">
+              :class="{ 'show': dropdownStates.settings }" @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')">
               <li><RouterLink class="dropdown-item" :to="{ name: 'post-create-link' }" @click="closeDropdown('settings')">新增動態
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'user-post-link' }" @click="closeDropdown('settings')">動態牆
@@ -56,11 +56,12 @@
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown me-2">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
-              @click="toggleDropdown('person')" aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn">
+            @mouseenter="openDropdown('person')" @mouseleave="closeDropdown('person')" 
+            aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn">
               <font-awesome-icon :icon="['fas', 'user']" /> <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.person }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
-              :class="{ 'show': dropdownStates.person }">
+              :class="{ 'show': dropdownStates.person }" @mouseenter="openDropdown('person')" @mouseleave="closeDropdown('person')">
               <RouterLink class="dropdown-item" :to="{ name: 'profile-link' }" @click="closeDropdown('person')">會員詳細
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'friend-link' }" @click="closeDropdown('person')">我的好友列表
@@ -116,8 +117,6 @@ import axios from '@/plugins/axios';
 
 import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
 
-
-const notiValue = ref(5);
 const cartValue = ref(2);
 
 const dropdownStates = ref({
@@ -132,12 +131,8 @@ function initializeDropdownState(menu) {
   }
 }
 
-function toggleDropdown(menu) {
-  initializeDropdownState(menu);
-  Object.keys(dropdownStates.value).forEach(key => {
-    dropdownStates.value[key] = key === menu ? !dropdownStates.value[key] : false;
-  });
-
+function openDropdown(menu) {
+  dropdownStates.value[menu] = true;
 }
 
 function closeDropdown(menu) {
