@@ -11,8 +11,7 @@
         <div class="modal-body">
           <table>
             <tr>
-              <td>Id : </td>
-              <td><input type="text" name="id" :value="product.id" readonly @input="modify('id', $event.target.value)">
+              <td><input type="hidden" name="id" :value="product.id" readonly @input="modify('id', $event.target.value)">
               </td>
             </tr>
             <tr v-show="isShowCategory">
