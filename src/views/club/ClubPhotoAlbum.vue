@@ -30,7 +30,7 @@
           @error="handleImageError"
         >
         <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 rounded-b-lg">
-          <p class="text-sm">上傳者: {{ photo.userName }}</p>
+          <p class="text-sm">上傳者 ID: {{ photo.userName }}</p>
           <button 
             v-if="isMember && photo.uploaderId === userStore.userId" 
             @click="deletePhoto(photo.id)" 
@@ -101,7 +101,6 @@ const uploadPhoto = async () => {
     const newPhoto = {
       ...response.data,
       uploaderId: userStore.userId, // 確保 uploaderId 存在
-      userName: userStore.nickname, // 添加上傳者的名字
       url: getPhotoUrl(props.clubId, response.data.id)
     };
     
@@ -172,5 +171,4 @@ const handleApiError = (err, defaultMessage) => {
 onMounted(() => {
   fetchPhotos();
 });
-
 </script>
