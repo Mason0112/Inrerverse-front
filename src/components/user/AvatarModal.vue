@@ -18,7 +18,7 @@
             />
           </div>
           <div v-else class="friend-photo default-avatar mb-3">
-            {{ (friend.nickname || "無").charAt(0) }}
+            {{ (friend.accountNumber || "無").charAt(0).toUpperCase() }}
           </div>
           <h3 class="media-heading">
             {{ friend.nickname || "無" }}
