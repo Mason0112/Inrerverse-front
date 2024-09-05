@@ -125,12 +125,6 @@ const dropdownStates = ref({
   person: false
 });
 
-function initializeDropdownState(menu) {
-  if (!(menu in dropdownStates.value)) {
-    dropdownStates.value[menu] = false;
-  }
-}
-
 function openDropdown(menu) {
   dropdownStates.value[menu] = true;
 }
@@ -151,30 +145,15 @@ function logout() {
 
 
 <style scoped>
-
-
 .arrow {
   font-size: 0.75em;
   /* Adjust the size of the arrow */
-  transition: transform 0.5s ease;
-  /* Smooth transition for rotation */
 }
 
 .rotate {
   transform: rotate(180deg);
   /* Rotate the arrow when the dropdown is open */
-}
-
-.dropdown-menu {
-  display: none;
-  /* Hide dropdown menu by default */
-  border: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-menu.show {
-  display: block;
-  /* Show dropdown menu when it has 'show' class */
+  transition: transform 0.5s ease; /* 增加旋轉時間到0.5秒 */
 }
 
 .dropdown-item {
@@ -196,6 +175,36 @@ function logout() {
   align-items: center;
   gap: 4px;
   /* Adjust the gap between the text and the icon */
+}
+
+.dropdown-menu {
+  display: block;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
+  opacity: 0;
+}
+
+.dropdown-menu.show {
+  max-height: 300px; /* 根據實際內容調整此值 */
+  opacity: 1;
+}
+
+.dropdown-toggle .fa-caret-down {
+  transition: transform 0.5s ease; /* 確保非旋轉狀態也有相同的過渡效果 */
+}
+
+/* 添加淡入淡出效果 */
+.dropdown-menu {
+  transition: max-height 0.5s ease-out, opacity 0.3s ease-out, visibility 0s 0.5s;
+  visibility: hidden;
+}
+
+.dropdown-menu.show {
+  transition: max-height 0.5s ease-in, opacity 0.3s ease-in, visibility 0s;
+  visibility: visible;
 }
 
 </style>

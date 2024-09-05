@@ -1,17 +1,21 @@
 <template>
   <li v-if="isLoggedIn" class="nav-item dropdown">
-    <n-badge :value="displayCount" :max="99">
+    <n-badge :value="displayCount" :max="15">
       <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
-         @click="handleBellClick" aria-expanded="dropdownVisible">
+      @mouseenter="openDropdown" @mouseleave="closeDropdown" aria-expanded="dropdownVisible">
         <font-awesome-icon :icon="['far', 'bell']" />
       </a>
     </n-badge>
-    <ul class="dropdown-menu" :class="{ 'show': dropdownVisible }" aria-labelledby="notificationDropdown">
+    <ul class="dropdown-menu" :class="{ 'show': dropdownVisible }" aria-labelledby="notificationDropdown"
+    @mouseenter="openDropdown" @mouseleave="closeDropdown">
       <li v-if="isLoading" class="dropdown-item text-muted">加載中...</li>
       <li v-else-if="error" class="dropdown-item text-danger">{{ error }}</li>
       <li v-else-if="notifications.length === 0" class="dropdown-item text-muted">沒有新通知</li>
       <li v-for="notification in notifications" :key="notification.id" class="dropdown-item">
         {{ notification.content }}
+        <span class="time-ago" :title="formatFullDate(notification.added)">
+          {{ getTimeAgo(notification.added) }}
+        </span>
       </li>
     </ul>
   </li>
@@ -68,14 +72,30 @@ async function fetchNotificationCount() {
   }
 }
 
-function handleBellClick(event) {
-  event.stopPropagation();
-  dropdownVisible.value = !dropdownVisible.value;
-  if (dropdownVisible.value && isLoggedIn.value) {
-    fetchNotifications();
-  }
+// 開始轉換通知時間
+function getTimeAgo(dateString) {
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffMs = now - past;
+  const diffSecs = Math.round(diffMs / 1000);
+  const diffMins = Math.round(diffSecs / 60);
+  const diffHours = Math.round(diffMins / 60);
+  const diffDays = Math.round(diffHours / 24);
+
+  if (diffSecs < 60) return `${diffSecs} 秒前`;
+  if (diffMins < 60) return `${diffMins} 分鐘前`;
+  if (diffHours < 24) return `${diffHours} 小時前`;
+  if (diffDays < 30) return `${diffDays} 天前`;
+  return formatFullDate(dateString);
 }
 
+function formatFullDate(dateString) {
+  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  return new Date(dateString).toLocaleDateString('zh-TW', options);
+}
+// 結束轉換通知時間
+
+// 開始輪詢
 function startPolling() {
   if (isPolling.value || !isLoggedIn.value) return;
   isPolling.value = true;
@@ -121,20 +141,28 @@ function handleOnline() {
 function handleOffline() {
   stopPolling();
 }
+// 結束輪詢
 
-function closeDropdown(event) {
-  if (!event.target.closest('.dropdown')) {
-    dropdownVisible.value = false;
+// 開始樣式
+function openDropdown() {
+  dropdownVisible.value = true;
+  if (isLoggedIn.value) {
+    fetchNotifications();
   }
 }
+
+function closeDropdown() {
+  dropdownVisible.value = false;
+}
+// 結束樣式
+
 
 onMounted(async () => {
   if (isLoggedIn.value) {
     await fetchNotificationCount(); // 初始只獲取數量
     startPolling(); // 開始輪詢完整通知
   }
-  
-  document.addEventListener('click', closeDropdown);
+
   document.addEventListener('visibilitychange', handleVisibilityChange);
   window.addEventListener('online', handleOnline);
   window.addEventListener('offline', handleOffline);
@@ -149,7 +177,6 @@ onMounted(async () => {
 onUnmounted(() => {
   stopPolling();
   
-  document.removeEventListener('click', closeDropdown);
   document.removeEventListener('visibilitychange', handleVisibilityChange);
   window.removeEventListener('online', handleOnline);
   window.removeEventListener('offline', handleOffline);
@@ -184,12 +211,20 @@ watch(() => userStore.route, (newRoute) => {
 
 <style scoped>
 .dropdown-menu {
-  max-height: 300px;
-  overflow-y: auto;
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s ease-out, opacity 0.3s ease-out, visibility 0s 0.5s;
+  visibility: hidden;
 }
 
 .dropdown-menu.show {
-  display: block;
+  max-height: 300px;
+  opacity: 1;
+  overflow-y: auto;
+  transition: max-height 0.5s ease-in, opacity 0.3s ease-in, visibility 0s;
+  visibility: visible;
 }
 
 .nav-link {
@@ -198,5 +233,17 @@ watch(() => userStore.route, (newRoute) => {
 
 .navbar .dropdown-toggle::after {
   display: none; /* 隱藏 Bootstrap 生成的下拉箭頭 */
+}
+
+.time-ago {
+  font-size: 0.8em;
+  color: #6c757d;
+  margin-left: 5px;
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>
