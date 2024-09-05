@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-4">
-    <div class="row mb-3">
-      <div class="col-md-4">
+    <div class="row mb-3 align-items-center">
+      <div class="col-md-3">
         <select v-model="selectedOption" class="form-select" @change="fetchTransactions">
           <option value="all">所有交易</option>
           <option value="handling">處理中交易</option>
@@ -15,6 +15,11 @@
           <button class="btn btn-outline-secondary" @click="clearDates">清空日期</button>
         </div>
       </div>
+      <div class="col-md-1">
+        <button class="btn btn-link text-dark" @click="toggleSortOrder" :title="sortOrderTitle">
+          <font-awesome-icon :icon="sortOrderIcon" />
+        </button>
+      </div>
     </div>
     <div v-if="loading" class="text-center">
       <div class="spinner-border" role="status">
@@ -24,7 +29,7 @@
     <div v-else>
       <h3>{{ dateRangeText }}</h3>
       <div class="transaction-list">
-        <div v-for="transaction in filteredTransactions" :key="transaction.id" class="transaction-card mb-3">
+        <div v-for="transaction in sortedTransactions" :key="transaction.id" class="transaction-card mb-3">
           <div class="row align-items-center">
             <div class="col-md-6">
               <h5 class="mb-0">
@@ -73,6 +78,7 @@ const startDate = ref('');
 const endDate = ref('');
 const transactions = ref([]);
 const loading = ref(false);
+const sortAscending = ref(false);
 
 const dateRangeText = computed(() => {
   if (startDate.value && endDate.value) {
@@ -81,6 +87,28 @@ const dateRangeText = computed(() => {
   return '所有日期的交易';
 });
 
+const sortedTransactions = computed(() => {
+  let sorted = [...filteredTransactions.value];
+  sorted.sort((a, b) => {
+    let dateA = new Date(a.added);
+    let dateB = new Date(b.added);
+    return sortAscending.value ? dateA - dateB : dateB - dateA;
+  });
+  return sorted;
+});
+
+const sortOrderIcon = computed(() => {
+  return sortAscending.value ? ['fas', 'arrow-down-1-9'] : ['fas', 'arrow-down-9-1'];
+});
+
+const sortOrderTitle = computed(() => {
+  return sortAscending.value ? "由舊到新排序" : "由新到舊排序";
+});
+
+const toggleSortOrder = () => {
+  sortAscending.value = !sortAscending.value;
+};
+
 const filteredTransactions = computed(() => {
   if (!startDate.value || !endDate.value) {
     return transactions.value;
@@ -88,6 +116,7 @@ const filteredTransactions = computed(() => {
 
   const start = new Date(startDate.value);
   const end = new Date(endDate.value);
+  end.setHours(23, 59, 59, 999);  // 設置結束日期為當天的最後一刻
 
   return transactions.value.filter(t => {
     const date = new Date(t.added);
@@ -111,7 +140,7 @@ const expense = computed(() => {
 
 // 計算總金額
 const totalAmount = computed(() => {
-  return (parseFloat(income.value) + parseFloat(expense.value));
+  return (parseFloat(income.value) + parseFloat(expense.value)).toFixed(2);
 });
 
 const fetchTransactions = async () => {
