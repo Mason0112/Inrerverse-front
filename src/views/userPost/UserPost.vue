@@ -22,15 +22,15 @@
                         :src="onePhoto.base64Photo" 
                         :alt="onePhoto.name"/>
                     </n-carousel>
-                    <div>
-                        <font-awesome-icon 
-                        :icon="onePost.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
-                        @click="toggleLike(onePost)"
-                        :style="{ color: onePost.isLiked ? 'red' : 'black', cursor: 'pointer' }"
-                        />
-                        <span class="like-count">{{ onePost.likeCount || 0 }}</span>
-                    </div>
                 </n-ellipsis>
+                <div>
+                    <font-awesome-icon 
+                    :icon="onePost.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+                    @click="toggleLike(onePost)"
+                    :style="{ color: onePost.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+                    />
+                    <span class="like-count">{{ onePost.likeCount || 0 }}</span>
+                </div>
                 <div v-if="onePost.userId !== null">
                     <div v-if="onePost.user.id == userStore.userId">
                         <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
