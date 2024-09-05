@@ -109,14 +109,12 @@ function openModal(action, id) {
 function callCreate() {
     console.log("callCreate", product.value);
     console.log("callCreate", product.value.category);
-    // 第一步：获取类别信息
     axiosapi.get(`/categories/${product.value.category}`).then(function (response) {
         console.log("response", response)
         category.value = {
             id: response.data.id,
             name: response.data.name
         };
-        // 第二步：创建产品
         let request = {
             "name": product.value.name,
             "description": product.value.description,
@@ -128,22 +126,24 @@ function callCreate() {
         return axiosapi.post("/products", request);
     }).then(function (productResponse) {
         console.log("Product created", productResponse);
-         // 第三步：上传图片（如果有）
-         if (fileObject.value) {
-                const formData = new FormData();
-                formData.append('file', fileObject.value);
-                formData.append('productId', productResponse.data.id); // 假设后端返回的产品数据中包含 id
+        if (fileObject.value) {
+            const formData = new FormData();
+            formData.append('file', fileObject.value);
+            formData.append('productId', productResponse.data.id);
 
-                return axiosapi.post("/api/product-photos", formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
+            return axiosapi.post("/api/product-photos", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
         }
-            
-        return Promise.resolve(); // 如果没有图片，返回一个已解决的 Promise
+        return Promise.resolve();
+    }).then(() => {
+        getAllProducts(); // Call getAllProducts after creating the product
+        productModal.value.hideModal();
+    }).catch(error => {
+        console.error("Error in callCreate:", error);
     });
-    productModal.value.hideModal();
 }
 
 // 处理文件选择
@@ -155,43 +155,45 @@ function handleFileUpload(event) {
 //修改
 
 function callModify() {
-    //物件
     console.log("callModify", product.value);
-    //id
     console.log("callModify", product.value.id);
 
     let request = {
-                    "name": product.value.name,
-                    "description": product.value.description,
-                    "color": product.value.color,
-                    "price": product.value.price
-                    };
-        axiosapi.put(`/products/${product.value.id}`, request).then(function(response) {
-            console.log("Product modify", response);
-         // 第三步：上传图片（如果有）
-            if (fileObject.value) {
-                const formData = new FormData();
-                formData.append('file', fileObject.value);
-                formData.append('productId', response.data.id); // 假设后端返回的产品数据中包含 id
+        "name": product.value.name,
+        "description": product.value.description,
+        "color": product.value.color,
+        "price": product.value.price
+    };
+    axiosapi.put(`/products/${product.value.id}`, request).then(function(response) {
+        console.log("Product modify", response);
+        if (fileObject.value) {
+            const formData = new FormData();
+            formData.append('file', fileObject.value);
+            formData.append('productId', response.data.id);
 
-                return axiosapi.post("/api/product-photos", formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
-        }  
-        return Promise.resolve(); // 如果没有图片，返回一个已解决的 Promise
-         });
-
-
-    productModal.value.hideModal();
+            return axiosapi.post("/api/product-photos", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+        }
+        return Promise.resolve();
+    }).then(() => {
+        getAllProducts(); // Call getAllProducts after modifying the product
+        productModal.value.hideModal();
+    }).catch(error => {
+        console.error("Error in callModify:", error);
+    });
 }
 
 //刪除
 function callRemove(id){
     console.log("callRemove",id);
     axiosapi.delete(`/products/${id}`).then(function(response){
-    })
+        getAllProducts(); // Call getAllProducts after removing the product
+    }).catch(error => {
+        console.error("Error in callRemove:", error);
+    });
 }
 
 //重新導頁面的function 之後要加在新增刪除修改後面

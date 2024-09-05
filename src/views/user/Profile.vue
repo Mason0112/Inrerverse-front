@@ -17,7 +17,7 @@
                 <img :src="`${photo}`" :alt="userData.nickname || 'User Photo'"/>
               </div>
               <div v-else class="default-avatar">
-                {{ (userData.nickname || 'Unknown').charAt(0) }}
+                {{ (userData.accountNumber || "無").charAt(0).toUpperCase() }}
               </div>
               <n-upload ref="upload" :default-upload="false" :on-change="handleChange">
                 <n-button>修改大頭照</n-button>
@@ -277,7 +277,7 @@ async function uploadPhoto() {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 35px;
   font-weight: bold;
 }
 

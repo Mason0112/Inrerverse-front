@@ -4,6 +4,9 @@
             type="textarea"
             placeholder="大聲說出來你在想什麼?"
             v-model:value="content"
+            :autosize="{
+            minRows: 3
+            }"
         />
         <n-upload
             ref="upload"
@@ -28,7 +31,7 @@ const content = ref('')
 const fileList = ref([])  
 const userStore = useUserStore();
 let userId = userStore.userId;
-const postId=ref(null)
+const articleId=ref(null)
 const upload=ref(null)
 
 const customRequest=({file, onFinish, onError}) =>{
@@ -51,13 +54,13 @@ const handleChange = (options) => {
 async function submit() {
   try {
   //axios.post 返回一個 Promise，所以使用 await 來等待請求完成並獲取回應。
-  const postResponse = await axios.post('/userPost', {
+  const articleResponse = await axios.post('/club/article', {
     content:content.value,
     user:{
       id:userId
     }
   }) 
-  const postId = postResponse.data.id
+  const articleId = articleResponse.data.id
   
   //遍歷 fileList.value 中的每個檔案。
   for(const file of fileList.value){
@@ -66,10 +69,10 @@ async function submit() {
     //formData.append('file', file.file);: 將檔案添加到FormData 物件中，file.file 是檔案本身。
     formData.append('file', file.file);
     //將之前獲取的 postId 添加到 FormData 中，用於將圖片與指定的貼文關聯。
-    formData.append('postId', postId)
+    formData.append('articleId', articleId)
 
     //使用 axios 發送 POST 請求到 /postPhoto，並附上 formData，Content-Type 設為 multipart/form-data，以便處理檔案上傳。
-    await axios.post('/postPhoto', formData,{
+    await axios.post('/club/articlePhoto', formData,{
       headers:{
         'Content-Type': 'multipart/form-data'
       }
