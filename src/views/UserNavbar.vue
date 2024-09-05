@@ -65,6 +65,8 @@
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'friend-link' }" @click="closeDropdown('person')">我的好友列表
               </RouterLink>
+              <RouterLink class="dropdown-item" :to="{ name: 'friend-request-link' }" @click="closeDropdown('person')">我的好友邀請列表
+              </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'user-orders' }" @click="closeDropdown('person')">我的訂單紀錄
               </RouterLink>
               <li><a class="dropdown-item" @click="logout(); closeDropdown('person')">登出</a></li>

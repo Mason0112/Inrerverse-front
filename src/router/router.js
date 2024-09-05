@@ -10,6 +10,7 @@ import Notification from "@/views/user/Notification.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
 import UserPost from "@/views/userPost/UserPost.vue";
 import Friend from "@/views/user/Friend.vue";
+import FriendRequest from "@/views/user/FriendRequest.vue";
 import Profile from "@/views/user/Profile.vue";
 import Category from "@/views/Category/category.vue";
 import Product from "@/views/Product/Product.vue";
@@ -55,6 +56,7 @@ const routes = [
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/user/notification", name: "notification-link", component: Notification },
     { path: "/friend", name: "friend-link", component: Friend },
+    { path: "/friend/request", name: "friend-request-link", component: FriendRequest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
     { path: "/payment", name: "payment-link", component: Payment },
     { path: "/admin/home", name: "admin-home-link", component: AdminHome },
