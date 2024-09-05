@@ -49,6 +49,7 @@ import { useRoute } from 'vue-router';
 import { ref, onMounted, computed } from 'vue'
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
+import { useRouter } from 'vue-router';
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -56,6 +57,7 @@ const product = ref(null);
 const vol = ref(1);
 const currentImageIndex = ref(0);
 const productPhotos = ref([]);
+const router = useRouter();
 
 
 
@@ -97,15 +99,23 @@ function getPhotoUrl(photoId) {
 }
 
 function addToCart() {
-  if (!isValidInput.value) return;  
-  console.log(userStore.userId);
-  console.log(product.value.id);
-  console.log(vol.value);
-  let request = {
-    "usersId": userStore.userId,
-    "productsId": product.value.id,
-    "vol": vol.value
-  };
+  if (!isValidInput.value) return;
+
+// 檢查用戶是否登入
+if (!userStore.isLoggedIn) {
+  alert('請先登入才能加入購物車');
+  router.push('/login'); // 假設登入頁面的路由是 '/login'
+  return;
+}
+
+console.log(userStore.userId);
+console.log(product.value.id);
+console.log(vol.value);
+let request = {
+  "usersId": userStore.userId,
+  "productsId": product.value.id,
+  "vol": vol.value
+};
 
   console.log(request);
   

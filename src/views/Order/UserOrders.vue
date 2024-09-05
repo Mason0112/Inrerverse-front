@@ -67,9 +67,9 @@ onMounted(function () {
 });
 
 function getAllOrdersByUser(id) {
-    axiosapi.get(`/api/orders/user/${id}/paginated`).then(function (response) {
-        console.log("responseUserOrders1", response.data.content);
-        userOrders.value = response.data.content;
+    axiosapi.get(`/api/orders/user/${id}`).then(function (response) {
+        console.log("responseUserOrders1", response.data);
+        userOrders.value = response.data;
     })
 }
 
