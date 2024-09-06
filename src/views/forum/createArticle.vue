@@ -53,42 +53,43 @@ const handleChange = (options) => {
 async function submit() {
   try {
     console.log('Submitting article. Current userStore.userId:', userStore.userId);
-
     // 確保 userId 存在
     if (!userStore.userId) {
-      throw new Error('User ID is not available');
-    }
-
+      console.error('User ID is missing');
+      alert('User ID is missing. Please log in.');
+      return;
+      }
     // 創建 DTO 對象
     const articleDTO = {
-      userId: userStore.userId,
       content: content.value,
       title: title.value,
-      photoUrls: []
+      user:{
+        id:userStore.userId
+      },
     }
+    // console.log('Article DTO:', articleDTO);
 
-    // 先上傳圖片，獲取 URL
+    const articleResponse = await axios.post('/club/article', articleDTO);
+    const createdArticleId = articleResponse.data.id
+    // console.log('Article created successfully:', articleResponse.data);
+
+    // 上傳圖片，獲取 URL
     for (const file of fileList.value) {
       const formData = new FormData();
       formData.append('file', file.file);
-
-      const response = await axios.post('/club/articlePhoto', formData, {
+      formData.append('articleId', createdArticleId)
+      await axios.post('/club/articlePhoto', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      // 假設後端返回上傳後的圖片 URL
-      articleDTO.photoUrls.push(response.data.url);
     }
-
-    // 發送包含圖片 URL 的文章 DTO
-    const articleResponse = await axios.post('/club/article', articleDTO);
-
-    console.log('Article created successfully:', articleResponse.data);
+    const updatedArticle = await axios.get(`/club/article/${createdArticleId}`);
+    console.log('Updated article:', updatedArticle.data);
 
     // 清空內容
     content.value = '';
+    title.value = ''
     fileList.value = [];
     if (upload.value) {
       upload.value.clear();
