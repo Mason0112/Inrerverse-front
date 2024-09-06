@@ -20,7 +20,8 @@
                         v-for="onePhoto in onePost.photos"
                         :key="onePhoto.id"
                         :src="onePhoto.base64Photo" 
-                        :alt="onePhoto.name"/>
+                        :alt="onePhoto.name"
+                        class="image"/>
                     </n-carousel>
                 </n-ellipsis>
                 <div>
@@ -348,7 +349,12 @@ function formatDate(dateString) {
     /* 輪播圖 */
     .carousel-img {
         width: 100%;
-        height: 240px;
+        height: auto;
         object-fit: cover;
     }
+    .image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 </style>

@@ -45,6 +45,7 @@ import ClubEvent from "@/views/Event/ClubEvent.vue";
 import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
 import AddWorkshopForm from "@/views/Event/AddWorkshopForm.vue";
 import PaymentStatus from "@/views/Order/PaymentStatus.vue";
+import oneArticle from "@/views/forum/oneArticle.vue";
 
 
 const routes = [
@@ -98,7 +99,9 @@ const routes = [
     { path: "/club/addArticle", name: "club-addArticle", component: createArticle },
 
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
-    { path: "/post/userPost/:id?", name: "user-post-link", component: UserPost}
+    { path: "/post/userPost/:id?", name: "user-post-link", component: UserPost},
+    { path: "/club/article/:id?", name: "club-article-link", component: oneArticle}
+
 
 ]
 
