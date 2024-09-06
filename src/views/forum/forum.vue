@@ -21,8 +21,6 @@
       </n-list-item>
     </n-list>
   <div v-for="oneArticle in articleList" :key="oneArticle.id">
-    <RouterLink :to="{ name: 'club-article-link' }">
-
       <n-list hoverable clickable>
         <n-list-item @click="enterArticle(oneArticle.id)">
           <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
@@ -42,7 +40,6 @@
           
         </n-list-item>
       </n-list>
-    </RouterLink>
   
   </div>
   </template>
@@ -53,15 +50,15 @@
   import useUserStore from '@/stores/userstore';
   import { useMessage } from 'naive-ui'
   import { RouterLink } from "vue-router";
-  import { useRoute } from "vue-router";
+  import { useRouter } from "vue-router";
 
   const userStore = useUserStore();
   const userId = userStore.userId;
   const userNickname=userStore.nickname
   const articleList = ref([])
   const clubId=ref(1)
-  const route = useRoute();
-
+  const router = useRouter();
+  const message=useMessage()
 
   onMounted(function(){
     showClubArticleList(clubId)
@@ -70,7 +67,7 @@
   //渲染article
 async function showClubArticleList(clubId) {
   try{
-    const response = await axios.get(`/club/article/${clubId.value}`);
+    const response = await axios.get(`/club/article/all/${clubId.value}`);
     articleList.value=response.data;
     // await Promise.all(articleList.value.map(article=> fetchComment(article.id)));
     //await checkLikeStatus();
@@ -82,8 +79,20 @@ async function showClubArticleList(clubId) {
 }
 
 
-function enterArticle(oneArticle){
-  oneArticle.value.id=(route.params.id)
+async function enterArticle(articleId){
+  try{
+    const response = await axios.get(`/club/article/oneArticle/${articleId}`);
+    const articleData = response.data;
+
+    router.push({
+      name:"club-article-link",
+      params:{ id : articleId},
+      state:{ articleData }
+    })
+  }catch(error){
+    console.error("Error fetching article details:", error);
+    message.error("Failed to fetch article details");
+  }
 }
 
 
