@@ -28,16 +28,13 @@
                                 <td>NT$ {{ product.price }}</td>
                                 <td>
                                     <div class="quantity-control">
-                                        <button @click="decrementQuantity(product)" class="ts-button is-fluid is-primary" style="width: 20px;"
-                                        >-</button>
-                                        <input 
-                                            type="number" 
-                                            v-model="product.vol" 
-                                            @change="onQuantityChange(product)"
-                                            class="ts-input is-small"
-                                            min="1"
-                                        >
-                                        <button @click="incrementQuantity(product)" class="ts-button is-fluid is-primary" style="width: 20px;">+</button>
+                                        <button @click="decrementQuantity(product)"
+                                            class="ts-button is-fluid is-primary" style="width: 20px;"
+                                            :disabled="product.vol <= 0">-</button>
+                                        <input type="number" v-model="product.vol" @change="onQuantityChange(product)"
+                                            class="ts-input is-small" min="1">
+                                        <button @click="incrementQuantity(product)"
+                                            class="ts-button is-fluid is-primary" style="width: 20px;">+</button>
                                     </div>
                                 </td>
                                 <td>NT$ {{ product.price * product.vol }}</td>
@@ -76,7 +73,7 @@ const path = import.meta.env.VITE_API_URL;
 const userStore = useUserStore();
 const router = useRouter();
 const products = ref([]);
-const totalAmount = ref(0); 
+const totalAmount = ref(0);
 
 const calculateTotalAmount = computed(() => {
     return products.value.reduce((total, product) => total + (product.price * product.vol), 0);
@@ -91,9 +88,19 @@ onMounted(() => {
     getUserCart(userStore.userId);
 });
 
-function getUserCart(request) {
+function getCartItemCount(userId){
     axiosapi.get(`/cart/user/${request}`).then(function (productResponse) {
         console.log("列出清單", productResponse.data);
+        
+        products.value = productResponse.data;
+    });
+
+}
+
+function getUserCart(userId) {
+    axiosapi.get(`/cart/count/${userId}`).then(function (productResponse) {
+        console.log("列出清單", productResponse.data);
+        
         products.value = productResponse.data;
     });
 }
@@ -106,22 +113,29 @@ function proceedToCheckout() {
 }
 
 function onQuantityChange(product) {
+    if (product.vol <= 0) {
+        // 如果數量減到0或更低，觸發刪除
+        deleteCartItem(product);
+        return;
+    }
+    
+    
     // Ensure the quantity is at least 1
     product.vol = Math.max(1, product.vol);
     // You can implement your AJAX call here to update the server
     console.log(`Quantity changed for product ${product.productId}: ${product.vol}`);
     console.log(`userid ${userStore.userId}`);
-    
-    
+
+
     let cartupdate = {
-        "usersId":userStore.userId,
-        "productsId":product.productId,
-        "vol":product.vol
+        "usersId": userStore.userId,
+        "productsId": product.productId,
+        "vol": product.vol
     }
 
 
 
-    axiosapi.put(`/cart/update`,cartupdate).then(function (Response) {
+    axiosapi.put(`/cart/update`, cartupdate).then(function (Response) {
         console.log("購物車更新", Response.data);
     });
 
@@ -137,7 +151,24 @@ function decrementQuantity(product) {
     if (product.vol > 1) {
         product.vol--;
         onQuantityChange(product);
+    } else if (product.vol === 1) {
+        // 當數量為1時，再次減少會觸發刪除
+        deleteCartItem(product);
     }
+}
+
+
+function deleteCartItem(product){
+    console.log("減少的userId", product.userId);
+    console.log("減少的productId",product.productId)
+    
+    
+    axiosapi.delete(`/cart/delete?userId=${product.userId}&productId=${product.productId}`).then(function (Response) {
+        console.log("購物車更新", Response.data);
+        getUserCart(userStore.userId);
+    });
+
+
 }
 </script>
 

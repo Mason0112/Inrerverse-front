@@ -25,7 +25,7 @@
                                 <td>{{ userOrder.totalAmount }}</td>
                                 <td>
                                     <button 
-                                        v-if="userOrder.status !== 3"
+                                        v-if="userOrder.status !== 3 && userOrder.status !== 4"
                                         type="button" 
                                         class="btn btn-primary" 
                                         @click="cancelOrder(userOrder.id,3)"
@@ -86,7 +86,7 @@ function getPaymentMethod(method) {
         default: return '未知付款方式';
     }
 }
-//status :1:已付款等待發貨 2:等待確認中 3:已申請取消待確認 
+//status :1:已付款等待發貨 2:等待確認中 3:已申請取消待確認 4.確認取消訂單
 function getStatus(status) {
     switch (status) {
         case 1: return '已付款等待發貨';

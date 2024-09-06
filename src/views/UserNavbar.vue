@@ -88,7 +88,7 @@
           <li class="nav-item me-2">
             <n-badge :value="cartValue" :max="15" v-show="userStore.isLoggedIn">
               <RouterLink class="nav-link" :to="{ name: 'cart-user' }" v-show="userStore.isLoggedIn">
-                <font-awesome-icon :icon="['fas', 'cart-shopping']" />
+                <font-awesome-icon :icon="['fas', 'cart-shopping']"  />
               </RouterLink>
             </n-badge>
           </li>

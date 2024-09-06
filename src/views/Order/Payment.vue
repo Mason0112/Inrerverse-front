@@ -14,6 +14,10 @@
             <input type="radio" name="payment" value="linepay" v-model="selectedPayment" />
             LinePay
           </label>
+          <label class="payment-option">
+            <input type="radio" name="payment" value="creditcard" v-model="selectedPayment" />
+            信用卡
+          </label>
         </div>
       </div>
       <div class="payment-divider"></div>
@@ -60,6 +64,9 @@ watch(selectedPayment, (newValue) => {
   } else if (newValue === 'cod') {
     status.value = 2;
     paymentMethod.value = 2;
+  } else if (newValue === 'creditcard') {
+    status.value = 1; // 或者根據您的需求設置適當的狀態
+    paymentMethod.value = 3;
   } else {
     status.value = 0;
     paymentMethod.value = 0;
