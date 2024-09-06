@@ -46,6 +46,8 @@ import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
 import AddWorkshopForm from "@/views/Event/AddWorkshopForm.vue";
 import PaymentStatus from "@/views/Order/PaymentStatus.vue";
 import oneArticle from "@/views/forum/oneArticle.vue";
+import EventApprove from "@/views/Event/EventApprove.vue";
+import MyJoinedEvent from "@/views/Event/MyJoinedEvent.vue";
 
 
 const routes = [
@@ -82,6 +84,11 @@ const routes = [
     { path: "/event/club/all",name:"event-cluball-link", component:ClubEvent},
     { path: "/event/club/new",name:"event-addclubevent-link", component:AddClubEventForm},
     { path: "/event/workshop/new",name:"event-addWorkshop-link", component:AddWorkshopForm},
+    { path: "/event/approve",name:"event-approve-link", component:EventApprove},
+    { path: "/event/my",name:"event-my-link", component:MyJoinedEvent},
+
+
+    
 
 
     //暐欣

@@ -12,11 +12,13 @@
       <p class="club-info"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
       <p class="club-info"><strong>創建者：</strong> {{ club.userName }}</p>
 
-      <!-- 加入俱樂部按鈕 -->
-      <button v-if="!isMember && !isCreator" @click="joinClub" class="button join-button">
-        {{ club.isPublic ? '加入俱樂部' : '申請加入' }}
-      </button>
-      <p v-else-if="isMember" class="member-status">您已是該俱樂部成員</p>
+     <!-- 加入俱樂部按鈕 -->
+    <button v-if="!isMember && !isPending && !isCreator" @click="joinClub" class="button join-button">
+      {{ club.isPublic ? '加入俱樂部' : '申請加入' }}
+    </button>
+    <p v-else-if="isMember" class="member-status">您已是該俱樂部成員</p>
+    <p v-else-if="isPending" class="member-status pending">您的申請正在審核中</p>
+
       <div v-if="errorMessage" class="error-message">
         <!-- 成功消息 -->
         <div v-if="successMessage" class="message success-message">
@@ -89,6 +91,7 @@ const errorMessage = ref('');
 const successMessage = ref('');
 const showDeleteConfirm = ref(false);
 const isMember = ref(false);
+const isPending = ref(false);
 
 
 const clubId = route.params.id;
@@ -135,16 +138,27 @@ const deleteClub = async () => {
 
 const checkMembership = async () => {
   try {
-    const response = await axios.get(`/clubMember/club/${clubId}/approved-members`);
-    if (response.status === 200) {
-      isMember.value = response.data.some(member => member.userId === userStore.userId);
-    } else {
+    const approvedResponse = await axios.get(`/clubMember/club/${clubId}/approved-members`);
+    const pendingResponse = await axios.get(`/clubMember/club/${clubId}/pending-members`);
+    
+    if (approvedResponse.status === 200) {
+      isMember.value = approvedResponse.data.some(member => member.userId === userStore.userId);
+    }
+    
+    if (pendingResponse.status === 200) {
+      isPending.value = pendingResponse.data.some(member => member.userId === userStore.userId);
+    }
+
+    if (!isMember.value && !isPending.value) {
+      // 用戶既不是成員也不是待審核成員
       isMember.value = false;
+      isPending.value = false;
     }
   } catch (err) {
     console.error('Error checking membership:', err);
     errorMessage.value = '檢查會員資格時出錯';
     isMember.value = false;
+    isPending.value = false;
   }
 };
 
@@ -162,6 +176,7 @@ const joinClub = async () => {
         isMember.value = true;
       } else {
         successMessage.value = '已成功提交申請！等待審核中。';
+        isPending.value = true;
       }
     } else {
       throw new Error('未預期的響應狀態：' + response.status);

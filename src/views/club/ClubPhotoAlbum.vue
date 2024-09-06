@@ -32,6 +32,7 @@
             :src="getPhotoUrl(clubId, photo.id)"
             :alt="'俱樂部照片'"
             @error="handleImageError"
+            :data-retries="0"
           >
           <div class="carousel-caption">
             <p>上傳者: {{ photo.userName }}</p>
@@ -126,8 +127,31 @@ const uploadPhoto = async () => {
   }
 };
 
-const getPhotoUrl = (clubId, photoId) => {
-  return `${import.meta.env.VITE_API_URL}/clubPhoto/${clubId}/${photoId}`;
+const loadNewPhoto = async (photo) => {
+  try {
+    const img = new Image();
+    img.onload = () => {
+      photo.loading = false;
+      photo.url = img.src;
+    };
+    img.onerror = () => {
+      photo.loading = false;
+      photo.error = true;
+    };
+    img.src = getPhotoUrl(props.clubId, photo.id, true);
+  } catch (err) {
+    console.error('Error loading new photo:', err);
+    photo.loading = false;
+    photo.error = true;
+  }
+};
+
+const getPhotoUrl = (clubId, photoId, noCache = false) => {
+  let url = `${import.meta.env.VITE_API_URL}/clubPhoto/${clubId}/${photoId}`;
+  if (noCache) {
+    url += `?t=${new Date().getTime()}`;
+  }
+  return url;
 };
 
 const fetchPhotos = async () => {
@@ -165,9 +189,17 @@ const deletePhoto = async (photoId) => {
   }
 };
 
-const handleImageError = (event) => {
-  event.target.src = '/path/to/placeholder-image.jpg';
-  event.target.alt = '照片無法載入';
+const handleImageError = (event, photo) => {
+  const img = event.target;
+  const retries = parseInt(img.dataset.retries || '0');
+  if (retries < 3) {
+    setTimeout(() => {
+      img.dataset.retries = retries + 1;
+      img.src = getPhotoUrl(props.clubId, photo.id, true);
+    }, 1000);
+  } else {
+    photo.error = true;
+  }
 };
 
 const handleApiError = (err, defaultMessage) => {

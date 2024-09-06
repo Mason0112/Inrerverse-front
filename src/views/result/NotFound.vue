@@ -1,7 +1,7 @@
 <template>
     <n-result status="404" title="404 Not Found" description="找不到網頁">
         <template #footer>
-            <n-button @click="toHome">回首頁</n-button>
+            <n-button @click="toHome">回上一頁</n-button>
         </template>
     </n-result>
 </template>
@@ -12,7 +12,7 @@ const router = useRouter();
 
 function toHome() {
 
-    router.push("/");
+    router.go(-1);
 }
 
 </script>

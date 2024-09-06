@@ -31,6 +31,10 @@
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'event-all-link' }" @click="closeDropdown('club')">工作坊
               </RouterLink></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">我主辦的活動/工作坊
+              </RouterLink></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-my-link' }" @click="closeDropdown('club')">我參加的活動/工作坊
+              </RouterLink></li>
             </ul>
           </li>
           <li class="nav-item dropdown">
