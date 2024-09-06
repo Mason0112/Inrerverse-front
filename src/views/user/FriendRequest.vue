@@ -167,6 +167,26 @@ async function acceptFriend(friendId) {
   }
 }
 
+async function rejectFriend(friendId) {
+  try {
+    await axios.delete(`/friend/switch-status/${userId}/${friendId}`);
+    // 從列表中移除該好友
+    friends.value = friends.value.filter(
+      (friend) => friend.user1Id !== friendId
+    );
+    message.success("已拒絕好友邀請", {
+      closable: true,
+      duration: 5000,
+    });
+  } catch (error) {
+    console.error(error);
+    message.error("操作失敗，請稍後重試", {
+      closable: true,
+      duration: 5000,
+    });
+  }
+}
+
 // Modal
 function openModal(friend) {
   selectedFriend.value = friend;
