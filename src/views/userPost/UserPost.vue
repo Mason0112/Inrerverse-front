@@ -100,7 +100,6 @@ const message=useMessage()
 const postList = ref([])
 onMounted(function(){
     userIdUrl.value = (route.params.id);
-    console.log(userIdUrl.value+'123')
     showUserPostList()
 })
 

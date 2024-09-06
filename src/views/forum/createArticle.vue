@@ -52,6 +52,8 @@ const handleChange = (options) => {
 // 修改後的提交函數
 async function submit() {
   try {
+    console.log('Submitting article. Current userStore.userId:', userStore.userId);
+
     // 確保 userId 存在
     if (!userStore.userId) {
       throw new Error('User ID is not available');
