@@ -1,60 +1,73 @@
 <template>
-  <div class="container mx-auto p-4">
-    <h2 class="text-2xl font-bold mb-4 text-black text-center">俱樂部相簿</h2>
+  <div class="ts-container">
+    <div class="ts-header is-huge is-center-aligned">俱樂部相簿</div>
+    <div class="ts-space"></div>
     
     <!-- 上傳照片表單，只有成員可見 -->
-    <div v-if="isMember" class="mb-6">
-      <h3 class="text-lg font-semibold mb-2">上傳新照片</h3>
-      <input 
-        type="file" 
-        @change="handleFileChange" 
-        accept="image/*" 
-        class="mb-2"
-      >
+    <div v-if="isMember" class="ts-space">
+      <div class="ts-header is-large">上傳新照片</div>
+      <div class="ts-space"></div>
+      <div class="ts-input is-fluid">
+        <input 
+          type="file" 
+          @change="handleFileChange" 
+          accept="image/*"
+        >
+      </div>
+      <div class="ts-space"></div>
       <button 
         @click="uploadPhoto" 
-        class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded"
+        class="ts-button is-primary text-black"
         :disabled="!selectedFile"
       >
         上傳照片
       </button>
     </div>
 
-    <!-- 照片網格或無照片訊息 -->
-    <div v-if="photos.length > 0" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      <div v-for="photo in photos" :key="photo.id" class="relative">
-        <img 
-          :src="getPhotoUrl(clubId, photo.id)"
-          :alt="'俱樂部照片'"
-          class="w-full h-48 object-cover rounded-lg shadow-md"
-          @error="handleImageError"
-        >
-        <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 rounded-b-lg">
-          <p class="text-sm">上傳者: {{ photo.userName }}</p>
-          <button 
-            v-if="isMember && photo.uploaderId === userStore.userId" 
-            @click="deletePhoto(photo.id)" 
-            class="bg-red-500 hover:bg-red-700 text-black text-xs py-1 px-2 rounded mt-1"
+    <!-- 照片輪播圖 -->
+    <div v-if="photos.length > 0" class="carousel-container">
+      <transition-group name="fade" tag="div" class="carousel-slides">
+        <div v-for="(photo, index) in photos" :key="photo.id" v-show="index === currentIndex" class="carousel-slide">
+          <img 
+            :src="getPhotoUrl(clubId, photo.id)"
+            :alt="'俱樂部照片'"
+            @error="handleImageError"
           >
-            刪除
-          </button>
+          <div class="carousel-caption">
+            <p>上傳者: {{ photo.userName }}</p>
+            <button 
+              v-if="isMember && photo.uploaderId === userStore.userId" 
+              @click.stop="deletePhoto(photo.id)" 
+              class="ts-button is-negative is-small"
+            >
+              刪除
+            </button>
+          </div>
         </div>
-      </div>
+      </transition-group>
+      
+      <!-- 輪播圖控制按鈕 -->
+      <button @click="prevSlide" class="carousel-control left">&lt;</button>
+      <button @click="nextSlide" class="carousel-control right">&gt;</button>
     </div>
-    <div v-else-if="!loading" class="text-center text-gray-500 my-8">
+
+    <div v-else-if="!loading" class="ts-center">
       尚無相片
     </div>
 
     <!-- 錯誤訊息 -->
-    <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mt-4" role="alert">
-      <strong class="font-bold">錯誤：</strong>
-      <span class="block sm:inline">{{ error }}</span>
+    <div v-if="error" class="ts-notice is-negative">
+      <div class="content">
+        <div class="header">錯誤</div>
+        <p>{{ error }}</p>
+      </div>
     </div>
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
@@ -77,6 +90,8 @@ const photos = ref([]);
 const selectedFile = ref(null);
 const error = ref(null);
 const loading = ref(true);
+const currentIndex = ref(0);
+let autoPlayInterval = null;
 
 const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -97,11 +112,10 @@ const uploadPhoto = async () => {
       }
     });
     
-    // 確保新照片對象包含所有必要的信息
     const newPhoto = {
       ...response.data,
-      uploaderId: userStore.userId, // 確保 uploaderId 存在
-      userName: userStore.nickname, // 添加上傳者的名字
+      uploaderId: userStore.userId,
+      userName: userStore.nickname,
       url: getPhotoUrl(props.clubId, response.data.id)
     };
     
@@ -134,6 +148,7 @@ const fetchPhotos = async () => {
     loading.value = false;
   }
 };
+
 const deletePhoto = async (photoId) => {
   if (!props.isMember) return;
   
@@ -142,6 +157,9 @@ const deletePhoto = async (photoId) => {
       params: { uploaderId: userStore.userId }
     });
     photos.value = photos.value.filter(photo => photo.id !== photoId);
+    if (currentIndex.value >= photos.value.length) {
+      currentIndex.value = photos.value.length - 1;
+    }
   } catch (err) {
     handleApiError(err, '刪除照片失敗');
   }
@@ -169,8 +187,213 @@ const handleApiError = (err, defaultMessage) => {
   console.error('API 錯誤:', err);
 };
 
+const nextSlide = () => {
+  currentIndex.value = (currentIndex.value + 1) % photos.value.length;
+};
+
+const prevSlide = () => {
+  currentIndex.value = (currentIndex.value - 1 + photos.value.length) % photos.value.length;
+};
+
+const startAutoPlay = () => {
+  autoPlayInterval = setInterval(() => {
+    nextSlide();
+  }, 3000);
+};
+
+const stopAutoPlay = () => {
+  clearInterval(autoPlayInterval);
+};
+
 onMounted(() => {
   fetchPhotos();
+  startAutoPlay();
+});
+
+onUnmounted(() => {
+  stopAutoPlay();
 });
 
 </script>
+
+<style scoped>
+.carousel-container {
+  position: relative;
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.carousel-slides {
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-slide img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 5px;
+  font-size: 0.8em;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.carousel-control.left {
+  left: 5px;
+}
+
+.carousel-control.right {
+  right: 5px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+:root {
+  --primary-pink: #FFD1DC;
+  --secondary-pink: #FFC0CB;
+  --primary-purple: #E6E6FA;
+  --secondary-purple: #D8BFD8;
+  --text-color: #4A4A4A;
+  --button-hover: #FFB6C1;
+}
+
+/* 全局樣式 */
+body {
+  background-color: var(--primary-pink);
+  color: var(--text-color);
+  font-family: 'Arial', sans-serif;
+}
+
+.ts-container {
+  background-color: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+/* 標題樣式 */
+.ts-header.is-huge {
+  color: var(--secondary-purple);
+  font-size: 2.5em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 按鈕樣式 */
+.ts-button {
+  background-color: var(--primary-purple);
+  border: none;
+  color: var(--text-color);
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.ts-button:hover {
+  background-color: var(--button-hover);
+}
+
+.ts-button.is-primary {
+  background-color: var(--secondary-purple);
+  color: white;
+}
+
+.ts-button.is-negative {
+  background-color: #FF69B4;
+  color: white;
+}
+
+/* 輸入框樣式 */
+.ts-input input {
+  border: 2px solid var(--secondary-pink);
+  border-radius: 5px;
+  padding: 8px;
+}
+
+/* 輪播圖樣式 */
+.carousel-container {
+  background-color: var(--primary-purple);
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-slide img {
+  border-radius: 8px;
+}
+
+.carousel-caption {
+  background-color: rgba(216, 191, 216, 0.7);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.carousel-control {
+  background-color: rgba(255, 192, 203, 0.7);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+}
+
+/* 錯誤訊息樣式 */
+.ts-notice.is-negative {
+  background-color: #FFB6C1;
+  border-left: 4px solid #FF69B4;
+  color: #8B0000;
+}
+
+/* 動畫效果 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-enter-active {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.fade-leave-active {
+  animation: fadeIn 0.5s ease-in reverse;
+}
+</style>
