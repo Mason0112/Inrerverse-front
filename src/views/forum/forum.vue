@@ -21,25 +21,28 @@
       </n-list-item>
     </n-list>
   <div v-for="oneArticle in articleList" :key="oneArticle.id">
-    <n-list hoverable clickable>
-      <n-list-item>
-        <n-thing title="相见恨晚" content-style="margin-top: 10px;">
-          <template #description>
-            <n-space size="small" style="margin-top: 4px">
-              <n-tag :bordered="false" type="info" size="small">
-                <!-- hashtag -->
-              </n-tag>
+    <RouterLink :to="{ name: 'club-article-link' }">
 
-            </n-space>
-          </template>
+      <n-list hoverable clickable>
+        <n-list-item @click="enterArticle(oneArticle.id)">
+          <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
+            <template #description>
+              <n-space size="small" style="margin-top: 4px">
+                <n-tag :bordered="false" type="info" size="small">
+                  <!-- hashtag -->
+                </n-tag>
+                
+              </n-space>
+            </template>
             <n-ellipsis style="max-width: 240px">
-                {{oneArticle.content}}
+              {{oneArticle.content}}
             </n-ellipsis>
-        </n-thing>
-        
-        
-      </n-list-item>
-    </n-list>
+          </n-thing>
+          
+          
+        </n-list-item>
+      </n-list>
+    </RouterLink>
   
   </div>
   </template>
@@ -49,11 +52,16 @@
   import axios from '@/plugins/axios';
   import useUserStore from '@/stores/userstore';
   import { useMessage } from 'naive-ui'
+  import { RouterLink } from "vue-router";
+  import { useRoute } from "vue-router";
 
   const userStore = useUserStore();
   const userId = userStore.userId;
   const userNickname=userStore.nickname
   const articleList = ref([])
+  const clubId=ref(1)
+  const route = useRoute();
+
 
   onMounted(function(){
     showClubArticleList(clubId)
@@ -62,7 +70,7 @@
   //渲染article
 async function showClubArticleList(clubId) {
   try{
-    const response = await axios.get(`/club/article/${clubId}`);
+    const response = await axios.get(`/club/article/${clubId.value}`);
     articleList.value=response.data;
     // await Promise.all(articleList.value.map(article=> fetchComment(article.id)));
     //await checkLikeStatus();
@@ -71,6 +79,11 @@ async function showClubArticleList(clubId) {
     console.error("Error fetching club articles:", error);
     message.error("Failed to fetch articles");
   }
+}
+
+
+function enterArticle(oneArticle){
+  oneArticle.value.id=(route.params.id)
 }
 
 

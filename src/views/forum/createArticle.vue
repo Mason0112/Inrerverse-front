@@ -1,5 +1,6 @@
 <template>
   <n-space vertical>
+    <n-input v-model:value="title" type="text" placeholder="有創意的文章標題" />
     <n-input
       type="textarea"
       placeholder="大聲說出來你在想什麼?"
@@ -27,6 +28,7 @@ import axios from '@/plugins/axios'
 import useUserStore from '@/stores/userstore';
 
 const content = ref('')
+const title=ref('')
 const fileList = ref([])  
 const userStore = useUserStore();
 const upload = ref(null)
@@ -59,6 +61,7 @@ async function submit() {
     const articleDTO = {
       userId: userStore.userId,
       content: content.value,
+      title: title.value,
       photoUrls: []
     }
 
