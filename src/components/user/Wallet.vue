@@ -6,7 +6,7 @@
     </div>
     <div class="action-buttons d-flex justify-content-end mb-4">
       <button class="btn btn-primary me-2" @click="showDepositModal = true">儲值</button>
-      <button class="btn btn-secondary" @click="showWithdrawModal = true">提現</button>
+      <button class="btn btn-secondary" @click="showWithdrawModal = true">提款</button>
     </div>
     <ul class="list-group">
       <li class="list-group-item" v-for="transaction in transactionsWithBalance" :key="transaction.id">
@@ -73,7 +73,7 @@
         <n-input-number v-model:value="withdrawAmount" placeholder="請輸入提現金額" min="0" step="100"/>
         <template #footer>
           <n-button @click="showWithdrawModal = false">取消</n-button>
-          <n-button type="primary" @click="withdraw">確認提現</n-button>
+          <n-button type="primary" @click="withdraw">確認提款</n-button>
         </template>
       </n-card>
     </n-modal>

@@ -1,20 +1,49 @@
 <template>
   <li v-if="isLoggedIn" class="nav-item dropdown">
     <n-badge :value="displayCount" :max="15">
-      <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button"
-      @mouseenter="openDropdown" @mouseleave="closeDropdown" aria-expanded="dropdownVisible">
+      <a
+        class="nav-link dropdown-toggle"
+        href="#"
+        id="notificationDropdown"
+        role="button"
+        @mouseenter="openDropdown"
+        @mouseleave="closeDropdown"
+        aria-expanded="dropdownVisible"
+      >
         <font-awesome-icon :icon="['far', 'bell']" />
       </a>
     </n-badge>
-    <ul class="dropdown-menu" :class="{ 'show': dropdownVisible }" aria-labelledby="notificationDropdown"
-    @mouseenter="openDropdown" @mouseleave="closeDropdown">
+    <ul
+      class="dropdown-menu"
+      :class="{ show: dropdownVisible }"
+      aria-labelledby="notificationDropdown"
+      @mouseenter="openDropdown"
+      @mouseleave="closeDropdown"
+    >
       <li v-if="isLoading" class="dropdown-item text-muted">加載中...</li>
       <li v-else-if="error" class="dropdown-item text-danger">{{ error }}</li>
-      <li v-else-if="notifications.length === 0" class="dropdown-item text-muted">沒有新通知</li>
-      <li v-for="notification in notifications" :key="notification.id" class="dropdown-item">
-        {{ notification.content }}
-        <span class="time-ago" :title="formatFullDate(notification.added)">
-          {{ getTimeAgo(notification.added) }}
+      <li
+        v-else-if="notifications.length === 0"
+        class="dropdown-item text-muted"
+      >
+        沒有新通知
+      </li>
+      <li v-else class="dropdown-item">
+        <button @click="markAllAsRead" class="btn btn-sm btn-outline-secondary">
+          標示全部為已讀
+        </button>
+      </li>
+      <li
+        v-for="notification in notifications"
+        :key="notification.id"
+        class="dropdown-item"
+        :class="{ 'font-weight-bold': !notification.status }"
+      >
+        <span @click="markAsRead(notification.id)">
+          {{ notification.content }}
+          <span class="time-ago" :title="formatFullDate(notification.added)">
+            {{ getTimeAgo(notification.added) }}
+          </span>
         </span>
       </li>
     </ul>
@@ -22,7 +51,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 
@@ -47,10 +76,9 @@ async function fetchNotifications() {
   try {
     const response = await axios.get(`/notification/${userId.value}`);
     notifications.value = response.data;
-    unreadCount.value = notifications.value.filter(n => !n.status).length;
-    localStorage.setItem('notificationCount', unreadCount.value.toString());
+    updateUnreadCount();
   } catch (err) {
-    console.error('Failed to fetch notifications:', err);
+    console.error("Failed to fetch notifications:", err);
     if (err.response && err.response.status === 404) {
       error.value = "無法獲取通知，請稍後再試";
     } else {
@@ -61,14 +89,43 @@ async function fetchNotifications() {
   }
 }
 
+function updateUnreadCount() {
+  unreadCount.value = notifications.value.filter((n) => !n.status).length;
+  localStorage.setItem("notificationCount", unreadCount.value.toString());
+}
+
 async function fetchNotificationCount() {
   if (!isLoggedIn.value) return;
   try {
     const response = await axios.get(`/notification/count/${userId.value}`);
     unreadCount.value = response.data;
-    localStorage.setItem('notificationCount', unreadCount.value.toString());
+    localStorage.setItem("notificationCount", unreadCount.value.toString());
   } catch (err) {
-    console.error('Failed to fetch notification count:', err);
+    console.error("Failed to fetch notification count:", err);
+  }
+}
+
+async function markAsRead(notificationId) {
+  try {
+    const response = await axios.put(`/notification/update-status/${notificationId}`);
+    const updatedNotification = response.data;
+    const index = notifications.value.findIndex(n => n.id === updatedNotification.id);
+    if (index !== -1) {
+      notifications.value[index] = updatedNotification;
+    }
+    updateUnreadCount();
+  } catch (err) {
+    console.error('Failed to mark notification as read:', err);
+  }
+}
+
+async function markAllAsRead() {
+  try {
+    const response = await axios.put(`/notification/update/${userId.value}/all`);
+    notifications.value = response.data;
+    updateUnreadCount();
+  } catch (err) {
+    console.error('Failed to mark all notifications as read:', err);
   }
 }
 
@@ -90,8 +147,14 @@ function getTimeAgo(dateString) {
 }
 
 function formatFullDate(dateString) {
-  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-  return new Date(dateString).toLocaleDateString('zh-TW', options);
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  };
+  return new Date(dateString).toLocaleDateString("zh-TW", options);
 }
 // 結束轉換通知時間
 
@@ -156,35 +219,34 @@ function closeDropdown() {
 }
 // 結束樣式
 
-
 onMounted(async () => {
   if (isLoggedIn.value) {
     await fetchNotificationCount(); // 初始只獲取數量
     startPolling(); // 開始輪詢完整通知
   }
 
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-  window.addEventListener('online', handleOnline);
-  window.addEventListener('offline', handleOffline);
-  
-  ['mousemove', 'keypress', 'scroll', 'click'].forEach(event => {
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  window.addEventListener("online", handleOnline);
+  window.addEventListener("offline", handleOffline);
+
+  ["mousemove", "keypress", "scroll", "click"].forEach((event) => {
     document.addEventListener(event, handleUserActivity);
   });
-  
+
   resetUserActivityTimer();
 });
 
 onUnmounted(() => {
   stopPolling();
-  
-  document.removeEventListener('visibilitychange', handleVisibilityChange);
-  window.removeEventListener('online', handleOnline);
-  window.removeEventListener('offline', handleOffline);
-  
-  ['mousemove', 'keypress', 'scroll', 'click'].forEach(event => {
+
+  document.removeEventListener("visibilitychange", handleVisibilityChange);
+  window.removeEventListener("online", handleOnline);
+  window.removeEventListener("offline", handleOffline);
+
+  ["mousemove", "keypress", "scroll", "click"].forEach((event) => {
     document.removeEventListener(event, handleUserActivity);
   });
-  
+
   clearTimeout(userActivityTimeout);
 });
 
@@ -197,16 +259,19 @@ watch(isLoggedIn, async (newValue) => {
     notifications.value = [];
     unreadCount.value = 0;
     error.value = null;
-    localStorage.removeItem('notificationCount');
+    localStorage.removeItem("notificationCount");
   }
 });
 
-watch(() => userStore.route, (newRoute) => {
-  if (isLoggedIn.value) {
-    stopPolling();
-    startPolling();
+watch(
+  () => userStore.route,
+  (newRoute) => {
+    if (isLoggedIn.value) {
+      stopPolling();
+      startPolling();
+    }
   }
-});
+);
 </script>
 
 <style scoped>
@@ -215,7 +280,8 @@ watch(() => userStore.route, (newRoute) => {
   max-height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: max-height 0.5s ease-out, opacity 0.3s ease-out, visibility 0s 0.5s;
+  transition: max-height 0.5s ease-out, opacity 0.3s ease-out,
+    visibility 0s 0.5s;
   visibility: hidden;
 }
 
@@ -245,5 +311,13 @@ watch(() => userStore.route, (newRoute) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.font-weight-bold {
+  font-weight: bold;
+}
+
+.dropdown-item span {
+  cursor: pointer;
 }
 </style>
