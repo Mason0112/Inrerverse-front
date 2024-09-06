@@ -51,14 +51,22 @@
     </ul>
 
     <n-modal v-model:show="showDepositModal">
-      <n-card style="width: 600px" title="儲值" :bordered="false" size="huge" role="dialog" aria-modal="true">
+    <n-card style="width: 600px" title="儲值" :bordered="false" size="huge" role="dialog" aria-modal="true">
+      <n-space vertical>
+        <n-radio-group v-model:value="paymentMethod" name="paymentMethod">
+          <n-space>
+            <n-radio value="creditCard">信用卡支付</n-radio>
+            <n-radio value="linePay">LINE Pay</n-radio>
+          </n-space>
+        </n-radio-group>
         <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="100" step="100"/>
-        <template #footer>
-          <n-button @click="showDepositModal = false">取消</n-button>
-          <n-button type="primary" @click="deposit">確認儲值</n-button>
-        </template>
-      </n-card>
-    </n-modal>
+      </n-space>
+      <template #footer>
+        <n-button @click="showDepositModal = false">取消</n-button>
+        <n-button type="primary" @click="deposit">確認儲值</n-button>
+      </template>
+    </n-card>
+  </n-modal>
     
     <n-modal v-model:show="showWithdrawModal">
       <n-card style="width: 600px" title="提現" :bordered="false" size="huge" role="dialog" aria-modal="true">
@@ -95,6 +103,7 @@ const showDepositModal = ref(false);
 const showWithdrawModal = ref(false);
 const depositAmount = ref(100);
 const withdrawAmount = ref(0);
+const paymentMethod = ref('creditCard')
 
 onMounted(callFind);
 
@@ -165,7 +174,15 @@ const getStatusText = (status) => {
 function deposit() {
   if (depositAmount.value > 0) {
     depositStore.setDepositAmount(depositAmount.value)
-    router.push('/payment')
+    depositStore.setPaymentMethod(paymentMethod.value)
+    
+    if (paymentMethod.value === 'creditCard') {
+      router.push('/payment')
+    } else if (paymentMethod.value === 'linePay') {
+      router.push('/payment/line-pay')
+    }
+    
+    showDepositModal.value = false
   }
 }
 
