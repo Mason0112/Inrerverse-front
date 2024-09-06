@@ -1,10 +1,13 @@
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-10 col-xl-9 mx-auto">
-        <input type="text" v-model="auth" required />
-        <button type="button" @click="submit">送出</button>
+  <div class="admin-auth-container">
+    <div class="admin-auth-layout">
+      <div class="side-offset"></div>
+      <div class="admin-auth-content">
+        <h1 class="admin-auth-title">IYKYK</h1>
+        <input type="text" v-model="auth" required class="admin-auth-input" placeholder="請輸入通關密語">
+        <button type="button" @click="submit" class="admin-auth-button">送出</button>
       </div>
+      <div class="side-offset"></div>
     </div>
   </div>
 </template>
@@ -57,3 +60,95 @@ function submit() {
     });
 }
 </script>
+
+<style scoped>
+.admin-auth-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--background-color);
+}
+
+.admin-auth-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr 250px;
+  width: 80%;
+  max-width: 1200px;
+}
+
+.admin-auth-content {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.admin-auth-title {
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: bold;
+}
+
+.admin-auth-input {
+  width: 80%;
+  padding: 12px 15px;
+  margin-bottom: 1.5rem;
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.admin-auth-input::placeholder {
+  color: var(--light-text-color);
+}
+
+.admin-auth-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(177, 151, 252, 0.2);
+}
+
+.admin-auth-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.1s;
+}
+
+.admin-auth-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.admin-auth-button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .admin-auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-auth-content {
+    grid-column: 1;
+    margin: 0 1rem;
+  }
+
+  .admin-auth-title {
+    font-size: 2rem;
+  }
+}
+</style>
