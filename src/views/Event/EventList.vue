@@ -47,57 +47,70 @@
 
             <!-- 工作坊列表 -->
             <div v-if="loading" class="ts-center">
-              <div class="ts-loading"></div>
+              <n-spin size="large" />
             </div>
             <div v-else-if="filteredEvents.length === 0" class="ts-center">
               沒有找到工作坊活動
             </div>
             <div v-else>
-              <div 
-                v-for="event in filteredEvents" 
-                :key="event.id" 
-                class="custom-event-box"
-                @click="goToEventDetail(event.id)"
-              >
-                <div class="ts-content">
-                  <div class="ts-row">
-                    <div class="column is-7-wide is-center-aligned">
-                      <div class="ts-header">{{ event.eventName }}</div>
-                    </div>
-                    <div class="column is-5-wide is-right-aligned">
-                      <div class="ts-text is-secondary">
-                        <p>創建者: {{ event.creatorName }}</p>
-                        <p>日期: {{ formatDate(event.added) }}</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+      <div 
+        v-for="event in filteredEvents" 
+        :key="event.id" 
+        class="custom-event-box"
+      >
+        <div class="ts-content">
+          <div class="ts-row">
+            <div class="column is-7-wide is-center-aligned">
+              <div class="ts-header" @click="goToEventDetail(event.id)">{{ event.eventName }}</div>
+            </div>
+            <div class="column is-5-wide is-right-aligned">
+              <div class="ts-text is-secondary">
+                <p>創建者: {{ event.creatorName }}</p>
+                <p>開始時間: {{ formatDate(event.startTime) }}</p>
+              </div>
+              <div v-if="canUserEdit(event)" class="action-buttons">
+                <n-button size="small" @click.stop="editEvent(event)" class="custom-button">編輯</n-button>
+                <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- 編輯模態框 -->
-    <div v-if="showEditModal" class="ts-modal is-visible">
-      <div class="ts-box">
-        <div class="ts-content">
-          <div class="ts-header">編輯工作坊</div>
-          <div class="ts-space"></div>
-          <div class="ts-input is-fluid custom-input">
-            <input v-model="editingEvent.eventName" type="text" placeholder="活動名稱">
           </div>
-          <div class="ts-space"></div>
-          <div class="ts-textarea custom-textarea">
-            <textarea v-model="editingEvent.description" placeholder="活動詳情"></textarea>
-          </div>
-          <div class="ts-space"></div>
-          <button @click="updateEvent" class="ts-button custom-button">保存</button>
-          <button @click="showEditModal = false" class="ts-button">取消</button>
         </div>
       </div>
     </div>
+
+    <!-- 編輯模態框 -->
+    <n-modal v-model:show="showEditModal">
+      <n-card
+        style="width: 600px"
+        title="編輯工作坊"
+        :bordered="false"
+        size="huge"
+        role="dialog"
+        aria-modal="true"
+      >
+        <n-form>
+          <n-form-item label="活動名稱">
+            <n-input v-model:value="editingEvent.eventName" placeholder="活動名稱" />
+          </n-form-item>
+          <n-form-item label="活動詳情">
+            <n-input
+              v-model:value="editingEvent.description"
+              type="textarea"
+              placeholder="活動詳情"
+            />
+          </n-form-item>
+        </n-form>
+        
+        <template #footer>
+          <n-button @click="updateEvent" type="primary">保存</n-button>
+          <n-button @click="showEditModal = false">取消</n-button>
+        </template>
+      </n-card>
+    </n-modal>
   </div>
 </template>
 
@@ -106,9 +119,14 @@ import { ref, onMounted } from 'vue';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
 import { useRouter } from 'vue-router';
+import { useDialog, useMessage } from 'naive-ui';
+import { NButton, NModal, NCard, NForm, NFormItem, NInput, NSpin } from 'naive-ui';
 
 const router = useRouter();
 const userStore = useUserStore();
+const dialog = useDialog();
+const message = useMessage();
+
 const events = ref([]);
 const filteredEvents = ref([]);
 const searchQuery = ref('');
@@ -120,10 +138,26 @@ const editingEvent = ref({});
 const fetchEvents = async () => {
   try {
     const response = await axios.get('/events');
-    events.value = response.data.filter(event => event.source === 2); // 只保留工作坊 (source = 2)
+    const workshopEvents = response.data.filter(event => event.source === 2);
+    
+    // 获取每个事件的 EventDetail
+    const eventsWithDetails = await Promise.all(workshopEvents.map(async (event) => {
+      try {
+        const detailResponse = await axios.get(`/eventDetail/${event.id}/show`);
+        return {
+          ...event,
+          startTime: detailResponse.data.startTime
+        };
+      } catch (error) {
+        console.error(`獲取事件 ${event.id} 的詳情失敗:`, error);
+        return event;
+      }
+    }));
+    events.value = eventsWithDetails;
     filterEvents();
   } catch (error) {
     console.error('獲取工作坊列表失敗:', error);
+    message.error('獲取工作坊列表失敗');
   } finally {
     loading.value = false;
   }
@@ -141,9 +175,9 @@ const sortEvents = () => {
   filteredEvents.value.sort((a, b) => {
     switch (sortOption.value) {
       case 'dateAsc':
-        return new Date(a.added) - new Date(b.added);
+        return new Date(a.startTime || 0) - new Date(b.startTime || 0);
       case 'dateDesc':
-        return new Date(b.added) - new Date(a.added);
+        return new Date(b.startTime || 0) - new Date(a.startTime || 0);
       case 'nameAsc':
         return a.eventName.localeCompare(b.eventName);
       case 'nameDesc':
@@ -154,10 +188,13 @@ const sortEvents = () => {
   });
 };
 
+
 const formatDate = (dateString) => {
+  if (!dateString) return '未設置時間';
   const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
   return new Date(dateString).toLocaleDateString('zh-TW', options);
 };
+
 
 const canUserEdit = (event) => {
   return userStore.userId === event.eventCreatorId;
@@ -183,14 +220,41 @@ const updateEvent = async () => {
       }
       showEditModal.value = false;
       filterEvents(); // 重新過濾和排序事件
+      message.success('更新工作坊成功');
     }
   } catch (error) {
     console.error('更新工作坊失敗:', error);
+    message.error('更新工作坊失敗');
   }
 };
 
 const goToEventDetail = (eventId) => {
   router.push({ name: 'event-detail-link', params: { id: eventId } });
+};
+
+const confirmDelete = (event) => {
+  dialog.warning({
+    title: '確認刪除',
+    content: '您確定要刪除這個工作坊嗎？此操作不可撤銷。',
+    positiveText: '確認刪除',
+    negativeText: '取消',
+    onPositiveClick: () => deleteEvent(event),
+    onNegativeClick: () => {}
+  });
+};
+
+const deleteEvent = async (event) => {
+  try {
+    const response = await axios.delete(`/events/${event.id}`);
+    if (response.status === 200) {
+      events.value = events.value.filter(e => e.id !== event.id);
+      filteredEvents.value = filteredEvents.value.filter(e => e.id !== event.id);
+      message.success('工作坊已成功刪除');
+    }
+  } catch (error) {
+    console.error('刪除工作坊失敗:', error);
+    message.error('刪除工作坊失敗，請稍後再試');
+  }
 };
 
 onMounted(() => {
@@ -199,6 +263,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* 保持原有的樣式 */
 .custom-container {
   width: 80%;
   margin: 0 auto;
@@ -212,7 +277,7 @@ onMounted(() => {
 }
 
 .search-input {
-  width: 78%; /* 給間距留一些空間 */
+  width: 78%;
 }
 
 .sort-select {
@@ -221,7 +286,7 @@ onMounted(() => {
 
 .custom-event-box {
   background-color: #FFF;
-  border: 1px solid #FFB6C1;  /* 淺粉紅色邊框 */
+  border: 1px solid #FFB6C1;
   border-radius: 0.5rem;
   margin-bottom: 1rem;
   cursor: pointer;
@@ -229,48 +294,44 @@ onMounted(() => {
 }
 
 .custom-event-box:hover {
-  background-color: #FFE4E1;  /* 更深的粉色背景 */
-  border-color: #DB7093;  /* 更深的邊框顏色 */
-  box-shadow: 0 2px 4px rgba(219, 112, 147, 0.3);  /* 更明顯的陰影 */
+  background-color: #FFE4E1;
+  border-color: #DB7093;
+  box-shadow: 0 2px 4px rgba(219, 112, 147, 0.3);
 }
 
 .custom-event-box:hover .ts-header {
-  color: #C71585;  /* 懸停時更深的標題顏色 */
+  color: #C71585;
 }
 
 .custom-event-box:hover .ts-text.is-secondary {
-  color: #8B0000;  /* 懸停時更深的次要文字顏色 */
+  color: #8B0000;
 }
 
+.ts-header {
+  color: #DB7093;
+  transition: color 0.3s ease;
+}
+
+.ts-text.is-secondary {
+  color: #CD5C5C;
+  transition: color 0.3s ease;
+}
+
+.action-buttons {
+  margin-top: 0.5rem;
+}
+
+.action-buttons .n-button {
+  margin-left: 0.5rem;
+}
+
+/* 調整 Naive UI 按鈕樣式以匹配原有設計 */
 .custom-button {
-  background-color: #FFB6C1 !important;  /* 粉藕色按鈕 */
+  background-color: #FFB6C1 !important;
   color: #FFF !important;
 }
 
 .custom-button:hover {
-  background-color: #FFA07A !important;  /* 深一點的粉藕色 */
-}
-
-.custom-input input,
-.custom-select select,
-.custom-textarea textarea {
-  border-color: #FFB6C1 !important;
-}
-
-.custom-input input:focus,
-.custom-select select:focus,
-.custom-textarea textarea:focus {
-  border-color: #FFA07A !important;
-}
-
-.ts-header {
-  color: #DB7093;  /* 深粉藕色標題 */
-  transition: color 0.3s ease;  /* 添加顏色過渡效果 */
-}
-
-.ts-text.is-secondary {
-  color: #CD5C5C;  /* 深紅色次要文字 */
-  transition: color 0.3s ease;  /* 添加顏色過渡效果 */
+  background-color: #FFA07A !important;
 }
 </style>
-  

@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto p-4">
+<div class="container mx-auto p-4">
     <h1 class="text-4xl font-bold text-center text-pink-400 mb-8">所有俱樂部</h1>
     <div class="flex justify-end mb-4">
       <router-link 
@@ -17,19 +17,18 @@
     </div>
     <div v-else class="club-grid">
       <div v-for="club in clubs" :key="club.id" class="club-card">
-        <div class="club-image">
-          <img 
-            v-if="club.photo" 
-            :src="getPhotoUrl(club.photo)" 
-            :alt="club.clubName"
-          >
-          <div v-else class="no-photo">
-            無照片
+        <router-link :to="{ name: 'club-detail-link', params: { id: club.id } }">
+          <div class="club-image">
+            <img 
+              v-if="club.photo" 
+              :src="getPhotoUrl(club.photo)" 
+              :alt="club.clubName"
+            >
+            <div v-else class="no-photo">
+              無照片
+            </div>
           </div>
-          <div v-if="!club.isPublic" class="club-overlay">
-            <span class="overlay-text">須審核</span>
-          </div>
-        </div>
+        </router-link>
         <div class="club-content">
           <h2 class="club-name">
             <router-link 
@@ -38,6 +37,9 @@
               {{ club.clubName }}
             </router-link>
           </h2>
+          <div v-if="!club.isPublic" class="review-status">
+            須審核
+          </div>
         </div>
         <div class="club-footer">
           <button @click="joinClub(club)" class="join-button">
@@ -145,24 +147,6 @@ onMounted(fetchClubs);
   font-size: 1.2rem;
 }
 
-.club-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(248, 165, 194, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.overlay-text {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
 .club-content {
   flex-grow: 1;
   padding: 1rem;
@@ -183,6 +167,17 @@ onMounted(fetchClubs);
 
 .club-name a:hover {
   color: #d3a9a9;
+}
+
+.review-status {
+  color: white;
+  background-color: rgba(248, 165, 194, 0.7);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  display: inline-block;
+  margin-top: 0.5rem;
 }
 
 .club-footer {
@@ -224,4 +219,6 @@ onMounted(fetchClubs);
   transform: translateY(-2px);
   box-shadow: 0 6px 8px rgba(255, 105, 180, 0.6);
 }
+
+
 </style>
