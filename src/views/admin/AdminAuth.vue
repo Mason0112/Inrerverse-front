@@ -1,11 +1,15 @@
 <template>
   <div class="admin-auth-container">
-    <div class="admin-auth-content">
-      <h1 class="admin-auth-title">IYKYK</h1>
+    <div class="admin-auth-layout">
+      <div class="side-offset"></div>
+      <div class="admin-auth-content">
+        <h1 class="admin-auth-title">IYKYK</h1>
         <input type="text" v-model="auth" required class="admin-auth-input" placeholder="請輸入通關密語">
         <button type="button" @click="submit" class="admin-auth-button">送出</button>
       </div>
+      <div class="side-offset"></div>
     </div>
+  </div>
 </template>
 
 <script setup>
@@ -59,64 +63,92 @@ function submit() {
 
 <style scoped>
 .admin-auth-container {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: #1a202c; /* 深蓝灰色背景 */
-  color: #e2e8f0; /* 浅色文字 */
+  background-color: var(--background-color);
+}
+
+.admin-auth-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr 250px;
+  width: 80%;
+  max-width: 1200px;
 }
 
 .admin-auth-content {
-  text-align: center;
-  background-color: #2d3748; /* 稍微浅一点的背景色 */
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 2rem;
+  background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .admin-auth-title {
+  color: var(--text-color);
   margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   font-weight: bold;
 }
 
 .admin-auth-input {
-  margin-bottom: 1rem;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 300px;
-  background-color: #4a5568; /* 输入框背景色 */
-  color: #e2e8f0;
-  border: 1px solid #718096;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 80%;
+  padding: 12px 15px;
+  margin-bottom: 1.5rem;
+  border: 2px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.admin-auth-input::placeholder {
+  color: var(--light-text-color);
 }
 
 .admin-auth-input:focus {
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(177, 151, 252, 0.2);
 }
 
 .admin-auth-button {
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  cursor: pointer;
-  background-color: #4299e1; /* 蓝色按钮 */
-  color: white;
+  padding: 12px 24px;
   border: none;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  border-radius: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.1s;
 }
 
 .admin-auth-button:hover {
-  background-color: #3182ce; /* 悬停时稍深的蓝色 */
+  background-color: var(--secondary-color);
 }
 
 .admin-auth-button:active {
-  background-color: #2b6cb0; /* 点击时更深的蓝色 */
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .admin-auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-auth-content {
+    grid-column: 1;
+    margin: 0 1rem;
+  }
+
+  .admin-auth-title {
+    font-size: 2rem;
+  }
 }
 </style>
