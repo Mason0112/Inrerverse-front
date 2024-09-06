@@ -77,6 +77,8 @@ function fetchOrders() {
     getAllOrdersByUser(userStore.userId);
 }
 
+
+// method:1:linePay 2:貨到付款
 function getPaymentMethod(method) {
     switch (method) {
         case 1: return 'LinePay';
@@ -84,12 +86,13 @@ function getPaymentMethod(method) {
         default: return '未知付款方式';
     }
 }
-
+//status :1:已付款等待發貨 2:等待確認中 3:已申請取消待確認 
 function getStatus(status) {
     switch (status) {
         case 1: return '已付款等待發貨';
         case 2: return '等待確認中';
         case 3: return '已申請取消待確認';
+        case 4: return '確認取消訂單';
         default: return '未知狀態';
     }
 }
