@@ -10,6 +10,7 @@ import Notification from "@/views/user/Notification.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
 import UserPost from "@/views/userPost/UserPost.vue";
 import Friend from "@/views/user/Friend.vue";
+import FriendRequest from "@/views/user/FriendRequest.vue";
 import Profile from "@/views/user/Profile.vue";
 import Category from "@/views/Category/category.vue";
 import Product from "@/views/Product/Product.vue";
@@ -43,6 +44,7 @@ import EventDetail from "@/views/Event/EventDetail.vue";
 import ClubEvent from "@/views/Event/ClubEvent.vue";
 import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
 import AddWorkshopForm from "@/views/Event/AddWorkshopForm.vue";
+import PaymentStatus from "@/views/Order/PaymentStatus.vue";
 import oneArticle from "@/views/forum/oneArticle.vue";
 
 
@@ -56,6 +58,7 @@ const routes = [
     { path: "/user/profile", name: "profile-link", component: Profile },
     { path: "/user/notification", name: "notification-link", component: Notification },
     { path: "/friend", name: "friend-link", component: Friend },
+    { path: "/friend/request", name: "friend-request-link", component: FriendRequest },
     { path: "/wallet", name: "wallet-link", component: Wallet },
     { path: "/payment", name: "payment-link", component: Payment },
     { path: "/admin/home", name: "admin-home-link", component: AdminHome },
@@ -89,6 +92,7 @@ const routes = [
     { path: "/cart", name: "cart-user", component: UserCart },
     { path: "/order/payment", name: "order-payment", component: OrderPayment },
     { path: "/order/userOrders", name: "user-orders", component: UserOrders },
+    { path: "/order/controllStaus", name: "orderStaus-controller", component: PaymentStatus },
 
     //勁甫
     { path: "/club/forum", name: "club-forum", component: forum },

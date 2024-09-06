@@ -1,19 +1,10 @@
 <template>
   <div class="container mt-5">
-    <h1 class="text-center">好友列表</h1>
+    <h1 class="text-center">待確認好友邀請列表</h1>
     <div class="card">
       <div class="input-box">
-        <input
-          type="text"
-          class="form-control"
-          v-model="searchTerm"
-          @input="filterFriends"
-          placeholder="搜尋好友"
-        />
-        <font-awesome-icon
-          :icon="['fas', 'magnifying-glass']"
-          class="input-icon"
-        />
+        <input type="text" class="form-control" v-model="searchTerm" @input="filterFriends" placeholder="搜尋待確認好友" />
+        <font-awesome-icon :icon="['fas', 'magnifying-glass']" class="input-icon" />
       </div>
 
       <div v-if="loading" class="text-center my-3">
@@ -23,19 +14,11 @@
       </div>
 
       <template v-else-if="friends.length > 0">
-        <div
-          class="list border-bottom d-flex justify-content-between align-items-center"
-          v-for="friend in filteredFriends"
-          :key="friend.user2Id"
-        >
+        <div class="list border-bottom d-flex justify-content-between align-items-center"
+          v-for="friend in filteredFriends" :key="friend.user2Id">
           <div class="d-flex align-items-center">
             <div class="friend-photo mr-3 me-2 mx-2" @click="openModal(friend)">
-              <img
-                v-if="friend.photo"
-                :src="friend.photo"
-                :alt="friend.nickname || 'Friend'"
-                style="cursor: pointer"
-              />
+              <img v-if="friend.photo" :src="friend.photo" :alt="friend.nickname || 'Friend'" style="cursor: pointer" />
               <div v-else class="default-avatar">
                 {{ getDefaultAvatar(friend) }}
               </div>
@@ -45,23 +28,28 @@
               <small>@{{ friend.accountNumber || "無" }}</small>
             </div>
           </div>
-          <button
-            class="btn btn-outline-danger btn-sm"
-            @click="deleteFriend(friend.user2Id)"
-          >
-            刪除好友
-          </button>
+
+
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-outline-primary btn-sm me-2" @click="acceptFriend(friend.user1Id)">
+              <!-- 帶入加我好友的userId -->
+              <font-awesome-icon :icon="['fas', 'user-plus']" />
+              接受交友邀請
+            </button>
+            <button class="btn btn-outline-danger btn-sm" @click="rejectFriend(friend.user1Id)">
+              <!-- 帶入加我好友的userId -->
+              <font-awesome-icon :icon="['fas', 'user-xmark']" />
+              拒絕交友邀請
+            </button>
+          </div>
+
         </div>
       </template>
 
-      <div v-else class="text-center my-3">朋友列表是空的。</div>
+      <div v-else class="text-center my-3">待確認好友列表是空的。</div>
     </div>
 
-    <AvatarModal
-      v-if="selectedFriend"
-      :friend="selectedFriend"
-      @close="closeModal"
-    />
+    <AvatarModal v-if="selectedFriend" :friend="selectedFriend" @close="closeModal" />
 
   </div>
 </template>
@@ -103,7 +91,7 @@ onMounted(async () => {
 
 async function fetchFriends() {
   try {
-    const response = await axios.get(`/friend/${userId}/list`);
+    const response = await axios.get(`/friend/${userId}/requests`);
     const friendsData = response.data;
     await fetchUserDetails(friendsData);
   } catch (error) {
@@ -116,15 +104,15 @@ async function fetchFriends() {
 async function fetchUserDetails(friendsData) {
   try {
     const userRequests = friendsData.map((friend) =>
-      axios.get(`/user/secure/${friend.user2Id}`)
+      axios.get(`/user/secure/${friend.user1Id}`)
     );
     const photoRequests = friendsData.map(
       (friend) =>
         axios
-          .get(`/user/secure/profile-photo/${friend.user2Id}`)
+          .get(`/user/secure/profile-photo/${friend.user1Id}`)
           .catch(() => ({ data: null })) // 如果獲取頭像失敗，返回 null
     );
-    
+
     const [userResponses, photoResponses] = await Promise.all([
       Promise.all(userRequests),
       Promise.all(photoRequests),
@@ -159,26 +147,24 @@ async function fetchUserDetails(friendsData) {
   }
 }
 
-async function deleteFriend(friendId) {
-  dialog.warning({
-    title: '刪除好友',
-    content: '確定要刪除這個好友嗎？',
-    positiveText: '確定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await axios.get(`/friend/switch-status/${userId}/${friendId}`);
-        // 從列表中移除該好友
-        friends.value = friends.value.filter(
-          (friend) => friend.user2Id !== friendId
-        );
-        message.success('好友已成功刪除');
-      } catch (error) {
-        console.error(error);
-        message.error('刪除好友失敗，請稍後再試');
-      }
-    }
-  });
+async function acceptFriend(friendId) {
+  try {
+    await axios.get(`/friend/switch-status/${userId}/${friendId}`);
+    // 從列表中移除該好友
+    friends.value = friends.value.filter(
+      (friend) => friend.user1Id !== friendId
+    );
+    message.success("已成為好友", {
+      closable: true,
+      duration: 5000,
+    });
+  } catch (error) {
+    console.error(error);
+    message.error("操作失敗，請稍後重試", {
+      closable: true,
+      duration: 5000,
+    });
+  }
 }
 
 // Modal
@@ -203,7 +189,8 @@ function getDefaultAvatar(friend) {
   top: 50%;
   transform: translateY(-50%);
   color: #888;
-  pointer-events: none; /* 防止圖標阻礙用戶點擊輸入框 */
+  pointer-events: none;
+  /* 防止圖標阻礙用戶點擊輸入框 */
 }
 
 .card {
@@ -280,6 +267,7 @@ function getDefaultAvatar(friend) {
 }
 
 .badge-margin {
-  margin-right: 8px; /* 可根据需要调整 */
+  margin-right: 8px;
+  /* 可根据需要调整 */
 }
 </style>

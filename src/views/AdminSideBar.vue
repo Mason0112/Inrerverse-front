@@ -84,6 +84,9 @@
           <RouterLink to="/product/category" class="nav-item">
             類別頁
           </RouterLink>
+          <RouterLink to="/order/controllStaus" class="nav-item">
+            訂單管理
+          </RouterLink>
         </div>
       </div>
 

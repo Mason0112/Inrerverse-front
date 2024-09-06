@@ -122,10 +122,10 @@ let request = {
 
   axiosapi.post("/cart/add", request).then(function (productResponse) {
     console.log("加入購物車成功", productResponse);
-    // 這裡可以添加成功提示
+    alert('加入購物車成功！'); // 新增的成功提示
   }).catch(error => {
     console.error("加入購物車失敗", error);
-    // 這裡可以添加錯誤提示
+    alert('加入購物車失敗，請稍後再試。'); // 新增的錯誤提示
   });
 }
 

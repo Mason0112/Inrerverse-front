@@ -1,6 +1,6 @@
 <template>
   <div class="modal-backdrop" @click="$emit('close')"></div>
-  <div class="modal">
+  <div class="modal" @click.self="closeModal">
     <div class="modal-dialog modal-zoom">
       <div class="modal-content">
         <div class="modal-header">
@@ -41,9 +41,9 @@
           </p>
         </div>
         <div class="modal-footer">
-          <!-- <button type="button" class="btn btn-primary" @click="$emit('close')">
+          <button type="button" class="btn btn-primary" @click="navigateToUserPost">
             前往 @ {{ friend.accountNumber }} 的個人首頁
-          </button> -->
+          </button>
           <button type="button" class="btn btn-secondary" @click="$emit('close')">
             關閉
           </button>
@@ -54,6 +54,8 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+
 const props = defineProps({
   friend: {
     type: Object,
@@ -61,7 +63,23 @@ const props = defineProps({
   }
 });
 
-defineEmits(['close']);
+const router = useRouter();
+const emit = defineEmits(['close']);
+
+const navigateToUserPost = () => {
+  router.push({
+    name: 'user-post-link',
+    params: { id: props.friend.id }
+  });
+  emit('close');
+};
+
+const closeModal = (event) => {
+  // 確保點擊的是modal背景或modal本身,而不是modal內容
+  if (event.target.classList.contains('modal-backdrop') || event.target.classList.contains('modal')) {
+    emit('close');
+  }
+};
 
 </script>
 
@@ -103,6 +121,7 @@ defineEmits(['close']);
     opacity: 1;
   }
 }
+
 /* 应用动画到 modal */
 .modal-zoom {
   animation: zoomIn 0.4s ease forwards;

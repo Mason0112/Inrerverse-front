@@ -1,55 +1,73 @@
 <template>
   <div class="wallet-container">
-    <div class="balance-section">
+    <div class="balance-section text-center mb-4">
       <h6>錢包餘額</h6>
       <h4>臺幣(TWD) ${{ userData.walletBalance || 0 }} </h4>
     </div>
-
-    <div class="action-buttons">
-      <n-button type="primary" @click="showDepositModal = true">儲值</n-button>
-      <n-button @click="showWithdrawModal = true">提現</n-button>
+    <div class="action-buttons d-flex justify-content-end mb-4">
+      <button class="btn btn-primary me-2" @click="showDepositModal = true">儲值</button>
+      <button class="btn btn-secondary" @click="showWithdrawModal = true">提現</button>
     </div>
-
-    <n-list hoverable clickable>
-      <n-list-item v-for="transaction in transactionsWithBalance" :key="transaction.id">
+    <ul class="list-group">
+      <li class="list-group-item" v-for="transaction in transactionsWithBalance" :key="transaction.id">
         <div class="transaction-item">
-          <div class="transaction-header">
+          <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="date">{{ formatDate(transaction.added) }}</span>
-            <div class="right-aligned-content">
-              <div class="amount-section">
-                <span class="amount" :class="{ 'negative': transaction.amount < 0, 'failed': transaction.status === 0 }">
-                  {{ transaction.amount < 0 ? '-' : '' }} ${{ Math.abs(transaction.amount) }}
-                </span>
-                <span v-if="transaction.status !== 0" class="balance">
-                  餘額: ${{ transaction.balance || '0' }}
-                </span>
+            <div class="d-flex align-items-center">
+              <div class="amount-section text-end me-3">
+                <div>
+                  <span :class="['amount', { 'text-danger': transaction.amount < 0, 'text-decoration-line-through': transaction.status === 0 }]">
+                    {{ transaction.amount < 0 ? '-' : '' }} ${{ Math.abs(transaction.amount) }}
+                  </span>
+                </div>
+                <div v-if="transaction.status !== 0">
+                  <span class="balance text-muted">
+                    餘額: ${{ transaction.balance || '0' }}
+                  </span>
+                </div>
               </div>
-              <n-tag :type="getStatusType(transaction.status)" class="status-tag">
+              <span :class="['badge', getStatusBadgeClass(transaction.status)]">
                 {{ getStatusText(transaction.status) }}
-              </n-tag>
+              </span>
             </div>
           </div>
-          <n-collapse>
-            <n-collapse-item title="詳細信息">
-              <p>支付方式: {{ transaction.paymentMethod }}</p>
-              <p>備註: {{ transaction.transactionNo }}</p>
-            </n-collapse-item>
-          </n-collapse>
+          <div class="accordion" :id="'accordion-' + transaction.id">
+            <div class="accordion-item">
+              <h2 class="accordion-header" :id="'heading-' + transaction.id">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" :data-bs-target="'#collapse-' + transaction.id" aria-expanded="false" :aria-controls="'collapse-' + transaction.id">
+                  詳細信息
+                </button>
+              </h2>
+              <div :id="'collapse-' + transaction.id" class="accordion-collapse collapse" :aria-labelledby="'heading-' + transaction.id" :data-bs-parent="'#accordion-' + transaction.id">
+                <div class="accordion-body">
+                  <p>支付方式: {{ transaction.paymentMethod }}</p>
+                  <p>備註: {{ transaction.transactionNo }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </n-list-item>
-    </n-list>
-
+      </li>
+    </ul>
 
     <n-modal v-model:show="showDepositModal">
-      <n-card style="width: 600px" title="儲值" :bordered="false" size="huge" role="dialog" aria-modal="true">
+    <n-card style="width: 600px" title="儲值" :bordered="false" size="huge" role="dialog" aria-modal="true">
+      <n-space vertical>
+        <n-radio-group v-model:value="paymentMethod" name="paymentMethod">
+          <n-space>
+            <n-radio value="creditCard">信用卡支付</n-radio>
+            <n-radio value="linePay">LINE Pay</n-radio>
+          </n-space>
+        </n-radio-group>
         <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="100" step="100"/>
-        <template #footer>
-          <n-button @click="showDepositModal = false">取消</n-button>
-          <n-button type="primary" @click="deposit">確認儲值</n-button>
-        </template>
-      </n-card>
-    </n-modal>
-
+      </n-space>
+      <template #footer>
+        <n-button @click="showDepositModal = false">取消</n-button>
+        <n-button type="primary" @click="deposit">確認儲值</n-button>
+      </template>
+    </n-card>
+  </n-modal>
+    
     <n-modal v-model:show="showWithdrawModal">
       <n-card style="width: 600px" title="提現" :bordered="false" size="huge" role="dialog" aria-modal="true">
         <n-input-number v-model:value="withdrawAmount" placeholder="請輸入提現金額" min="0" step="100"/>
@@ -85,6 +103,7 @@ const showDepositModal = ref(false);
 const showWithdrawModal = ref(false);
 const depositAmount = ref(100);
 const withdrawAmount = ref(0);
+const paymentMethod = ref('creditCard')
 
 onMounted(callFind);
 
@@ -133,12 +152,12 @@ const formatDate = (dateString) => {
   }).replace(/\//g, '-');
 };
 
-const getStatusType = (status) => {
+const getStatusBadgeClass = (status) => {
   switch (status) {
-    case 0: return 'error';
-    case 1: return 'success';
-    case 2: return 'info';
-    default: return 'default';
+    case 0: return 'bg-danger';
+    case 1: return 'bg-success';
+    case 2: return 'bg-info';
+    default: return 'bg-warning';
   }
 };
 
@@ -155,7 +174,15 @@ const getStatusText = (status) => {
 function deposit() {
   if (depositAmount.value > 0) {
     depositStore.setDepositAmount(depositAmount.value)
-    router.push('/payment')
+    depositStore.setPaymentMethod(paymentMethod.value)
+    
+    if (paymentMethod.value === 'creditCard') {
+      router.push('/payment')
+    } else if (paymentMethod.value === 'linePay') {
+      router.push('/payment/line-pay')
+    }
+    
+    showDepositModal.value = false
   }
 }
 
@@ -227,82 +254,32 @@ function withdraw() {
   font-size: 16px;
 }
 
-.balance-section {
-  text-align: center;
-  margin-bottom: 22px;
-}
-
-.balance-section h6 {
-  margin-bottom: 10px;
-}
-
-.action-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-bottom: 22px;
-}
-
-.transaction-item {
-  width: 100%;
-}
-
-.transaction-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 8px;
-}
-
-.right-aligned-content {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.date {
-  /* font-size: 1.05em; */
-  color: #555;
-}
-
-.amount-section {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
 .amount {
   font-size: 1.15em;
   font-weight: bold;
 }
 
-.amount.negative {
-  color: #ff4d4f;
-}
-
-.amount.failed {
-  text-decoration: line-through;
-}
-
 .balance {
-  font-size: 0.95em;
-  color: #666;
+  font-size: 0.85em;
 }
 
-.status-tag {
-  white-space: nowrap;
+.date {
+  color: #555;
 }
 
-:deep(.n-list-item) {
+.list-group-item {
   padding: 18px;
 }
 
-:deep(.n-button) {
+.btn {
   font-size: 0.95em;
 }
 
-:deep(.n-tag) {
+.badge {
   font-size: 0.9em;
+}
+/* 確保詳細信息內容靠左對齊 */
+.accordion-body {
+  text-align: left;
 }
 </style>

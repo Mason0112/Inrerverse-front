@@ -2,24 +2,28 @@
   <n-config-provider>
     <n-dialog-provider>
       <n-message-provider>
-        <div class="app-container" v-if="isAdmin">
+        <div class="container-fluid" v-if="isAdminAuthPage">
+          <RouterView></RouterView>
+        </div>
+        <template v-else>
+          <div class="app-container" v-if="isAdmin">
             <AdminSideBar></AdminSideBar>
-          <main class="main-content">
-            <RouterView></RouterView>
-          </main>
-        </div>
-        <div class="container" v-else>
-          <div>
-            <UserNavbar></UserNavbar>
+            <main class="main-content">
+              <RouterView></RouterView>
+            </main>
           </div>
-          <div>
-            <RouterView></RouterView>
+          <div class="container" v-else>
+            <div>
+              <UserNavbar></UserNavbar>
+            </div>
+            <div>
+              <RouterView></RouterView>
+            </div>
           </div>
-        </div>
+        </template>
       </n-message-provider>
     </n-dialog-provider>
   </n-config-provider>
-
 </template>
 
 <script setup>
@@ -32,9 +36,13 @@ import "tocas/dist/tocas.min.css";
 import { NConfigProvider, NMessageProvider, NDialogProvider } from "naive-ui";
 
 import { computed } from "vue";
+import { useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import useAdminStore from "@/stores/adminStore";
+
+const route = useRoute()
+const isAdminAuthPage = computed(() => route.path === '/admin/auth')
 
 // 初始化應用時設置 axios headers，這是用來在重新整理f5的時候，不會丟失token的方法
 const adminStore = useAdminStore();
