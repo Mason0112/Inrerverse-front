@@ -169,7 +169,7 @@ async function acceptFriend(friendId) {
 
 async function rejectFriend(friendId) {
   try {
-    await axios.delete(`/friend/switch-status/${userId}/${friendId}`);
+    await axios.get(`/friend/decline-request/${userId}/${friendId}`);
     // 從列表中移除該好友
     friends.value = friends.value.filter(
       (friend) => friend.user1Id !== friendId

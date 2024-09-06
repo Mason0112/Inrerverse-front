@@ -172,7 +172,7 @@ async function deleteFriend(friendId) {
         friends.value = friends.value.filter(
           (friend) => friend.user2Id !== friendId
         );
-        message.success('好友已成功刪除');
+        message.success('已成功刪除好友');
       } catch (error) {
         console.error(error);
         message.error('刪除好友失敗，請稍後再試');
