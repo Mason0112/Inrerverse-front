@@ -43,6 +43,7 @@ import EventDetail from "@/views/Event/EventDetail.vue";
 import ClubEvent from "@/views/Event/ClubEvent.vue";
 import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
 import AddWorkshopForm from "@/views/Event/AddWorkshopForm.vue";
+import PaymentStatus from "@/views/Order/PaymentStatus.vue";
 
 
 const routes = [
@@ -88,6 +89,7 @@ const routes = [
     { path: "/cart", name: "cart-user", component: UserCart },
     { path: "/order/payment", name: "order-payment", component: OrderPayment },
     { path: "/order/userOrders", name: "user-orders", component: UserOrders },
+    { path: "/order/controllStaus", name: "orderStaus-controller", component: PaymentStatus },
 
     //勁甫
     { path: "/club/forum", name: "club-forum", component: forum },
