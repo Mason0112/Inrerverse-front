@@ -35,6 +35,8 @@
           categories.value = response.data;
       });
   }
+
+  
   </script>
   
   <style scoped>

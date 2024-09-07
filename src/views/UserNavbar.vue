@@ -113,13 +113,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref,computed } from 'vue';
 import useUserStore from '@/stores/userstore';
 import axios from '@/plugins/axios';
+import { useCartStore } from '@/stores/cartStore';
 
 import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
 
-const cartValue = ref(2);
+const cartStore = useCartStore();
+
+const cartValue = computed(() => cartStore.cartItemCount);
+
+onMounted(() => {
+  cartStore.initializeCartCount();
+});
+
+
+
+
+
 
 const dropdownStates = ref({
   club: false,

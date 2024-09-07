@@ -50,6 +50,7 @@ import { ref, onMounted, computed } from 'vue'
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import { useRouter } from 'vue-router';
+import { useCartStore } from '@/stores/cartStore';
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -58,8 +59,9 @@ const vol = ref(1);
 const currentImageIndex = ref(0);
 const productPhotos = ref([]);
 const router = useRouter();
-
-
+const products=ref([]);
+const totalVolume =ref(0);
+const cartStore = useCartStore();
 
 const currentImageUrl = computed(() => {
   if (productPhotos.value.length > 0) {
@@ -76,7 +78,11 @@ onMounted(() => {
   const productId = route.params.id;
   getProductById(productId);
   getProductPhotos(productId);
+  getUserCartCount(userStore.userId);
 });
+
+
+
 
 function getProductById(id) {
   axiosapi.get(`/products/${id}`).then(function (response) {
@@ -106,6 +112,9 @@ if (!userStore.isLoggedIn) {
   alert('請先登入才能加入購物車');
   router.push('/login'); // 假設登入頁面的路由是 '/login'
   return;
+
+
+
 }
 
 console.log(userStore.userId);
@@ -125,11 +134,13 @@ let request = {
     alert('加入購物車成功！'); // 新增的成功提示
     router.push({
     name: 'product-cart',
-  });
+    })
   }).catch(error => {
     console.error("加入購物車失敗", error);
     alert('加入購物車失敗，請稍後再試。'); // 新增的錯誤提示
-  });
+  }).then(function(){
+    getUserCartCount(userStore.userId);
+  })
 }
 
 function prevImage() {
@@ -143,6 +154,24 @@ function nextImage() {
 function setCurrentImage(index) {
   currentImageIndex.value = index;
 }
+
+function getUserCartCount(userId) {
+    axiosapi.get(`/cart/user/${userId}`).then(function (productResponse) {
+        console.log("列出清單", productResponse);
+        products.value = productResponse.data;
+        totalVolume.value = products.value.reduce((sum, product) => sum + product.vol, 0);
+        console.log("總數量",totalVolume._rawValue);
+
+        cartStore.updateCartCount(totalVolume._rawValue);
+    });
+}
+
+
+  
+
+
+
+
 </script>
 
 <style scoped>

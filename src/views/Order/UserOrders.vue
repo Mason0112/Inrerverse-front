@@ -55,7 +55,9 @@ import { ref, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import OrderModal from '@/components/Order/OrderModal.vue';
+import { useCartStore } from '@/stores/cartStore';
 
+const cartStore = useCartStore();
 const userStore = useUserStore();
 const userOrders = ref([]);
 const orderModalRef = ref(null);
@@ -64,6 +66,7 @@ const selectedOrder = ref({});
 onMounted(function () {
     console.log("onMounted UserId", userStore.userId);
     getAllOrdersByUser(userStore.userId);
+    cartStore.initializeCartCount();
 });
 
 function getAllOrdersByUser(id) {

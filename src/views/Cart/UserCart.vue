@@ -68,7 +68,9 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted, computed, watch } from 'vue'
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
+import { useCartStore } from '@/stores/cartStore';
 
+const cartStore = useCartStore();
 const path = import.meta.env.VITE_API_URL;
 const userStore = useUserStore();
 const router = useRouter();
@@ -86,10 +88,11 @@ watch(calculateTotalAmount, (newValue) => {
 onMounted(() => {
     console.log(userStore.userId);
     getUserCart(userStore.userId);
+    cartStore.initializeCartCount(userStore.userId);
 });
 
-function getCartItemCount(userId){
-    axiosapi.get(`/cart/user/${request}`).then(function (productResponse) {
+function getUserCart(userId){
+    axiosapi.get(`/cart/user/${userId}`).then(function (productResponse) {
         console.log("列出清單", productResponse.data);
         
         products.value = productResponse.data;
@@ -97,13 +100,7 @@ function getCartItemCount(userId){
 
 }
 
-function getUserCart(userId) {
-    axiosapi.get(`/cart/count/${userId}`).then(function (productResponse) {
-        console.log("列出清單", productResponse.data);
-        
-        products.value = productResponse.data;
-    });
-}
+
 
 function proceedToCheckout() {
     console.log("前往結帳");
@@ -137,6 +134,7 @@ function onQuantityChange(product) {
 
     axiosapi.put(`/cart/update`, cartupdate).then(function (Response) {
         console.log("購物車更新", Response.data);
+        cartStore.initializeCartCount(userStore.userId);
     });
 
 
@@ -166,6 +164,7 @@ function deleteCartItem(product){
     axiosapi.delete(`/cart/delete?userId=${product.userId}&productId=${product.productId}`).then(function (Response) {
         console.log("購物車更新", Response.data);
         getUserCart(userStore.userId);
+        cartStore.initializeCartCount(userStore.userId);
     });
 
 
