@@ -1,8 +1,8 @@
 <template>
   <div v-for="oneArticle in articleList" :key="oneArticle.id">
     <n-list hoverable clickable>
-      <n-list-item @click="enterArticle(oneArticle.id)">
-        <div class="flexbox">
+      <n-list-item>
+        <div class="flexbox" @click="enterArticle(oneArticle.id)">
           <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
             <template #description>
               <n-space size="small" style="margin-top: 4px">
@@ -15,13 +15,21 @@
               {{ oneArticle.content }}
             </n-ellipsis>
           </n-thing>
-          <div v-if="oneArticle.photos && oneArticle.photos.length > 0">
-            <img 
+          <div v-if="oneArticle.photos && oneArticle.photos.length > 0" @click.stop>
+            <n-image
               :src="oneArticle.photos[0].base64Photo" 
               :alt="oneArticle.photos[0].name"
-              style="max-width: 100px; max-height: 100px; object-fit: cover;"
-            >
+              style="max-width: auto; height: 100px; object-fit: cover;"
+            />
           </div>
+        </div>
+        <div @click.stop>
+          <font-awesome-icon 
+            :icon="oneArticle.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+            @click="toggleLike(oneArticle)"
+            :style="{ color: oneArticle.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+          />
+          <span class="like-count">{{ oneArticle.likeCount || 0 }}</span>
         </div>
       </n-list-item>
     </n-list>
@@ -55,7 +63,7 @@ async function showClubArticleList(clubId) {
     articleList.value=response.data;
     
     // await Promise.all(articleList.value.map(article=> fetchComment(article.id)));
-    //await checkLikeStatus();
+    await checkLikeStatus();
 
   }catch(error){
     console.error("Error fetching club articles:", error);
@@ -82,6 +90,37 @@ async function enterArticle(articleId){
   }
 }
 
+// 檢查按讚狀態
+async function checkLikeStatus() {
+    for (const article of articleList.value) {
+        try {
+            const response = await axios.get(`/articleLike`, {
+                params: { userId: userId, articleId: article.id }
+            });
+            article.isLiked = response.data;
+        } catch (error) {
+            console.error('Error checking like status:', error);
+        }
+    }
+}
+
+// 切換按讚狀態
+async function toggleLike(article) {
+    try {
+        await axios.post('/articleLike', null, {
+            params: { userId: userId, articleId: article.id, type: 1 }
+        });
+        article.isLiked = !article.isLiked;
+        if(article.likeCount=null){
+          article.likeCount=0;
+        }
+        article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
+        message.success(article.isLiked ? '已按讚!' : '已取消讚!');
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        message.error('更新按讚狀態失敗');
+    }
+}
 
 </script>
     
