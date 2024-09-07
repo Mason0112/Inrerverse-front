@@ -3,7 +3,7 @@
     <template #header>
       <n-h1>活動詳情</n-h1>
     </template>
-    
+
     <n-spin :show="loading">
       <n-space v-if="eventDetail && event" vertical size="large">
         <n-h2>{{ event.eventName }}</n-h2>
@@ -33,15 +33,19 @@
             {{ approvedParticipants.length }} / {{ eventDetail.participantMax }}
           </n-descriptions-item>
         </n-descriptions>
-        
-        
+
+
         <n-space justify="end">
           <n-button @click="handleParticipation" type="primary" :disabled="!canParticipate" :loading="loading">
-        {{ participationButtonText }}
-      </n-button>
+            {{ participationButtonText }}
+          </n-button>
         </n-space>
-          <!-- 已批准的參加者列表 -->
-          <n-card title="參加者" v-if="approvedParticipants.length > 0">
+
+        <!-- 相簿 -->
+        <EventPhoto :workshopId="route.params.id" :isMember="isWorkshopMember" />
+
+        <!-- 已批准的參加者列表 -->
+        <n-card title="參加者" v-if="approvedParticipants.length > 0">
           <n-list>
             <n-list-item v-for="participant in approvedParticipants" :key="participant.userId">
               {{ participant.userName }}
@@ -52,7 +56,7 @@
       </n-space>
       <n-result v-else-if="error" status="error" :title="error" />
     </n-spin>
-    
+
     <template #footer>
       <n-button @click="back" type="primary">
         返回列表
@@ -66,6 +70,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
+import EventPhoto from './EventPhoto.vue';
 import {
   NCard, NSpin, NSpace, NH1, NH2, NDescriptions,
   NDescriptionsItem, NButton, NResult, useMessage,
@@ -165,7 +170,7 @@ const joinButtonText = computed(() => {
 
 const joinEvent = async () => {
   if (!canJoin.value) return;
-  
+
   joining.value = true;
   try {
     const response = await axios.post('/eventParticipant', {
@@ -184,7 +189,7 @@ const joinEvent = async () => {
 
 const handleParticipation = async () => {
   if (!canParticipate.value) return;
-  
+
   loading.value = true;
   try {
     const response = await axios.post('/eventParticipant', {
@@ -208,6 +213,9 @@ const handleParticipation = async () => {
   }
 };
 
+const isWorkshopMember = computed(() => {
+  return participationStatus.value && participationStatus.value.status === 1;
+});
 
 const back = () => {
   router.go(-1);

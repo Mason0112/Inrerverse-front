@@ -38,7 +38,7 @@ import ClubEdit from "@/views/club/ClubEdit.vue";
 import ClubApprove from "@/views/club/ClubApprove.vue";
 import ClubApprove2 from "@/views/club/ClubApprove2.vue";
 import ClubMy from "@/views/club/ClubMy.vue";
-import ClubPhotoAlbum from "@/views/club/ClubPhotoAlbum.vue";
+import ClubPhotoAlbum from "@/views/club/EventPhotoAlbum.vue";
 import EventList from "@/views/Event/EventList.vue";
 import EventDetail from "@/views/Event/EventDetail.vue";
 import ClubEvent from "@/views/Event/ClubEvent.vue";
@@ -48,7 +48,7 @@ import PaymentStatus from "@/views/Order/PaymentStatus.vue";
 import oneArticle from "@/views/forum/oneArticle.vue";
 import EventApprove from "@/views/Event/EventApprove.vue";
 import MyJoinedEvent from "@/views/Event/MyJoinedEvent.vue";
-
+import EventPhoto from "@/views/Event/EventPhoto.vue";
 
 const routes = [
     //品琇
@@ -86,9 +86,8 @@ const routes = [
     { path: "/event/workshop/new",name:"event-addWorkshop-link", component:AddWorkshopForm},
     { path: "/event/approve",name:"event-approve-link", component:EventApprove},
     { path: "/event/my",name:"event-my-link", component:MyJoinedEvent},
+    { path: "/event/photo",name:"event-photo-link", component:EventPhoto},
 
-
-    
 
 
     //暐欣
