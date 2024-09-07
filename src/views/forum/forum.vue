@@ -1,27 +1,32 @@
 <template>
   <div v-for="oneArticle in articleList" :key="oneArticle.id">
-      <n-list hoverable clickable>
-        <n-list-item @click="enterArticle(oneArticle.id)">
+    <n-list hoverable clickable>
+      <n-list-item @click="enterArticle(oneArticle.id)">
+        <div class="flexbox">
           <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
             <template #description>
               <n-space size="small" style="margin-top: 4px">
                 <n-tag :bordered="false" type="info" size="small">
                   <!-- hashtag -->
                 </n-tag>
-                
               </n-space>
             </template>
             <n-ellipsis style="max-width: 240px">
-              {{oneArticle.content}}
+              {{ oneArticle.content }}
             </n-ellipsis>
           </n-thing>
-          
-          
-        </n-list-item>
-      </n-list>
-  
+          <div v-if="oneArticle.photos && oneArticle.photos.length > 0">
+            <img 
+              :src="oneArticle.photos[0].base64Photo" 
+              :alt="oneArticle.photos[0].name"
+              style="max-width: 100px; max-height: 100px; object-fit: cover;"
+            >
+          </div>
+        </div>
+      </n-list-item>
+    </n-list>
   </div>
-  </template>
+</template>
     
 <script setup>
   import {onMounted, ref, inject } from "vue";
@@ -48,6 +53,7 @@ async function showClubArticleList(clubId) {
   try{
     const response = await axios.get(`/club/article/all/${clubId.value}`);
     articleList.value=response.data;
+    
     // await Promise.all(articleList.value.map(article=> fetchComment(article.id)));
     //await checkLikeStatus();
 
