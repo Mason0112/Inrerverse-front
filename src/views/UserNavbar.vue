@@ -29,6 +29,8 @@
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-my-link' }" @click="closeDropdown('club')">我的俱樂部
               </RouterLink></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'club-favorite-link' }" @click="closeDropdown('club')">收藏
+              </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'event-all-link' }" @click="closeDropdown('club')">工作坊
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">我主辦的活動/工作坊

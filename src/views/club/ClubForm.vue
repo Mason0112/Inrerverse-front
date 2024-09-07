@@ -68,12 +68,12 @@ import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import {
   NCard, NSpin, NForm, NFormItem, NInput, NSelect, NButton,
-  NSpace, NUpload, NImage, NAlert, NH1
+  NSpace, NUpload, NImage, NAlert, NH1,useMessage
 } from 'naive-ui';
 
 const router = useRouter();
 const userStore = useUserStore();
-
+const message = useMessage(); 
 const loading = ref(false);
 const errorMessage = ref('');
 const photoFile = ref(null);
@@ -129,7 +129,7 @@ const submitForm = async () => {
       }
     });
     console.log('Club created:', response.data);
-    window.$message.success('俱樂部創建成功，您已自動加入該俱樂部！');
+    message.success('俱樂部創建成功，您已自動加入該俱樂部！');
     router.push({ name: 'club-all-link' });
   } catch (error) {
     console.error('Error creating club:', error);

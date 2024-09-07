@@ -12,32 +12,45 @@
       <p class="club-info"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
       <p class="club-info"><strong>創建者：</strong> {{ club.userName }}</p>
 
-     <!-- 加入俱樂部按鈕 -->
-    <button v-if="!isMember && !isPending && !isCreator" @click="joinClub" class="button join-button">
-      {{ club.isPublic ? '加入俱樂部' : '申請加入' }}
-    </button>
-    <p v-else-if="isMember" class="member-status">您已是該俱樂部成員</p>
-    <p v-else-if="isPending" class="member-status pending">您的申請正在審核中</p>
+      <!-- 加入俱樂部按鈕 -->
+      <button v-if="!isMember && !isPending && !isCreator" @click="joinClub" class="button join-button">
+        {{ club.isPublic ? '加入俱樂部' : '申請加入' }}
+      </button>
+      <p v-else-if="isMember" class="member-status">您已是該俱樂部成員</p>
+      <p v-else-if="isPending" class="member-status pending">您的申請正在審核中</p>
 
       <div v-if="errorMessage" class="error-message">
-        <!-- 成功消息 -->
-        <div v-if="successMessage" class="message success-message">
-          <strong>成功：</strong>
-          <span>{{ successMessage }}</span>
-        </div>
-
-        <!-- 錯誤消息 -->
-        <div v-if="errorMessage" class="message error-message">
-          <strong>錯誤：</strong>
-          <span>{{ errorMessage }}</span>
-        </div>
+        <strong>錯誤：</strong>
+        <span>{{ errorMessage }}</span>
       </div>
+      <div v-if="successMessage" class="success-message">
+        <strong>成功：</strong>
+        <span>{{ successMessage }}</span>
+      </div>
+
       <ClubPhotoAlbum v-if="club" :clubId="clubId" :isMember="isMember" />
-      <ClubEvent :clubId="clubId" :isMember="isMember" />
+
+      <!-- 新增活動按鈕和可折疊表單 -->
+      <div class="event-form-container">
+        <button @click="toggleEventForm" class="button event-button">
+          {{ showEventForm ? '收起表單' : '新增活動' }}
+        </button>
+        <transition name="slide-fade">
+          <div v-if="showEventForm" class="event-form">
+            <ClubEvent :clubId="clubId" :isMember="isMember" @event-added="handleEventAdded" />
+          </div>
+        </transition>
+      </div>
+
+      <!-- 活動列表 -->
+      <div class="event-list">
+        <!-- 這裡可以添加活動列表的展示邏輯 -->
+      </div>
 
       <div class="mt-8">
         <ClubMembersList :clubId="clubId" />
       </div>
+      
       <div class="button-group">
         <router-link v-if="isCreator" :to="{ name: 'club-edit-link', params: { id: club.id } }"
           class="button button-blue">
@@ -67,7 +80,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -92,7 +104,7 @@ const successMessage = ref('');
 const showDeleteConfirm = ref(false);
 const isMember = ref(false);
 const isPending = ref(false);
-
+const showEventForm = ref(false);
 
 const clubId = route.params.id;
 
@@ -150,7 +162,6 @@ const checkMembership = async () => {
     }
 
     if (!isMember.value && !isPending.value) {
-      // 用戶既不是成員也不是待審核成員
       isMember.value = false;
       isPending.value = false;
     }
@@ -184,7 +195,6 @@ const joinClub = async () => {
   } catch (error) {
     console.error('Error joining club:', error);
     if (error.response) {
-      // 服务器响应了，但状态码不在 2xx 范围内
       if (error.response.status === 400) {
         errorMessage.value = '無法加入俱樂部：請求無效。可能您已經是成員或已申請加入。';
       } else if (error.response.status === 403) {
@@ -195,17 +205,26 @@ const joinClub = async () => {
         errorMessage.value = `無法加入俱樂部：${error.response.data.message || '未知錯誤'}`;
       }
     } else if (error.request) {
-      // 请求已经发出，但没有收到响应
       errorMessage.value = '無法加入俱樂部：未收到服務器響應。請檢查您的網絡連接。';
     } else {
-      // 在设置请求时发生了一些事情，触发了错误
       errorMessage.value = '無法加入俱樂部：' + error.message;
     }
   }
 };
 
+const toggleEventForm = () => {
+  showEventForm.value = !showEventForm.value;
+};
+
+const handleEventAdded = () => {
+  showEventForm.value = false;
+  successMessage.value = '活動新增成功！';
+  // 這裡可以添加重新獲取活動列表的邏輯
+};
+
 onMounted(fetchClubDetails);
 </script>
+
 <style scoped>
 /* 主題顏色 */
 :root {
@@ -284,54 +303,7 @@ h1 {
   color: var(--secondary-purple);
 }
 
-/* 更新加入按钮样式 */
-.join-button {
-  display: block;
-  width: 100%;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem 1.5rem;
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-align: center;
-  color: #ffffff;
-  background-color: #ff69b4;
-  /* 粉红色 */
-  border: none;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(255, 105, 180, 0.3);
-}
-
-.join-button:hover {
-  background-color: #ff1493;
-  /* 深粉红色 */
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(255, 105, 180, 0.5);
-}
-
-.join-button:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 4px rgba(255, 105, 180, 0.5);
-}
-
-.member-status {
-  text-align: center;
-  color: #8a2be2;
-  /* 紫罗兰色 */
-  font-weight: bold;
-  font-size: 1.1rem;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background-color: #e6e6fa;
-  /* 淡紫色背景 */
-  border-radius: 30px;
-  box-shadow: 0 2px 4px rgba(138, 43, 226, 0.2);
-}
-
-/* 如果需要，可以调整其他按钮的样式以保持一致性 */
+/* 按鈕樣式 */
 .button {
   display: inline-block;
   padding: 0.5rem 1rem;
@@ -346,71 +318,73 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+.join-button {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #ffffff;
+  background-color: #ff69b4;
+  border-radius: 30px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(255, 105, 180, 0.3);
+}
+
+.join-button:hover {
+  background-color: #ff1493;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(255, 105, 180, 0.5);
+}
+
 .button-blue {
-  background-color: #1e90ff;
-  /* 道奇蓝 */
-  color: white;
+  background-color: var(--button-blue);
+  color: pink;
 }
 
 .button-blue:hover {
-  background-color: #4169e1;
-  /* 皇家蓝 */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(30, 144, 255, 0.3);
+  background-color: var(--button-blue-hover);
 }
 
 .button-red {
-  background-color: #ff6347;
-  /* 番茄红 */
-  color: white;
+  background-color: var(--button-red);
+  color: pink;
 }
 
 .button-red:hover {
-  background-color: #dc143c;
-  /* 猩红 */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(255, 99, 71, 0.3);
+  background-color: var(--button-red-hover);
 }
 
 .button-gray {
-  background-color: #a9a9a9;
-  /* 深灰色 */
-  color: white;
+  background-color: var(--button-gray);
+  color: var(--text-color);
 }
 
 .button-gray:hover {
-  background-color: #808080;
-  /* 灰色 */
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(169, 169, 169, 0.3);
+  background-color: var(--button-gray-hover);
 }
 
-/* 刪除確認對話框 */
-.delete-confirm-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.delete-confirm-dialog {
-  background-color: white;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  max-width: 400px;
+/* 成員狀態 */
+.member-status {
   text-align: center;
+  color: var(--secondary-purple);
+  font-weight: bold;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background-color: #e6e6fa;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* 成功和錯誤消息 */
-.message {
+/* 消息樣式 */
+.success-message, .error-message {
   padding: 1rem;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .success-message {
@@ -425,8 +399,84 @@ h1 {
   color: #FF69B4;
 }
 
+/* 刪除確認對話框 */
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.delete-confirm-dialog {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 新增活動表單樣式 */
+.event-form-container {
+  margin-top: 2rem;
+}
+
+.event-button {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  color: #ffffff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3);
+}
+
+.event-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(76, 175, 80, 0.5);
+}
+
+.event-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 過渡動畫 */
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+
 /* 響應式設計 */
 @media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
+
   .club-photo-container {
     width: 150px;
     height: 150px;
@@ -438,31 +488,5 @@ h1 {
     margin-right: 0;
     margin-bottom: 0.5rem;
   }
-}
-
-.loading {
-  text-align: center;
-  font-size: 1.2rem;
-  color: var(--secondary-purple);
-  margin-top: 2rem;
-}
-
-.button-group {
-  margin-top: 1rem;
-}
-
-.join-button {
-  display: block;
-  width: 100%;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-.member-status {
-  text-align: center;
-  color: var(--secondary-purple);
-  font-weight: bold;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
 }
 </style>

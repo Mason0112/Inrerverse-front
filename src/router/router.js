@@ -49,6 +49,7 @@ import oneArticle from "@/views/forum/oneArticle.vue";
 import EventApprove from "@/views/Event/EventApprove.vue";
 import MyJoinedEvent from "@/views/Event/MyJoinedEvent.vue";
 import EventPhoto from "@/views/Event/EventPhoto.vue";
+import ClubFavorite from "@/views/club/ClubFavorite.vue";
 
 const routes = [
     //品琇
@@ -78,6 +79,8 @@ const routes = [
     { path: "/clubMember/approve2/:id",name:"club-approve2-link", component:ClubApprove2},
     { path: "/clubMember/my-clubs",name:"club-my-link", component:ClubMy},
     { path: "/club/album",name:"club-album-link", component:ClubPhotoAlbum},
+    { path: "/club/favorite",name:"club-favorite-link", component:ClubFavorite},
+
 
     { path: "/event/all",name:"event-all-link", component:EventList},
     { path: "/event/detail/:id",name:"event-detail-link", component:EventDetail},
