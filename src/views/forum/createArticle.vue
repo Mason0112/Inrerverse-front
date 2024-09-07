@@ -65,12 +65,16 @@ async function submit() {
       user: { id: userId }
     });
 
-    const articleResponse = await axios.post('/club/article', {
-      content: content.value,
-      title: title.value,
-      club: { id: 1 },
-      user: { id: userId }
-    });
+  const articleDTO = {
+  title: title.value,
+  content: content.value,
+  clubId: 1,
+  userId: userId
+};
+
+console.log(articleDTO)
+
+    const articleResponse = await axios.post('/club/article', articleDTO);
 
     console.log('Article response:', articleResponse);
     const articleId = articleResponse.data.id
@@ -80,6 +84,7 @@ async function submit() {
       const formData = new FormData();
       formData.append('file', file.file);
       formData.append('articleId', articleId)
+      console.log("發出POST照片請求")
       await axios.post('/club/articlePhoto', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
