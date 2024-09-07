@@ -58,21 +58,21 @@ const handleChange = (options) => {
 // 修改後的提交函數
 async function submit() {
   try {
-    console.log('Sending data:', {
+      console.log('Sending data:', {
       content: content.value,
       title: title.value,
       club: { id: 1 },
       user: { id: userId }
-    });
+      });
 
-  const articleDTO = {
-  title: title.value,
-  content: content.value,
-  clubId: 1,
-  userId: userId
-};
+      const articleDTO = {
+      title: title.value,
+      content: content.value,
+      clubId: 1,
+      userId: userId
+    };
 
-console.log(articleDTO)
+    console.log(articleDTO)
 
     const articleResponse = await axios.post('/club/article', articleDTO);
 
@@ -91,7 +91,6 @@ console.log(articleDTO)
         }
       });
     }
-    alert('提交成功')
     // 清空內容
     content.value = '';
     title.value = ''
