@@ -38,7 +38,7 @@ import ClubEdit from "@/views/club/ClubEdit.vue";
 import ClubApprove from "@/views/club/ClubApprove.vue";
 import ClubApprove2 from "@/views/club/ClubApprove2.vue";
 import ClubMy from "@/views/club/ClubMy.vue";
-import ClubPhotoAlbum from "@/views/club/EventPhotoAlbum.vue";
+import ClubPhotoAlbum from "@/views/club/ClubPhotoAlbum.vue";
 import EventList from "@/views/Event/EventList.vue";
 import EventDetail from "@/views/Event/EventDetail.vue";
 import ClubEvent from "@/views/Event/ClubEvent.vue";

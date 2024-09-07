@@ -77,7 +77,7 @@ import { useRouter, useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import ClubMembersList from '@/views/club/ClubMembersList.vue';
-import ClubPhotoAlbum from './EventPhotoAlbum.vue';
+import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
 import ClubEvent from '../Event/ClubEvent.vue';
 
 const router = useRouter();

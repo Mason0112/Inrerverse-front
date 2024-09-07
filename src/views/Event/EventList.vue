@@ -53,30 +53,41 @@
               沒有找到工作坊活動
             </div>
             <div v-else>
-      <div 
-        v-for="event in filteredEvents" 
-        :key="event.id" 
-        class="custom-event-box"
-      >
-        <div class="ts-content">
-          <div class="ts-row">
-            <div class="column is-7-wide is-center-aligned">
-              <div class="ts-header" @click="goToEventDetail(event.id)">{{ event.eventName }}</div>
-            </div>
-            <div class="column is-5-wide is-right-aligned">
-              <div class="ts-text is-secondary">
-                <p>創建者: {{ event.creatorName }}</p>
-                <p>開始時間: {{ formatDate(event.startTime) }}</p>
+              <div 
+                v-for="event in filteredEvents" 
+                :key="event.id" 
+                class="custom-event-box"
+              >
+                <div class="ts-content">
+                  <div class="ts-row">
+                    <div class="column is-4-wide">
+                      <div class="event-cover-container" @click="goToEventDetail(event.id)">
+                        <img 
+                          v-if="event.coverPhotoUrl"
+                          :src="event.coverPhotoUrl" 
+                          :alt="event.eventName"
+                          class="event-cover-photo"
+                        >
+                        <div v-else class="no-photo">無照片</div>
+                      </div>
+                    </div>
+                    <div class="column is-6-wide">
+                      <div class="ts-header" @click="goToEventDetail(event.id)">{{ event.eventName }}</div>
+                      <div class="ts-text is-secondary">
+                        <p>創建者: {{ event.creatorName }}</p>
+                        <p>開始時間: {{ formatDate(event.startTime) }}</p>
+                      </div>
+                    </div>
+                    <div class="column is-4-wide is-right-aligned">
+                      <div v-if="canUserEdit(event)" class="action-buttons">
+                        <n-button size="small" @click.stop="editEvent(event)" class="custom-button">編輯</n-button>
+                        <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div v-if="canUserEdit(event)" class="action-buttons">
-                <n-button size="small" @click.stop="editEvent(event)" class="custom-button">編輯</n-button>
-                <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
-              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
           </div>
         </div>
       </div>
@@ -140,16 +151,21 @@ const fetchEvents = async () => {
     const response = await axios.get('/events');
     const workshopEvents = response.data.filter(event => event.source === 2);
     
-    // 获取每个事件的 EventDetail
+    // 获取每个事件的 EventDetail 和照片
     const eventsWithDetails = await Promise.all(workshopEvents.map(async (event) => {
       try {
-        const detailResponse = await axios.get(`/eventDetail/${event.id}/show`);
+        const [detailResponse, photosResponse] = await Promise.all([
+          axios.get(`/eventDetail/${event.id}/show`),
+          axios.get(`/eventPhoto/event/${event.id}`)
+        ]);
+        const firstPhoto = photosResponse.data && photosResponse.data.length > 0 ? photosResponse.data[0] : null;
         return {
           ...event,
-          startTime: detailResponse.data.startTime
+          startTime: detailResponse.data.startTime,
+          coverPhotoUrl: firstPhoto ? `${import.meta.env.VITE_API_URL}/eventPhoto/${event.id}/${firstPhoto.id}` : null
         };
       } catch (error) {
-        console.error(`獲取事件 ${event.id} 的詳情失敗:`, error);
+        console.error(`獲取事件 ${event.id} 的詳情或照片失敗:`, error);
         return event;
       }
     }));
@@ -188,13 +204,11 @@ const sortEvents = () => {
   });
 };
 
-
 const formatDate = (dateString) => {
   if (!dateString) return '未設置時間';
   const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
   return new Date(dateString).toLocaleDateString('zh-TW', options);
 };
-
 
 const canUserEdit = (event) => {
   return userStore.userId === event.eventCreatorId;
@@ -263,7 +277,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 保持原有的樣式 */
 .custom-container {
   width: 80%;
   margin: 0 auto;
@@ -299,12 +312,32 @@ onMounted(() => {
   box-shadow: 0 2px 4px rgba(219, 112, 147, 0.3);
 }
 
-.custom-event-box:hover .ts-header {
-  color: #C71585;
+.event-cover-container {
+  width: 200px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0;
 }
 
-.custom-event-box:hover .ts-text.is-secondary {
-  color: #8B0000;
+.event-cover-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.event-cover-container:hover .event-cover-photo {
+  transform: scale(1.05);
+}
+
+.no-photo {
+  font-size: 1rem;
+  color: #999;
 }
 
 .ts-header {
@@ -325,7 +358,6 @@ onMounted(() => {
   margin-left: 0.5rem;
 }
 
-/* 調整 Naive UI 按鈕樣式以匹配原有設計 */
 .custom-button {
   background-color: #FFB6C1 !important;
   color: #FFF !important;

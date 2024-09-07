@@ -1,10 +1,10 @@
 <template>
   <div class="ts-container">
-    <div class="ts-header is-huge is-center-aligned">活動相簿</div>
+    <div class="ts-header is-huge is-center-aligned">俱樂部相簿</div>
     <div class="ts-space"></div>
     
-    <!-- 上傳照片表單，只有創建者可見 -->
-    <div v-if="isCreator" class="ts-space">
+    <!-- 上傳照片表單，只有成員可見 -->
+    <div v-if="isMember" class="ts-space">
       <div class="ts-header is-large">上傳新照片</div>
       <div class="ts-space"></div>
       <div class="ts-input is-fluid">
@@ -29,15 +29,15 @@
       <transition-group name="fade" tag="div" class="carousel-slides">
         <div v-for="(photo, index) in photos" :key="photo.id" v-show="index === currentIndex" class="carousel-slide">
           <img 
-            :src="getPhotoUrl(eventId, photo.id)"
-            :alt="'活動照片'"
+            :src="getPhotoUrl(clubId, photo.id)"
+            :alt="'俱樂部照片'"
             @error="handleImageError"
             :data-retries="0"
           >
           <div class="carousel-caption">
             <p>上傳者: {{ photo.userName }}</p>
             <button 
-              v-if="isCreator" 
+              v-if="isMember && photo.uploaderId === userStore.userId" 
               @click.stop="deletePhoto(photo.id)" 
               class="ts-button is-negative is-small"
             >
@@ -68,18 +68,18 @@
 
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 
 const props = defineProps({
-  eventId: {
+  clubId: {
     type: String,
     required: true
   },
-  eventCreatorId: {
-    type: String,
+  isMember: {
+    type: Boolean,
     required: true
   }
 });
@@ -94,24 +94,20 @@ const loading = ref(true);
 const currentIndex = ref(0);
 let autoPlayInterval = null;
 
-const isCreator = computed(() => {
-  return userStore.userId === props.eventCreatorId;
-});
-
 const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0];
 };
 
 const uploadPhoto = async () => {
-  if (!selectedFile.value || !isCreator.value) return;
+  if (!selectedFile.value || !props.isMember) return;
 
   const formData = new FormData();
   formData.append('file', selectedFile.value);
-  formData.append('eventId', props.eventId);
+  formData.append('clubId', props.clubId);
   formData.append('uploaderId', userStore.userId);
 
   try {
-    const response = await axios.post('/eventPhoto/new', formData, {
+    const response = await axios.post('/clubPhoto/new', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -121,7 +117,7 @@ const uploadPhoto = async () => {
       ...response.data,
       uploaderId: userStore.userId,
       userName: userStore.nickname,
-      url: getPhotoUrl(props.eventId, response.data.id)
+      url: getPhotoUrl(props.clubId, response.data.id)
     };
     
     photos.value.unshift(newPhoto);
@@ -178,10 +174,10 @@ const fetchPhotos = async () => {
 };
 
 const deletePhoto = async (photoId) => {
-  if (!isCreator.value) return;
+  if (!props.isMember) return;
   
   try {
-    await axios.delete(`/eventPhoto/delete/${photoId}`, {
+    await axios.delete(`/clubPhoto/delete/${photoId}`, {
       params: { uploaderId: userStore.userId }
     });
     photos.value = photos.value.filter(photo => photo.id !== photoId);

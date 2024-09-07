@@ -42,7 +42,7 @@
         </n-space>
 
         <!-- 相簿 -->
-        <EventPhoto :workshopId="route.params.id" :isMember="isWorkshopMember" />
+        <EventPhoto :workshopId="route.params.id"  :eventCreatorId="event.eventCreatorId" />
 
         <!-- 已批准的參加者列表 -->
         <n-card title="參加者" v-if="approvedParticipants.length > 0">
@@ -117,6 +117,7 @@ const fetchEvent = async () => {
   try {
     const response = await axios.get(`/events/${route.params.id}`);
     event.value = response.data;
+    console.log("Event data:", event.value);
   } catch (error) {
     console.error('獲取活動名稱失敗:', error);
     error.value = '獲取活動名稱失敗';
