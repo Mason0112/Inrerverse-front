@@ -52,6 +52,7 @@ const handleChange = (options) => {
 
 // 提交
 async function submit() {
+  console.log(userId+'44444')
   try {
   //axios.post 返回一個 Promise，所以使用 await 來等待請求完成並獲取回應。
   const postResponse = await axios.post('/userPost', {

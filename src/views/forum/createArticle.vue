@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios'
 import useUserStore from '@/stores/userstore';
 
@@ -31,7 +31,13 @@ const content = ref('')
 const title=ref('')
 const fileList = ref([])  
 const userStore = useUserStore();
+let userId = userStore.userId;
 const upload = ref(null)
+
+
+onMounted(() => {
+  console.log('Component mounted. User ID:', userId);
+});
 
 const customRequest = ({ file, onFinish, onError }) => {
   const reader = new FileReader();
@@ -52,41 +58,35 @@ const handleChange = (options) => {
 // 修改後的提交函數
 async function submit() {
   try {
-    console.log('Submitting article. Current userStore.userId:', userStore.userId);
-    // 確保 userId 存在
-    if (!userStore.userId) {
-      console.error('User ID is missing');
-      alert('User ID is missing. Please log in.');
-      return;
-      }
-    // 創建 DTO 對象
-    const articleDTO = {
+    console.log('Sending data:', {
       content: content.value,
       title: title.value,
-      user:{
-        id:userStore.userId
-      },
-    }
-    // console.log('Article DTO:', articleDTO);
+      club: { id: 1 },
+      user: { id: userId }
+    });
 
-    const articleResponse = await axios.post('/club/article', articleDTO);
-    const createdArticleId = articleResponse.data.id
-    // console.log('Article created successfully:', articleResponse.data);
+    const articleResponse = await axios.post('/club/article', {
+      content: content.value,
+      title: title.value,
+      club: { id: 1 },
+      user: { id: userId }
+    });
+
+    console.log('Article response:', articleResponse);
+    const articleId = articleResponse.data.id
 
     // 上傳圖片，獲取 URL
     for (const file of fileList.value) {
       const formData = new FormData();
       formData.append('file', file.file);
-      formData.append('articleId', createdArticleId)
+      formData.append('articleId', articleId)
       await axios.post('/club/articlePhoto', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
     }
-    const updatedArticle = await axios.get(`/club/article/${createdArticleId}`);
-    console.log('Updated article:', updatedArticle.data);
-
+    alert('提交成功')
     // 清空內容
     content.value = '';
     title.value = ''
