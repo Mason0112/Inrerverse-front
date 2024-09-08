@@ -2,7 +2,7 @@
     <div v-if="article" class="article-container">
       <h1>{{ article.title }}</h1>
       <div class="article-meta">
-        <span>作者: {{ article.user? article.user.nickname : "匿名" }}</span>
+        <span>作者: {{ article.userId? article.userName : "匿名" }}</span>
         <span>發布時間: {{ formatDate(article.added) }}</span>
       </div>
       <div class="article-content">{{ article.content }}</div>
