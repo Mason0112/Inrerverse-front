@@ -12,12 +12,15 @@
               <RouterView></RouterView>
             </main>
           </div>
-          <div class="container" v-else>
+          <div class="container-fluid" v-else>
             <div>
               <UserNavbar></UserNavbar>
             </div>
             <div>
               <RouterView></RouterView>
+            </div>
+            <div>
+              <Footer></Footer>
             </div>
           </div>
         </template>
@@ -29,6 +32,7 @@
 <script setup>
 import UserNavbar from "./views/UserNavbar.vue";
 import AdminSideBar from "./views/AdminSideBar.vue";
+import Footer from "./views/Footer.vue";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
