@@ -16,7 +16,7 @@
       <button v-if="!isMember && !isPending && !isCreator" @click="joinClub" class="button join-button">
         {{ club.isPublic ? '加入俱樂部' : '申請加入' }}
       </button>
-      <p v-else-if="isMember" class="member-status">您已是該俱樂部成員</p>
+      <p v-else-if="isMember" class="member-status">歡迎來到俱樂部</p>
       <p v-else-if="isPending" class="member-status pending">您的申請正在審核中</p>
 
       <div v-if="errorMessage" class="error-message">

@@ -2,11 +2,8 @@
   <div class="container mx-auto p-4">
     <h1 class="text-4xl font-bold text-center text-pink-400 mb-8">所有俱樂部</h1>
     <div class="flex justify-end mb-4">
-
       <router-link :to="{ name: 'club-form-link' }" class="new-club-button">新增俱樂部</router-link>
-
       <router-link :to="{ name: 'club-favorite-link' }" class="new-club-button">我的收藏</router-link>
-      
     </div>
     <!-- 搜索和排序控件 -->
     <div class="flex justify-between items-center mb-4">
@@ -49,9 +46,9 @@
           </div>
         </div>
         <div class="club-footer">
-          <button @click="joinClub(club)" class="join-button">
+          <!-- <button @click="joinClub(club)" class="join-button">
             加入
-          </button>
+          </button> -->
           <button @click="toggleFavorite(club)" class="favorite-button" :class="{ 'is-favorite': club.isFavorite }">
             {{ club.isFavorite ? '❤' : '♡' }}
           </button>
@@ -62,9 +59,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import { useMessage } from 'naive-ui';
 
 const clubs = ref([]);
 const filteredClubs = ref([]);
@@ -73,6 +71,9 @@ const sortOption = ref('nameAsc');
 const loading = ref(true);
 const error = ref(null);
 const userStore = useUserStore();
+const message = useMessage();
+
+const isLoggedIn = computed(() => !!userStore.userId);
 
 const fetchClubs = async () => {
   try {
@@ -81,7 +82,9 @@ const fetchClubs = async () => {
       ...club,
       isFavorite: false // 初始化收藏状态
     }));
-    await fetchFavorites();
+    if (isLoggedIn.value) {
+      await fetchFavorites();
+    }
     filterClubs();
     loading.value = false;
   } catch (err) {
@@ -92,6 +95,8 @@ const fetchClubs = async () => {
 };
 
 const fetchFavorites = async () => {
+  if (!isLoggedIn.value) return;
+  
   try {
     const response = await axios.get(`/clubFavorite/user/${userStore.userId}`);
     const favorites = new Set(response.data.map(fav => fav.clubId));
@@ -100,6 +105,7 @@ const fetchFavorites = async () => {
     });
   } catch (err) {
     console.error('Error fetching favorites:', err);
+    // 不顯示錯誤，只是記錄它
   }
 };
 
@@ -129,25 +135,35 @@ const getPhotoUrl = (photoId) => {
 };
 
 const joinClub = async (club) => {
+  if (!isLoggedIn.value) {
+    message.warning('請先登入以加入俱樂部');
+    return;
+  }
+
   const clubMemberDTO = {
     clubId: club.id,
     userId: userStore.userId,
     status: club.isPublic === 1 ? 1 : 0
   };
   try {
-    const response = await axios.post('/clubMember', clubMemberDTO);
+    await axios.post('/clubMember', clubMemberDTO);
     if (club.isPublic === 1) {
-      alert('已成功加入俱樂部！');
+      message.success('已成功加入俱樂部！');
     } else {
-      alert('已成功提交申請！等待審核中。');
+      message.success('已成功提交申請！等待審核中。');
     }
   } catch (error) {
     console.error('Error joining club:', error);
-    alert('無法加入俱樂部，請稍後再試。');
+    message.error('無法加入俱樂部，請稍後再試。');
   }
 };
 
 const toggleFavorite = async (club) => {
+  if (!isLoggedIn.value) {
+    message.warning('請先登入以收藏俱樂部');
+    return;
+  }
+
   try {
     if (club.isFavorite) {
       await axios.delete(`/clubFavorite/user/${userStore.userId}/club/${club.id}`);
@@ -158,9 +174,10 @@ const toggleFavorite = async (club) => {
       });
     }
     club.isFavorite = !club.isFavorite;
+    message.success(club.isFavorite ? '已加入收藏' : '已取消收藏');
   } catch (error) {
     console.error('Error toggling favorite:', error);
-    alert('操作失敗，請稍後再試。');
+    message.error('操作失敗，請稍後再試。');
   }
 };
 
@@ -298,11 +315,6 @@ onMounted(fetchClubs);
   color: white;
 }
 
-.favorite-button.is-favorite {
-  background-color: #ff69b4;
-  color: white;
-}
-
 .new-club-button {
   padding: 0.75rem 1.5rem;
   background-color: #aa6788;
@@ -315,6 +327,7 @@ onMounted(fetchClubs);
   text-decoration: none;
   display: inline-block;
   box-shadow: 0 4px 6px rgba(255, 105, 180, 0.4);
+  margin-left: 1rem;
 }
 
 .new-club-button:hover {

@@ -111,7 +111,7 @@
   }
   
   .club-image {
-    height: 200px;
+    height: 300px;
     overflow: hidden;
   }
   
