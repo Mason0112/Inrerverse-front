@@ -7,7 +7,8 @@
       </div>
       <div class="article-content">{{ article.content }}</div>
       <div class="article-photos">
-        <img v-for="(photo, index) in article.photos" :key="index" :src="photo.base64Photo" :alt="`Photo ${index + 1}`" />
+        <n-image v-for="(photo, index) in article.photos" :key="index" :src="photo.base64Photo" :alt="`Photo ${index + 1}`" 
+        style="max-width: auto; height: 200px; object-fit: cover;"/>
       </div>
       <div class="article-actions">
         <button @click="handleLike">讚 ({{ article.likeCount }})</button>
