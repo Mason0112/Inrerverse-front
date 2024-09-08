@@ -1,29 +1,32 @@
 <template>
   <div v-for="oneArticle in articleList" :key="oneArticle.id">
-    <n-list hoverable clickable>
+    <n-list hoverable>
       <n-list-item>
-        <div class="flexbox" @click="enterArticle(oneArticle.id)">
-          <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
-            <template #description>
-              <n-space size="small" style="margin-top: 4px">
-                <n-tag :bordered="false" type="info" size="small">
-                  <!-- hashtag -->
-                </n-tag>
-              </n-space>
-            </template>
-            <n-ellipsis style="max-width: 240px">
-              {{ oneArticle.content }}
-            </n-ellipsis>
-          </n-thing>
-          <div v-if="oneArticle.photos && oneArticle.photos.length > 0" @click.stop>
-            <n-image
+        <div class="article-container">
+          <div class="content-container" @click="enterArticle(oneArticle.id)">
+            <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
+              <template #description>
+                <n-space size="small" style="margin-top: 4px">
+                  <n-tag :bordered="false" type="info" size="small">
+                    <!-- hashtag -->
+                  </n-tag>
+                </n-space>
+              </template>
+              <n-ellipsis style="max-width: 240px">
+                {{ oneArticle.content }}
+              </n-ellipsis>
+            </n-thing>
+          </div>
+          <div class="image-container" @click.stop>
+            <n-image 
+              v-if="oneArticle.photos && oneArticle.photos.length > 0"
               :src="oneArticle.photos[0].base64Photo" 
               :alt="oneArticle.photos[0].name"
               style="max-width: auto; height: 100px; object-fit: cover;"
             />
           </div>
         </div>
-        <div @click.stop>
+        <div class="like-container" @click.stop>
           <font-awesome-icon 
             :icon="oneArticle.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
             @click="toggleLike(oneArticle)"
@@ -124,6 +127,33 @@ async function toggleLike(article) {
 
 </script>
     
-<style>
-    
+<style scoped>
+.article-container {
+  display: flex;
+  width: 100%;
+  cursor: pointer;
+}
+
+.content-container {
+  flex-grow: 1;
+  cursor: pointer;
+}
+
+.image-container {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: default;
+}
+
+.like-container {
+  margin-top: 10px;
+  cursor: default;
+}
+
+.like-container .font-awesome-icon {
+  cursor: pointer;
+}
 </style>
