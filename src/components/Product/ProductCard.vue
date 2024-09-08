@@ -1,6 +1,6 @@
 <template>
   <div class="product-card">
-    <img class="product-image" :src="`${path}/products/${product.id}/latestphoto`" :alt="product.name">
+    <img class="product-image" :src="`${path}/products/${product.id}/latestphoto?timestamp=${Date.now()}`" :alt="product.name">
     <div class="product-details">
       <h5 class="product-title">{{ product.name }}</h5>
       <div class="product-price">NT$ {{ product.price }}</div>
