@@ -1,25 +1,17 @@
 <template>
   <div class="ts-container">
-    <div class="ts-header is-huge is-center-aligned">俱樂部相簿</div>
+    <div class="ts-header is-huge is-center-aligned">工作坊相簿</div>
     <div class="ts-space"></div>
-    
-    <!-- 上傳照片表單，只有成員可見 -->
-    <div v-if="isMember" class="ts-space">
+
+    <!-- 上傳照片表單，只有創建者可見 -->
+    <div v-if="isCreator" class="ts-space">
       <div class="ts-header is-large">上傳新照片</div>
       <div class="ts-space"></div>
       <div class="ts-input is-fluid">
-        <input 
-          type="file" 
-          @change="handleFileChange" 
-          accept="image/*"
-        >
+        <input type="file" @change="handleFileChange" accept="image/*">
       </div>
       <div class="ts-space"></div>
-      <button 
-        @click="uploadPhoto" 
-        class="ts-button is-primary text-black"
-        :disabled="!selectedFile"
-      >
+      <button @click="uploadPhoto" class="ts-button is-primary text-black" :disabled="!selectedFile">
         上傳照片
       </button>
     </div>
@@ -28,25 +20,16 @@
     <div v-if="photos.length > 0" class="carousel-container">
       <transition-group name="fade" tag="div" class="carousel-slides">
         <div v-for="(photo, index) in photos" :key="photo.id" v-show="index === currentIndex" class="carousel-slide">
-          <img 
-            :src="getPhotoUrl(clubId, photo.id)"
-            :alt="'俱樂部照片'"
-            @error="handleImageError"
-            :data-retries="0"
-          >
+          <img :src="getPhotoUrl(workshopId, photo.id)" :alt="'工作坊照片'" @error="handleImageError" :data-retries="0">
           <div class="carousel-caption">
             <p>上傳者: {{ photo.userName }}</p>
-            <button 
-              v-if="isMember && photo.uploaderId === userStore.userId" 
-              @click.stop="deletePhoto(photo.id)" 
-              class="ts-button is-negative is-small"
-            >
+            <button v-if="isCreator" @click.stop="deletePhoto(photo.id)" class="ts-button is-negative is-small">
               刪除
             </button>
           </div>
         </div>
       </transition-group>
-      
+
       <!-- 輪播圖控制按鈕 -->
       <button @click="prevSlide" class="carousel-control left">&lt;</button>
       <button @click="nextSlide" class="carousel-control right">&gt;</button>
@@ -66,20 +49,19 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 
 const props = defineProps({
-  clubId: {
+  workshopId: {
     type: String,
     required: true
   },
-  isMember: {
-    type: Boolean,
+  eventCreatorId: {
+    type: [String, Number],
     required: true
   }
 });
@@ -94,32 +76,40 @@ const loading = ref(true);
 const currentIndex = ref(0);
 let autoPlayInterval = null;
 
+const isCreator = computed(() => {
+  console.log("Computing isCreator:");
+  console.log("User ID:", userStore.userId);
+  console.log("Event Creator ID:", props.eventCreatorId);
+  return props.eventCreatorId != null && String(userStore.userId) === String(props.eventCreatorId);
+});
+
+
 const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0];
 };
 
 const uploadPhoto = async () => {
-  if (!selectedFile.value || !props.isMember) return;
+  if (!selectedFile.value || !isCreator.value) return;
 
   const formData = new FormData();
   formData.append('file', selectedFile.value);
-  formData.append('clubId', props.clubId);
+  formData.append('eventId', props.workshopId);
   formData.append('uploaderId', userStore.userId);
 
   try {
-    const response = await axios.post('/clubPhoto/new', formData, {
+    const response = await axios.post('/eventPhoto/new', formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     });
-    
+
     const newPhoto = {
       ...response.data,
       uploaderId: userStore.userId,
       userName: userStore.nickname,
-      url: getPhotoUrl(props.clubId, response.data.id)
+      url: getPhotoUrl(props.workshopId, response.data.id)
     };
-    
+
     photos.value.unshift(newPhoto);
     selectedFile.value = null;
   } catch (err) {
@@ -127,27 +117,8 @@ const uploadPhoto = async () => {
   }
 };
 
-const loadNewPhoto = async (photo) => {
-  try {
-    const img = new Image();
-    img.onload = () => {
-      photo.loading = false;
-      photo.url = img.src;
-    };
-    img.onerror = () => {
-      photo.loading = false;
-      photo.error = true;
-    };
-    img.src = getPhotoUrl(props.clubId, photo.id, true);
-  } catch (err) {
-    console.error('Error loading new photo:', err);
-    photo.loading = false;
-    photo.error = true;
-  }
-};
-
-const getPhotoUrl = (clubId, photoId, noCache = false) => {
-  let url = `${import.meta.env.VITE_API_URL}/clubPhoto/${clubId}/${photoId}`;
+const getPhotoUrl = (workshopId, photoId, noCache = false) => {
+  let url = `${import.meta.env.VITE_API_URL}/eventPhoto/${workshopId}/${photoId}`;
   if (noCache) {
     url += `?t=${new Date().getTime()}`;
   }
@@ -157,11 +128,11 @@ const getPhotoUrl = (clubId, photoId, noCache = false) => {
 const fetchPhotos = async () => {
   try {
     loading.value = true;
-    const response = await axios.get(`/clubPhoto/club/${props.clubId}`);
+    const response = await axios.get(`/eventPhoto/event/${props.workshopId}`);
     if (response.data && Array.isArray(response.data)) {
       photos.value = response.data.map(photo => ({
         ...photo,
-        url: getPhotoUrl(props.clubId, photo.id)
+        url: getPhotoUrl(props.workshopId, photo.id)
       }));
     } else {
       error.value = '獲取照片失敗：伺服器回應格式不正確';
@@ -174,10 +145,10 @@ const fetchPhotos = async () => {
 };
 
 const deletePhoto = async (photoId) => {
-  if (!props.isMember) return;
-  
+  if (!isCreator.value) return;
+
   try {
-    await axios.delete(`/clubPhoto/delete/${photoId}`, {
+    await axios.delete(`/eventPhoto/delete/${photoId}`, {
       params: { uploaderId: userStore.userId }
     });
     photos.value = photos.value.filter(photo => photo.id !== photoId);
@@ -195,7 +166,7 @@ const handleImageError = (event, photo) => {
   if (retries < 3) {
     setTimeout(() => {
       img.dataset.retries = retries + 1;
-      img.src = getPhotoUrl(props.clubId, photo.id, true);
+      img.src = getPhotoUrl(props.workshopId, photo.id, true);
     }, 1000);
   } else {
     photo.error = true;
@@ -417,8 +388,13 @@ body {
 
 /* 動畫效果 */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .fade-enter-active {
