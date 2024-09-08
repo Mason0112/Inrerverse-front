@@ -46,7 +46,10 @@ import AddClubEventForm from "@/views/Event/AddClubEventForm.vue";
 import AddWorkshopForm from "@/views/Event/AddWorkshopForm.vue";
 import PaymentStatus from "@/views/Order/PaymentStatus.vue";
 import oneArticle from "@/views/forum/oneArticle.vue";
-
+import EventApprove from "@/views/Event/EventApprove.vue";
+import MyJoinedEvent from "@/views/Event/MyJoinedEvent.vue";
+import EventPhoto from "@/views/Event/EventPhoto.vue";
+import ClubFavorite from "@/views/club/ClubFavorite.vue";
 
 const routes = [
     //品琇
@@ -76,12 +79,18 @@ const routes = [
     { path: "/clubMember/approve2/:id",name:"club-approve2-link", component:ClubApprove2},
     { path: "/clubMember/my-clubs",name:"club-my-link", component:ClubMy},
     { path: "/club/album",name:"club-album-link", component:ClubPhotoAlbum},
+    { path: "/club/favorite",name:"club-favorite-link", component:ClubFavorite},
+
 
     { path: "/event/all",name:"event-all-link", component:EventList},
     { path: "/event/detail/:id",name:"event-detail-link", component:EventDetail},
     { path: "/event/club/all",name:"event-cluball-link", component:ClubEvent},
     { path: "/event/club/new",name:"event-addclubevent-link", component:AddClubEventForm},
     { path: "/event/workshop/new",name:"event-addWorkshop-link", component:AddWorkshopForm},
+    { path: "/event/approve",name:"event-approve-link", component:EventApprove},
+    { path: "/event/my",name:"event-my-link", component:MyJoinedEvent},
+    { path: "/event/photo",name:"event-photo-link", component:EventPhoto},
+
 
 
     //暐欣
@@ -100,7 +109,7 @@ const routes = [
 
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost/:id?", name: "user-post-link", component: UserPost},
-    { path: "/club/article/:id?", name: "club-article-link", component: oneArticle}
+    { path: "/club/article/:id", name: "club-article-link", component: oneArticle}
 
 
 ]

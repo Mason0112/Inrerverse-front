@@ -25,7 +25,7 @@
                                 <td>{{ userOrder.totalAmount }}</td>
                                 <td>
                                     <button 
-                                        v-if="userOrder.status !== 3"
+                                        v-if="userOrder.status !== 3 && userOrder.status !== 4"
                                         type="button" 
                                         class="btn btn-primary" 
                                         @click="cancelOrder(userOrder.id,3)"
@@ -55,7 +55,9 @@ import { ref, onMounted } from 'vue';
 import axiosapi from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import OrderModal from '@/components/Order/OrderModal.vue';
+import { useCartStore } from '@/stores/cartStore';
 
+const cartStore = useCartStore();
 const userStore = useUserStore();
 const userOrders = ref([]);
 const orderModalRef = ref(null);
@@ -64,6 +66,7 @@ const selectedOrder = ref({});
 onMounted(function () {
     console.log("onMounted UserId", userStore.userId);
     getAllOrdersByUser(userStore.userId);
+    cartStore.initializeCartCount();
 });
 
 function getAllOrdersByUser(id) {
@@ -83,10 +86,11 @@ function getPaymentMethod(method) {
     switch (method) {
         case 1: return 'LinePay';
         case 2: return '貨到付款';
+        case 3: return 'PayPal';
         default: return '未知付款方式';
     }
 }
-//status :1:已付款等待發貨 2:等待確認中 3:已申請取消待確認 
+//status :1:已付款等待發貨 2:等待確認中 3:已申請取消待確認 4.確認取消訂單
 function getStatus(status) {
     switch (status) {
         case 1: return '已付款等待發貨';

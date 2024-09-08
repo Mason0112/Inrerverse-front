@@ -29,7 +29,13 @@
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-my-link' }" @click="closeDropdown('club')">我的俱樂部
               </RouterLink></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'club-favorite-link' }" @click="closeDropdown('club')">收藏
+              </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'event-all-link' }" @click="closeDropdown('club')">工作坊
+              </RouterLink></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">我主辦的活動/工作坊
+              </RouterLink></li>
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-my-link' }" @click="closeDropdown('club')">我參加的活動/工作坊
               </RouterLink></li>
             </ul>
           </li>
@@ -88,7 +94,7 @@
           <li class="nav-item me-2">
             <n-badge :value="cartValue" :max="15" v-show="userStore.isLoggedIn">
               <RouterLink class="nav-link" :to="{ name: 'cart-user' }" v-show="userStore.isLoggedIn">
-                <font-awesome-icon :icon="['fas', 'cart-shopping']" />
+                <font-awesome-icon :icon="['fas', 'cart-shopping']"  />
               </RouterLink>
             </n-badge>
           </li>
@@ -113,13 +119,25 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref,computed } from 'vue';
 import useUserStore from '@/stores/userstore';
 import axios from '@/plugins/axios';
+import { useCartStore } from '@/stores/cartStore';
 
 import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
 
-const cartValue = ref(2);
+const cartStore = useCartStore();
+
+const cartValue = computed(() => cartStore.cartItemCount);
+
+onMounted(() => {
+  cartStore.initializeCartCount();
+});
+
+
+
+
+
 
 const dropdownStates = ref({
   club: false,

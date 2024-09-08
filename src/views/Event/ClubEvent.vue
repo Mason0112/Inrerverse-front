@@ -2,9 +2,6 @@
   <div class="mt-8">
     <n-h2 prefix="bar">俱樂部活動</n-h2>
 
-    <!-- 只有成員可以看到添加活動表單 -->
-    <AddClubEventForm v-if="isMember" :clubId="clubId" @eventAdded="onEventAdded" />
-
     <n-spin :show="loading">
       <n-result
         v-if="error"
@@ -39,6 +36,9 @@
         </n-gi>
       </n-grid>
     </n-spin>
+
+<!-- 只有成員可以看到添加活動表單 -->
+    <AddClubEventForm v-if="isMember" :clubId="clubId" @eventAdded="onEventAdded" />
 
     <!-- 編輯模態框 -->
     <n-modal v-model:show="showEditModal">
