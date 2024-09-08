@@ -86,6 +86,7 @@ function getPaymentMethod(method) {
     switch (method) {
         case 1: return 'LinePay';
         case 2: return '貨到付款';
+        case 3: return 'PayPal';
         default: return '未知付款方式';
     }
 }

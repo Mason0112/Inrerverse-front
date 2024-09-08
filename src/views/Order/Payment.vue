@@ -15,8 +15,8 @@
             LinePay
           </label>
           <label class="payment-option">
-            <input type="radio" name="payment" value="creditcard" v-model="selectedPayment" />
-            信用卡
+            <input type="radio" name="payment" value="paypal" v-model="selectedPayment" />
+            Paypal
           </label>
         </div>
       </div>
@@ -64,7 +64,7 @@ watch(selectedPayment, (newValue) => {
   } else if (newValue === 'cod') {
     status.value = 2;
     paymentMethod.value = 2;
-  } else if (newValue === 'creditcard') {
+  } else if (newValue === 'paypal') {
     status.value = 1; // 或者根據您的需求設置適當的狀態
     paymentMethod.value = 3;
   } else {
@@ -87,56 +87,70 @@ function proceedToCheckout() {
 
   console.log("order", order.value);
 
-  // Create order
-  axiosapi.post(`/api/orders`, order.value)
-    .then(function (orderResponse) {
-      console.log("列出order", orderResponse.data.id);
-      let request = {
-        "orderId": orderResponse.data.id,
-        "cartItems": products.value
-      };
+  createOrder()
+    .then(createOrderDetails)
+    .then(processPayment)
+    .then(finishCheckout)
+    .catch(handleError);
+}
 
-      // Create order details
-      return axiosapi.post("/api/orders/create-with-details", request);
-    })
-    .then(function (detailResponse) {
-      console.log("detailResponse", detailResponse.data[0].orderId);
-      
-      if (paymentMethod.value === 2) { // COD
-        // For COD, we'll clear the cart and redirect to user orders
-        return axiosapi.delete(`/cart/clear/${userStore.userId}`);
-      } else { // LinePay
-        // For LinePay, we'll continue with the LinePay process
-        return axiosapi.get(`/api/orders/${detailResponse.data[0].orderId}`);
-      }
-    })
-    .then(function (response) {
-      if (paymentMethod.value === 2) { // COD
-        // Redirect to user orders page for COD
-        finishCheckout();
-      } else { // LinePay
-        // Continue with LinePay process
-        return axiosapi.post(`/linePay/pay`, response.data);
-      }
-    })
-    .then(function (linePayResponse) {
-      if (linePayResponse) { // This will only run for LinePay
-        console.log("linePay", linePayResponse);
-        console.log("拿網址", linePayResponse.data.info.paymentUrl.web);
-        window.open(linePayResponse.data.info.paymentUrl.web, '_blank');
-        
-        // Clear the cart for LinePay as well
-        return axiosapi.delete(`/cart/clear/${userStore.userId}`);
-      }
-    })
-    .then(function () {
-      if (paymentMethod.value === 1) { // LinePay
-        finishCheckout();
-      }
-    })
-    .catch(function (error) {
-      console.error("Error during checkout:", error);
-      // Handle error (e.g., show error message to user)
+function createOrder() {
+  return axiosapi.post(`/api/orders`, order.value);
+}
+
+function createOrderDetails(orderResponse) {
+  console.log("列出order", orderResponse.data.id);
+  let request = {
+    "orderId": orderResponse.data.id,
+    "cartItems": products.value
+  };
+  return axiosapi.post("/api/orders/create-with-details", request);
+}
+
+function processPayment(detailResponse) {
+  console.log("detailResponse", detailResponse.data[0].orderId);
+  
+  switch(paymentMethod.value) {
+    case 1:
+      return processLinePay(detailResponse.data[0].orderId);
+    case 2:
+      return processCOD();
+    case 3:
+      return processPayPal(detailResponse.data[0].orderId);
+    default:
+      throw new Error("未知的付款方式");
+  }
+}
+
+function processLinePay(orderId) {
+  return axiosapi.get(`/api/orders/${orderId}`)
+    .then(response => axiosapi.post(`/linePay/pay`, response.data))
+    .then(linePayResponse => {
+      console.log("linePay", linePayResponse);
+      console.log("拿網址", linePayResponse.data.info.paymentUrl.web);
+      window.open(linePayResponse.data.info.paymentUrl.web, '_blank');
+      return axiosapi.delete(`/cart/clear/${userStore.userId}`);
+    });
+}
+
+function processCOD() {
+  return axiosapi.delete(`/cart/clear/${userStore.userId}`);
+}
+
+function processPayPal(orderId) {
+  // 這裡添加 PayPal 的處理邏輯
+  // 例如：
+  return axiosapi.get(`/api/orders/${orderId}`)
+    .then(response => axiosapi.post(`/paypal/request`,response.data))
+    .then(paypalResponse => {
+      console.log("PayPal", paypalResponse);
+      // 假設 PayPal 也返回一個支付 URL
+      paypalResponse.data.payerAction
+      window.open(paypalResponse.data.payerAction, '_blank');
+      return axiosapi.get(`/paypal/self?url=${paypalResponse.data.self}`)
+        .then(response=>{
+          return axiosapi.delete(`/cart/clear/${userStore.userId}`);
+        })
     });
 }
 
@@ -147,6 +161,11 @@ function finishCheckout() {
 
   // Redirect to user orders page
   router.push({ name: 'user-orders' });
+}
+
+function handleError(error) {
+  console.error("Error during checkout:", error);
+  // 這裡可以添加更多的錯誤處理邏輯，例如顯示錯誤消息給用戶
 }
 </script>
   
