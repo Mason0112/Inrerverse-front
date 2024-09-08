@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios'
 import useUserStore from '@/stores/userstore';
 
@@ -31,7 +31,13 @@ const content = ref('')
 const title=ref('')
 const fileList = ref([])  
 const userStore = useUserStore();
+let userId = userStore.userId;
 const upload = ref(null)
+
+
+onMounted(() => {
+  console.log('Component mounted. User ID:', userId);
+});
 
 const customRequest = ({ file, onFinish, onError }) => {
   const reader = new FileReader();
@@ -52,43 +58,42 @@ const handleChange = (options) => {
 // 修改後的提交函數
 async function submit() {
   try {
-    console.log('Submitting article. Current userStore.userId:', userStore.userId);
-
-    // 確保 userId 存在
-    if (!userStore.userId) {
-      throw new Error('User ID is not available');
-    }
-
-    // 創建 DTO 對象
-    const articleDTO = {
-      userId: userStore.userId,
+      console.log('Sending data:', {
       content: content.value,
       title: title.value,
-      photoUrls: []
-    }
+      club: { id: 1 },
+      user: { id: userId }
+      });
 
-    // 先上傳圖片，獲取 URL
+      const articleDTO = {
+      title: title.value,
+      content: content.value,
+      clubId: 1,
+      userId: userId
+    };
+
+    console.log(articleDTO)
+
+    const articleResponse = await axios.post('/club/article', articleDTO);
+
+    console.log('Article response:', articleResponse);
+    const articleId = articleResponse.data.id
+
+    // 上傳圖片，獲取 URL
     for (const file of fileList.value) {
       const formData = new FormData();
       formData.append('file', file.file);
-
-      const response = await axios.post('/club/articlePhoto', formData, {
+      formData.append('articleId', articleId)
+      console.log("發出POST照片請求")
+      await axios.post('/club/articlePhoto', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-
-      // 假設後端返回上傳後的圖片 URL
-      articleDTO.photoUrls.push(response.data.url);
     }
-
-    // 發送包含圖片 URL 的文章 DTO
-    const articleResponse = await axios.post('/club/article', articleDTO);
-
-    console.log('Article created successfully:', articleResponse.data);
-
     // 清空內容
     content.value = '';
+    title.value = ''
     fileList.value = [];
     if (upload.value) {
       upload.value.clear();

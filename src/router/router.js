@@ -109,7 +109,7 @@ const routes = [
 
     { path: "/post/createPost", name: "post-create-link", component: CreatePost},
     { path: "/post/userPost/:id?", name: "user-post-link", component: UserPost},
-    { path: "/club/article/:id?", name: "club-article-link", component: oneArticle}
+    { path: "/club/article/:id", name: "club-article-link", component: oneArticle}
 
 
 ]
