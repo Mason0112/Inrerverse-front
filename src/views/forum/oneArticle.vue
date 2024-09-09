@@ -32,8 +32,8 @@
       </div>
       <div class="comments-section">
         <h3>評論</h3>
-        <div v-for="(comment, index) in article.comments" :key="index" class="comment">
-          <p>{{ comment.user.nickname }}: {{ comment.content }}</p>
+        <div v-for="comment in article.comments" :key="comment.id" class="comment">
+          <p>{{ comment.userName }}: {{ comment.content }}</p>
           <span>{{ formatDate(comment.added) }}</span>
         </div>
       </div>
@@ -58,7 +58,7 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, reactive } from 'vue';
+  import { ref, onMounted, reactive, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import axios from '@/plugins/axios';
   import useUserStore from '@/stores/userstore';
@@ -86,6 +86,10 @@
     } else {
       const response = await axios.get(`/club/article/oneArticle/${articleId}`);
       article.value = response.data;
+    }
+
+    if(!Array.isArray(article.value.comments)){
+      article.value.comments =[];
     }
     await checkLikeStatus();
   } catch (error) {
@@ -178,7 +182,26 @@ async function toggleLike() {
   };
   
   const handleCommentSubmit = async () => {
-    // 實現提交評論邏輯
+    if(!commentText.value.trim()) return;
+
+    try{
+      const response = await axios.post('/club/article/comment',{
+        content: commentText.value,
+        articleId: article.value.id,
+        userId: userStore.userId
+      })
+
+      if(!Array.isArray(article.value.comments)){
+        article.value.comments=[];
+      }
+
+      article.value.comments.push(response.data);
+      commentText.value='';
+      message.success('發布評論成功');
+    }catch(error){
+      console.error('Error submitting comment:', error);
+      message.error('發布評論失敗')
+    }
   };
   
   const formatDate = (dateString) => {
