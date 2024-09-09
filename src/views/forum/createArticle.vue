@@ -72,7 +72,7 @@ async function submit() {
       userId: userId
     };
 
-    console.log(articleDTO)
+    // console.log(articleDTO)
 
     const articleResponse = await axios.post('/club/article', articleDTO);
 

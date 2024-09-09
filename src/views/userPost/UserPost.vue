@@ -51,7 +51,7 @@
                                     <n-button @click="cancelEdit">取消</n-button>
                                 </div>
                                 <p v-else>
-                                    <a @click="navigateToUserPost(oneComment.user.id)"> 
+                                    <a @click="navigateToUserPost(oneComment.user.id)" class="a-link"> 
                                         <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
                                     </a>
                                     <span>{{ oneComment.comment }}</span>
@@ -122,8 +122,8 @@ watch(() => route.params.id, (newId) => {
 async function showUserPostList() {
     try {
         const response = await axios.get(`/userPost/showUserAllPost/${userIdUrl.value}`);
-        console.log(userIdUrl.value)
-        console.log(response.data);
+        console.log("userIdUrl:" + userIdUrl.value)
+        console.log("response.data:" + response.data);
         postList.value = response.data;
         await Promise.all(postList.value.map(post => fetchComments(post.id)));
         await checkLikeStatus();
