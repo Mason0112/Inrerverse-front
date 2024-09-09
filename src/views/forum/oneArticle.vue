@@ -4,9 +4,8 @@
         <h1>{{ article.title }}</h1>
         <div v-if="article.userId !== null">
           <div v-if="article.userId == userStore.userId">
-            <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
-            <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
-          </div>
+            <button class="btn btn-outline-secondary btn-sm" @click="editArticle">編輯</button>
+            <button class="btn btn-outline-danger btn-sm" @click="deleteArticle">刪除</button>          </div>
         </div>
       </div>
       <div class="article-meta">
@@ -47,14 +46,23 @@
       </form>
     </div>
     <div v-else>Loading...</div>
+
+    <n-modal v-model:show="showEditModal">
+    <n-card title="編輯文章" style="width: 600px;">
+      <n-input v-model:value="editedArticle.title" type="text" placeholder="標題" />
+      <n-input v-model:value="editedArticle.content" type="textarea" placeholder="內容" />
+      <n-button @click="updateArticle">保存</n-button>
+      <n-button @click="showEditModal = false">取消</n-button>
+    </n-card>
+  </n-modal>
   </template>
   
   <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, reactive } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import axios from '@/plugins/axios';
   import useUserStore from '@/stores/userstore';
-  import { useMessage } from 'naive-ui'
+  import { useMessage, NModal, NInput, NButton } from 'naive-ui'
   const message=useMessage()
 
   const userStore = useUserStore();
@@ -63,7 +71,11 @@
   const router = useRouter();
   const article = ref(null);
   const commentText = ref('');
-  const user=ref();
+  const showEditModal = ref(false)
+  const editedArticle = reactive({
+    title: '',
+    content: ''
+  })
 
 
   onMounted(async () => {
@@ -80,6 +92,47 @@
     console.error('Error fetching article:', error);
   }
 });
+
+// 編輯文章
+function editArticle() {
+  editedArticle.title = article.value.title;
+  editedArticle.content = article.value.content;
+  showEditModal.value = true;
+}
+
+// 更新文章
+async function updateArticle() {
+  try {
+    const updateData = {
+      title: editedArticle.title,
+      content: editedArticle.content,
+    };
+    const response = await axios.put(`/club/article/${article.value.id}`, updateData);
+    article.value = {
+      ...response.data,
+      photos: article.value.photos
+    }
+    showEditModal.value = false;
+    message.success('文章已更新');
+  } catch (error) {
+    console.error('Error updating article:', error);
+    message.error('更新文章失敗');
+  }
+}
+
+// 刪除文章
+async function deleteArticle() {
+  if (confirm('確定要刪除這篇文章嗎？')) {
+    try {
+      await axios.delete(`/club/article/${article.value.id}`);
+      message.success('文章已刪除');
+      router.push(`/club/article/all/${article.value.clubId}`); // 假設刪除後返回俱樂部頁面
+    } catch (error) {
+      console.error('Error deleting article:', error);
+      message.error('刪除文章失敗');
+    }
+  }
+}
   
 // 檢查按讚狀態
 async function checkLikeStatus() {
