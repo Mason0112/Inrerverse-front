@@ -3,7 +3,9 @@
         <div v-for="onePost in postList" :key="onePost.id" class="item">
             <div class="container">
                 <div> {{ formatDate(onePost.added) }}</div>
-                <div>{{ onePost.user.nickname }}</div>
+                <a @click="navigateToUserPost(onePost.user.id)" class="a-link"> 
+                    <div>{{ onePost.user.nickname }}</div>
+                </a>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
                     <p>
                         {{ onePost.content }}
@@ -49,7 +51,9 @@
                                     <n-button @click="cancelEdit">取消</n-button>
                                 </div>
                                 <p v-else>
-                                    <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
+                                    <a @click="navigateToUserPost(oneComment.user.id)"> 
+                                        <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
+                                    </a>
                                     <span>{{ oneComment.comment }}</span>
                                     <span class="commentAdded">{{ formatDate(oneComment.added) }}</span>
                                     <span class="commemtUD">
@@ -75,8 +79,8 @@
 </template>
 
 <script setup>
-import {onMounted, ref, inject } from "vue";
-import { useRoute } from "vue-router";
+import {onMounted, ref, inject, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import UpdatePostModal from "./updatePostModal.vue";
@@ -96,12 +100,22 @@ const selectedPost=ref(null)
 const editingCommentId=ref(null)
 const editedComment =ref(null)
 const message=useMessage()
+const router = useRouter();
+
 
 const postList = ref([])
 onMounted(function(){
     userIdUrl.value = (route.params.id);
     showUserPostList()
 })
+
+// 監聽路由變化
+watch(() => route.params.id, (newId) => {
+  if (newId && newId !== userIdUrl.value) {
+    userIdUrl.value = newId;
+    showUserPostList();
+  }
+});
 
 // 渲染post
 
@@ -291,7 +305,19 @@ async function deleteComment(oneComment, postId){
     }    
 }
 
-
+const navigateToUserPost = (userId) => {
+  if (userId) {
+    console.log("Navigating to user post:", userId); // 添加日誌
+    // 檢查當前路由是否已經是目標用戶的頁面
+    if (route.params.id !== userId.toString()) {
+      router.push(`/post/userPost/${userId}`);
+    } else {
+      console.log("Already on the target user's page");
+    }
+  } else {
+    console.log("User ID is undefined or null"); // 添加錯誤日誌
+  }
+};
 
     
 
@@ -355,5 +381,13 @@ function formatDate(dateString) {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+
+
+.a-link {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: none;
 }
 </style>
