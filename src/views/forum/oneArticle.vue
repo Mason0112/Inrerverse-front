@@ -5,7 +5,8 @@
         <div v-if="article.userId !== null">
           <div v-if="article.userId == userStore.userId">
             <button class="btn btn-outline-secondary btn-sm" @click="editArticle">編輯</button>
-            <button class="btn btn-outline-danger btn-sm" @click="deleteArticle">刪除</button>          </div>
+            <button class="btn btn-outline-danger btn-sm" @click="deleteArticle">刪除</button>          
+          </div>
         </div>
       </div>
       <div class="article-meta">
@@ -31,12 +32,21 @@
         <button @click="handleShare">分享</button>
       </div>
       <div class="comments-section">
-        <h3>評論</h3>
-        <div v-for="comment in article.comments" :key="comment.id" class="comment">
-          <p>{{ comment.userName }}: {{ comment.content }}</p>
-          <span>{{ formatDate(comment.added) }}</span>
+    <h3>評論</h3>
+    <div v-for="comment in article.comments" :key="comment.id" class="comment">
+      <div class="comment-header">
+        <span class="comment-date">{{ formatDate(comment.added) }}</span>
+        <div class="comment-actions" v-if="comment.userId === userStore.userId">
+          <button @click="editComment(comment)" class="btn-edit">編輯</button>
+          <button @click="deleteComment(comment.id)" class="btn-delete">刪除</button>
         </div>
       </div>
+      <div class="comment-content">
+        <strong class="comment-author">{{ comment.userName }}:</strong>
+        <p>{{ comment.content }}</p>
+      </div>
+    </div>
+  </div>
       <form @submit.prevent="handleCommentSubmit" class="comment-form">
         <textarea 
           v-model="commentText" 
@@ -290,6 +300,7 @@ h1 {
 
 /* 評論區域 */
 .comments-section {
+  margin-top: 20px;
   border-top: 1px solid #e0e0e0;
   padding-top: 24px;
 }
@@ -301,12 +312,41 @@ h1 {
 }
 
 .comment {
-  margin-bottom: 16px;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
 }
 
 .comment p {
   font-size: 14px;
   margin-bottom: 4px;
+}
+
+.comment-date {
+  font-size: 0.8em;
+  color: #6c757d;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit, .btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.8em;
+  color: #6c757d;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .comment span {
@@ -339,6 +379,18 @@ h1 {
   cursor: pointer;
   transition: background-color 0.2s;
   margin-top: 8px;
+}
+.btn-edit:hover, .btn-delete:hover {
+  color: #007bff;
+}
+
+.comment-content {
+  line-height: 1.4;
+}
+
+.comment-author {
+  font-weight: bold;
+  margin-right: 8px;
 }
 
 .comment-form button:hover {
