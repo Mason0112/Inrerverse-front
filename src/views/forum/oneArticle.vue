@@ -11,7 +11,16 @@
         style="max-width: auto; height: 200px; object-fit: cover;"/>
       </div>
       <div class="article-actions">
-        <button @click="handleLike">讚 ({{ article.likeCount }})</button>
+        <div class="like-container" @click.stop>
+          <button>
+            <font-awesome-icon 
+            :icon="article.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+            @click="toggleLike(article)"
+            :style="{ color: article.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+            />
+            <span class="like-count">{{ article.likeCount || 0 }}</span>
+          </button>
+        </div>
         <button @click="handleFavorite">收藏</button>
         <button @click="handleShare">分享</button>
       </div>
@@ -37,7 +46,12 @@
   import { ref, onMounted } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import axios from '@/plugins/axios';
-  
+  import useUserStore from '@/stores/userstore';
+  import { useMessage } from 'naive-ui'
+  const message=useMessage()
+
+  const userStore = useUserStore();
+  const userId = userStore.userId;
   const route = useRoute();
   const router = useRouter();
   const article = ref(null);
@@ -59,9 +73,37 @@
     }
   });
   
-  const handleLike = async () => {
-    // 實現點贊邏輯
-  };
+// 檢查按讚狀態
+async function checkLikeStatus() {
+    for (const article of articleList.value) {
+        try {
+            const response = await axios.get(`/articleLike`, {
+                params: { userId: userId, articleId: article.id }
+            });
+            article.isLiked = response.data;
+        } catch (error) {
+            console.error('Error checking like status:', error);
+        }
+    }
+}
+
+// 切換按讚狀態
+async function toggleLike(article) {
+    try {
+        await axios.post('/articleLike', null, {
+            params: { userId: userId, articleId: article.id, type: 1 }
+        });
+        article.isLiked = !article.isLiked;
+        if(article.likeCount=null){
+          article.likeCount=0;
+        }
+        article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
+        message.success(article.isLiked ? '已按讚!' : '已取消讚!');
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        message.error('更新按讚狀態失敗');
+    }
+}
   
   const handleFavorite = async () => {
     // 實現收藏邏輯
