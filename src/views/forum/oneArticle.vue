@@ -10,7 +10,11 @@
         </div>
       </div>
       <div class="article-meta">
-        <span>作者: {{ article.userId? article.userName : "匿名" }}</span>
+        <span>作者: 
+        <a @click="navigateToUserPost(article.userId)"> 
+          {{ article.userId ? article.userName : "匿名" }}
+        </a>
+      </span>
         <span>發布時間: {{ formatDate(article.added) }}</span>
       </div>
       <div class="article-content">{{ article.content }}</div>
@@ -42,7 +46,9 @@
         </div>
       </div>
       <div class="comment-content">
-        <strong class="comment-author">{{ comment.userName }}:</strong>
+        <a @click="navigateToUserPost(comment.userId)">
+          <strong class="comment-author">{{ comment.userName }}:</strong>
+        </a>
         <p>{{ comment.content }}</p>
       </div>
     </div>
@@ -268,6 +274,12 @@ const handleShare = async () => {
   }
 };
 
+const navigateToUserPost = (userId) => {
+  if (userId) {
+    router.push(`/post/userPost/${userId}`);
+  }
+};
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
@@ -468,5 +480,15 @@ h1 {
 .article-actions button {
   padding: 4px 8px;
   font-size: 12px;
+}
+
+.article-meta a {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.article-meta a:hover {
+  text-decoration: underline;
 }
   </style>
