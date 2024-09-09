@@ -1,6 +1,14 @@
 <template>
     <div v-if="article" class="article-container">
-      <h1>{{ article.title }}</h1>
+      <div class="header">
+        <h1>{{ article.title }}</h1>
+        <div v-if="article.userId !== null">
+          <div v-if="article.userId == userStore.userId">
+            <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
+            <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
+          </div>
+        </div>
+      </div>
       <div class="article-meta">
         <span>作者: {{ article.userId? article.userName : "匿名" }}</span>
         <span>發布時間: {{ formatDate(article.added) }}</span>
@@ -12,15 +20,14 @@
       </div>
       <div class="article-actions">
         <div class="like-container" @click.stop>
-          <button>
-            <font-awesome-icon 
-            :icon="article.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
-            @click="toggleLike(article)"
-            :style="{ color: article.isLiked ? 'red' : 'black', cursor: 'pointer' }"
-            />
-            <span class="like-count">{{ article.likeCount || 0 }}</span>
-          </button>
-        </div>
+  <button @click="toggleLike">
+    <font-awesome-icon 
+      :icon="article.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+      :style="{ color: article.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+    />
+    <span class="like-count">{{ article.likeCount || 0 }}</span>
+  </button>
+</div>
         <button @click="handleFavorite">收藏</button>
         <button @click="handleShare">分享</button>
       </div>
@@ -60,50 +67,54 @@
 
 
   onMounted(async () => {
-    try {
-      if (route.state && route.state.articleData) {
-        article.value = route.state.articleData;
+  try {
+    const articleId = route.params.id;
+    if (route.state && route.state.articleData) {
+      article.value = route.state.articleData;
     } else {
-        const articleId = route.params.id
-        const response = await axios.get(`/club/article/oneArticle/${articleId}`);
-        article.value = response.data;
+      const response = await axios.get(`/club/article/oneArticle/${articleId}`);
+      article.value = response.data;
     }
-    } catch (error) {
-      console.error('Error fetching article:', error);
-    }
-  });
+    await checkLikeStatus();
+  } catch (error) {
+    console.error('Error fetching article:', error);
+  }
+});
   
 // 檢查按讚狀態
 async function checkLikeStatus() {
-    for (const article of articleList.value) {
+  if (!article.value || !userId) return;
+
         try {
             const response = await axios.get(`/articleLike`, {
-                params: { userId: userId, articleId: article.id }
+                params: { userId: userId, articleId: article.value.id }
             });
-            article.isLiked = response.data;
+            article.value.isLiked = response.data;
         } catch (error) {
             console.error('Error checking like status:', error);
         }
     }
-}
 
 // 切換按讚狀態
-async function toggleLike(article) {
-    try {
-        await axios.post('/articleLike', null, {
-            params: { userId: userId, articleId: article.id, type: 1 }
-        });
-        article.isLiked = !article.isLiked;
-        if(article.likeCount=null){
-          article.likeCount=0;
-        }
-        article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
-        message.success(article.isLiked ? '已按讚!' : '已取消讚!');
-    } catch (error) {
-        console.error('Error toggling like:', error);
-        message.error('更新按讚狀態失敗');
-    }
+async function toggleLike() {
+  if (!article.value || !userId) return;
+  try {
+    const response = await axios.post('/articleLike', null, {
+      params: { 
+        userId: userId, 
+        articleId: article.value.id, 
+        type: article.value.isLiked ? 0 : 1 // 0 表示取消讚，1 表示按讚
+      }
+    });
+    article.value.isLiked = !article.value.isLiked;
+    article.value.likeCount = (article.value.likeCount) + (article.value.isLiked ? 1 : -1);
+    message.success(article.value.isLiked ? '已按讚!' : '已取消讚!');
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    message.error('更新按讚狀態失敗');
+  }
 }
+
   
   const handleFavorite = async () => {
     // 實現收藏邏輯
@@ -181,6 +192,11 @@ h1 {
   margin-bottom: 24px;
 }
 
+.article-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .article-actions button {
   background-color: #f0f0f0;
   border: none;
@@ -251,5 +267,24 @@ h1 {
 
 .comment-form button:hover {
   background-color: #2c7eb3;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0;
+  flex-grow: 1;
+}
+
+
+
+.article-actions button {
+  padding: 4px 8px;
+  font-size: 12px;
 }
   </style>
