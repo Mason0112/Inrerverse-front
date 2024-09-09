@@ -65,6 +65,13 @@
       <n-button @click="showEditModal = false">取消</n-button>
     </n-card>
   </n-modal>
+  <n-modal v-model:show="showEditCommentModal">
+    <n-card title="編輯評論" style="width: 600px;">
+      <n-input v-model:value="editedCommentContent" type="textarea" placeholder="編輯你的評論..." />
+      <n-button @click="updateComment">保存</n-button>
+      <n-button @click="showEditCommentModal = false">取消</n-button>
+    </n-card>
+  </n-modal>
   </template>
   
   <script setup>
@@ -86,6 +93,15 @@
     title: '',
     content: ''
   })
+  const showEditCommentModal = ref(false);
+  const editedCommentContent = ref('');
+  const currentEditingComment = ref(null);
+
+  const editComment = (comment) => {
+  currentEditingComment.value = comment;
+  editedCommentContent.value = comment.content;
+  showEditCommentModal.value = true;
+};
 
 
   onMounted(async () => {
@@ -187,10 +203,6 @@ async function toggleLike() {
     // 實現收藏邏輯
   };
   
-  const handleShare = () => {
-    // 實現分享邏輯
-  };
-  
   const handleCommentSubmit = async () => {
     if(!commentText.value.trim()) return;
 
@@ -213,7 +225,49 @@ async function toggleLike() {
       message.error('發布評論失敗')
     }
   };
+
+  const updateComment = async () => {
+  try {
+    const response = await axios.put(`/club/article/comment/${currentEditingComment.value.id}`, {
+      content: editedCommentContent.value
+    });
+    const updatedComment = response.data;
+    const index = article.value.comments.findIndex(c => c.id === updatedComment.id);
+    if (index !== -1) {
+      article.value.comments[index] = updatedComment;
+    }
+    showEditCommentModal.value = false;
+    message.success('評論已更新');
+  } catch (error) {
+    console.error('Error updating comment:', error);
+    message.error('更新評論失敗');
+  }
+};
   
+const deleteComment = async (commentId) => {
+  if (confirm('確定要刪除這條評論嗎？')) {
+    try {
+      await axios.delete(`/club/article/comment/${commentId}`);
+      article.value.comments = article.value.comments.filter(c => c.id !== commentId);
+      message.success('評論已刪除');
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      message.error('刪除評論失敗');
+    }
+  }
+};
+
+const handleShare = async () => {
+  try {
+    const shareUrl = `${window.location.origin}/club/article/${article.value.id}`;
+    await navigator.clipboard.writeText(shareUrl);
+    message.success('文章連結已複製到剪貼板');
+  } catch (error) {
+    console.error('Error sharing article:', error);
+    message.error('分享文章失敗');
+  }
+};
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString();
   };
