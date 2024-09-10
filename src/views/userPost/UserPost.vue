@@ -386,7 +386,7 @@ function formatDate(dateString) {
         align-items: center;
         justify-content: center;
         margin-bottom: 10px;
-        background-color: rgba(216, 191, 216, 0.7);
+        background-color: rgb(254, 232, 232);
         padding: 10px;
     }
 
@@ -435,11 +435,7 @@ function formatDate(dateString) {
     display: flex;
     gap: 5px;
     }
-    .a-link {
-    cursor: pointer;
-    color: #007bff;
-    text-decoration: none;
-}
+
     /* 輪播圖 */
     .carousel-img {
         width: 100%;
@@ -456,7 +452,7 @@ function formatDate(dateString) {
 
 .a-link {
   cursor: pointer;
-  color: #007bff;
+  color: rgb(177 151 252);
   text-decoration: none;
 }
 </style>

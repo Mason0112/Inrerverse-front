@@ -4,7 +4,7 @@
       <n-list-item>
         <div class="article-container">
           <div class="content-container" @click="enterArticle(oneArticle.id)">
-            <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
+            <n-thing :title="oneArticle.title" content-style="margin-top: 10px;" class="article-title">
               <template #description>
                 <n-space size="small" style="margin-top: 4px">
                   <n-tag :bordered="false" type="info" size="small">
@@ -12,7 +12,7 @@
                   </n-tag>
                 </n-space>
               </template>
-              <n-ellipsis style="max-width: 240px">
+              <n-ellipsis style="max-width: 240px" class="article-content">
                 {{ oneArticle.content }}
               </n-ellipsis>
             </n-thing>
@@ -132,6 +132,7 @@ async function toggleLike(article) {
   display: flex;
   width: 100%;
   cursor: pointer;
+  background-color: rgb(254, 232, 232);
 }
 
 .content-container {
@@ -155,5 +156,12 @@ async function toggleLike(article) {
 
 .like-container .font-awesome-icon {
   cursor: pointer;
+}
+.article-title{
+  font-size: 2rem;
+}
+
+.article-content{
+  font-size: 2rem;
 }
 </style>
