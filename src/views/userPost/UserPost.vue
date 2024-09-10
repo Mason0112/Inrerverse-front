@@ -3,7 +3,9 @@
         <div v-for="onePost in postList" :key="onePost.id" class="item">
             <div class="container">
                 <div> {{ formatDate(onePost.added) }}</div>
-                <div>{{ onePost.user.nickname }}</div>
+                <a @click="navigateToUserPost(onePost.user.id)" class="a-link"> 
+                    <div>{{ onePost.user.nickname }}</div>
+                </a>
                 <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
                     <p>
                         {{ onePost.content }}
@@ -41,27 +43,34 @@
                     <!-- 留言 -->
                     <div v-if="onePost.comments && onePost.comments.length> 0" >
                         <h6>評論區：</h6>
-                        <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
-                            <div>
-                                <div v-if="editingCommentId === oneComment.id">
-                                    <textarea v-model="editedComment" :placeholder="oneComment.comment"></textarea class="editcomment">
-                                    <n-button @click="saveComment(oneComment)">保存</n-button>
-                                    <n-button @click="cancelEdit">取消</n-button>
-                                </div>
-                                <p v-else>
-                                    <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
-                                    <span>{{ oneComment.comment }}</span>
-                                    <span class="commentAdded">{{ formatDate(oneComment.added) }}</span>
-                                    <span class="commemtUD">
-                                        <span v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId">
-                                            <n-button dashed @click="editComment(oneComment)">編輯</n-button>
-                                            <n-button dashed @click="deleteComment(oneComment, onePost.id)"><font-awesome-icon :icon="['fas', 'trash']" /></n-button>
-                                        </span>
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
+    <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
+      <div class="comment-main">
+        <div class="comment-content">
+          <div class="comment-user">
+            <a @click="navigateToUserPost(oneComment.user.id)" class="a-link"> 
+              <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
+            </a>
+          </div>
+          <div class="comment-text">{{ oneComment.comment }}</div>
+          <div class="comment-date">{{ formatDate(oneComment.added) }}</div>
+        </div>
+        <div class="comment-like">
+          <font-awesome-icon 
+            :icon="oneComment.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+            @click="toggleCommentLike(oneComment)"
+            :style="{ color: oneComment.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+          />
+          <span class="like-count">{{ oneComment.likeCount || 0 }}</span>
+        </div>
+      </div>
+      <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId" class="comment-actions">
+        <n-button dashed @click="editComment(oneComment)">編輯</n-button>
+        <n-button dashed @click="deleteComment(oneComment, onePost.id)">
+          <font-awesome-icon :icon="['fas', 'trash']" />
+        </n-button>
+      </div>
+    </div>
+  </div>
                     <!-- 留言輸入框 -->
                     <!-- 把屬性傳給子元件 -->
                     <PostComment 
@@ -75,8 +84,8 @@
 </template>
 
 <script setup>
-import {onMounted, ref, inject } from "vue";
-import { useRoute } from "vue-router";
+import {onMounted, ref, inject, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
 import UpdatePostModal from "./updatePostModal.vue";
@@ -96,6 +105,8 @@ const selectedPost=ref(null)
 const editingCommentId=ref(null)
 const editedComment =ref(null)
 const message=useMessage()
+const router = useRouter();
+
 
 const postList = ref([])
 onMounted(function(){
@@ -103,13 +114,21 @@ onMounted(function(){
     showUserPostList()
 })
 
+// 監聽路由變化
+watch(() => route.params.id, (newId) => {
+  if (newId && newId !== userIdUrl.value) {
+    userIdUrl.value = newId;
+    showUserPostList();
+  }
+});
+
 // 渲染post
 
 async function showUserPostList() {
     try {
         const response = await axios.get(`/userPost/showUserAllPost/${userIdUrl.value}`);
-        console.log(userIdUrl.value)
-        console.log(response.data);
+        console.log("userIdUrl:" + userIdUrl.value)
+        console.log("response.data:" + response.data);
         postList.value = response.data;
         await Promise.all(postList.value.map(post => fetchComments(post.id)));
         await checkLikeStatus();
@@ -206,6 +225,40 @@ function handleCommentAdded(postId, newComment){
 }
 
 
+// 檢查按讚狀態
+async function checkCommentLikeStatus() {
+  for (const post of postList.value) {
+    if (post.comments) {
+      for (const comment of post.comments) {
+        try {
+          const response = await axios.get(`/postCommentLike`, {
+            params: { userId: userId, commentId: comment.id }
+          });
+          comment.isLiked = response.data;
+        } catch (error) {
+          console.error('Error checking comment like status:', error);
+        }
+      }
+    }
+}
+}
+
+// 切換按讚狀態
+async function toggleCommentLike(comment) {
+  try {
+    await axios.post('/postCommentLike', null, {
+      params: { userId: userId, commentId: comment.id }
+    });
+    comment.isLiked = !comment.isLiked;
+    comment.likeCount = comment.likeCount || 0;
+    comment.likeCount += comment.isLiked ? 1 : -1;
+    message.success(comment.isLiked ? '已對評論按讚!' : '已取消評論讚!');
+  } catch (error) {
+    console.error('Error toggling comment like:', error);
+    message.error('更新評論按讚狀態失敗');
+  }
+}
+
 //載入更多
 const count = ref(6);
 const handleLoad = () => {
@@ -291,7 +344,17 @@ async function deleteComment(oneComment, postId){
     }    
 }
 
+const navigateToUserPost = (userId) => {
+  if (userId) {
+    console.log("Navigating to user post:", userId); // 添加日誌
+    // 檢查當前路由是否已經是目標用戶的頁面
 
+      router.push(`/post/userPost/${userId}`);
+
+  } else {
+    console.log("User ID is undefined or null"); // 添加錯誤日誌
+  }
+};
 
     
 
@@ -334,17 +397,49 @@ function formatDate(dateString) {
     white-space: pre-wrap; /* 保留换行符和空格 */
     }
 
-    .comment{
-        border: 1px solid black;
+    .comment {
+    border: 1px solid black;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
     }
-    .commemtUD{
-        display: flex;
-        justify-content: flex-end;
+    .comment-main {
+    flex-grow: 1;
     }
-    .commentAdded{
-        font-size: 0.8em;
-        float: right;
+    .comment-content {
+    margin-bottom: 10px;
     }
+    .comment-user {
+    font-weight: bold;
+    }
+    .comment-text {
+    margin-top: 5px;
+    }
+    .comment-date {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+    }
+    .comment-like {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    }
+    .like-count {
+    font-size: 0.9em;
+    color: #666;
+    }
+    .comment-actions {
+    display: flex;
+    gap: 5px;
+    }
+    .a-link {
+    cursor: pointer;
+    color: #007bff;
+    text-decoration: none;
+}
     /* 輪播圖 */
     .carousel-img {
         width: 100%;
@@ -355,5 +450,13 @@ function formatDate(dateString) {
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+
+
+.a-link {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: none;
 }
 </style>
