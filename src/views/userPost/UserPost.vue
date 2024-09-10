@@ -111,6 +111,7 @@ const router = useRouter();
 const postList = ref([])
 onMounted(function(){
     userIdUrl.value = (route.params.id);
+    console.log("userIdUrl:" + userIdUrl)
     showUserPostList()
 })
 

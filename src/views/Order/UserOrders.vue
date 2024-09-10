@@ -27,7 +27,7 @@
                                     <button 
                                         v-if="userOrder.status !== 3 && userOrder.status !== 4"
                                         type="button" 
-                                        class="btn btn-primary" 
+                                        class="btn cancelbtn" 
                                         @click="cancelOrder(userOrder.id,3)"
                                     >
                                         取消訂單
@@ -122,18 +122,34 @@ function openModal(order){
 
 <style scoped>
 .ts-breadcrumb.is-stepped.is-divided {
-  background-color: var(--secondary-color);
+  background-color: rgb(177, 151, 252) ;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 20px;
 }
 
 .ts-breadcrumb .item {
+  /* background-color: rgb(252, 177, 177); */
   color: #FFFFFF;
   font-weight: 700;
 }
 
 .btn-primary {
   margin-right: 10px;
+}
+
+.btn-primary:active {
+    background-color: rgb(112, 89, 179) ;
+}
+
+.cancelbtn {
+    margin-right: 10px;
+    background-color: rgb(245, 153, 153);
+    color: white;
+}
+
+.cancelbtn:active {
+    background-color: rgb(248, 109, 109);
+    color: white;
 }
 </style>

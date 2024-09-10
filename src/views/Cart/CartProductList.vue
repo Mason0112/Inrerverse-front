@@ -50,7 +50,7 @@
   .main-title {
     color: var(--primary-color);
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
     font-size: 1.8em;
     font-weight: bold;
   }

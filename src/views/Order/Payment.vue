@@ -231,7 +231,7 @@ function showWaitingAlert(message) {
   display: flex;
   align-items: center;
   padding: 10px;
-  border: 1px solid #B197FC;
+  border: 1px solid #B197FC;  
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -257,8 +257,8 @@ function showWaitingAlert(message) {
 
 .checkout-button {
   width: 100%;
-  background-color: #FCE797;
-  color: #3A3042;
+  background-color: rgb(252, 177, 177);
+  color: white;
   border: none;
   padding: 15px;
   border-radius: 5px;
@@ -268,11 +268,13 @@ function showWaitingAlert(message) {
 }
 
 .checkout-button:hover:not(:disabled) {
-  opacity: 0.8;
+  background-color: rgb(255, 165, 165);
+  border: none;
 }
 
 .checkout-button:disabled {
-  background-color: #dfd6fa;
+  background-color: rgb(255, 225, 225);
+  color: white;
   cursor: not-allowed;
 }
 

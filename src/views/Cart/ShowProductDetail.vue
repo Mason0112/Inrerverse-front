@@ -280,6 +280,7 @@ function getUserCartCount(userId) {
   margin: 4px 2px;
   transition: background-color 0.3s, transform 0.1s;
   cursor: pointer;
+  padding-top: 6px;
 }
 
 .ts-button.is-primary:hover {

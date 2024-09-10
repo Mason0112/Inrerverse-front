@@ -126,4 +126,16 @@ defineExpose({
 });
 </script>
 
-<style></style>
+<style scoped>
+
+.btn-secondary {
+  background-color: rgb(245, 153, 153);
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: rgb(255, 140, 140);
+  color: white;
+}
+
+</style>

@@ -10,10 +10,10 @@
                     <table class="ts-table">
                         <thead>
                             <tr>
-                                <th>品名</th>
-                                <th>數量</th>
-                                <th>單價</th>
-                                <th>金額</th>
+                                <th>品 名</th>
+                                <th>數 量</th>
+                                <th>單 價</th>
+                                <th>金 額</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -136,18 +136,18 @@ watch(() => props.order, (newOrder) => {
 }
 
 .ts-table thead th {
-    background-color: var(--secondary-color);
-    color: var(--text-color);
+    background-color: rgb(252, 192, 192);
+    color: white;
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.875rem;
+    font-size: 14px;
     padding: 1rem;
-    border-bottom: 2px solid var(--border-color);
+    /* border-bottom: 2px solid rgb(252, 192, 192); */
 }
 
 .ts-table tbody td {
     padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid rgb(252, 192, 192);
     transition: background-color 0.3s ease;
 }
 
@@ -156,7 +156,7 @@ watch(() => props.order, (newOrder) => {
 }
 
 .ts-table tbody tr:hover td {
-    background-color: rgba(177, 151, 252, 0.05);
+    background-color: rgb(254, 248, 248);
 }
 
 .modal-footer {
@@ -168,9 +168,9 @@ watch(() => props.order, (newOrder) => {
 }
 
 .btn-secondary {
-    background-color: var(--secondary-color);
+    background-color: rgb(177, 151, 252);
     border: none;
-    color: var(--text-color);
+    color: white;
     padding: 0.5rem 1rem;
     font-size: 1rem;
     border-radius: 5px;
@@ -178,7 +178,7 @@ watch(() => props.order, (newOrder) => {
 }
 
 .btn-secondary:hover {
-    background-color: var(--primary-color);
+    background-color: rgb(134, 112, 200);
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 5px rgba(177, 151, 252, 0.2);
