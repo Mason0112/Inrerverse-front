@@ -1,36 +1,52 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-card class="event-approve-container">
-      <n-h1>我主辦的活動/工作坊</n-h1>
+      <n-h1 class="page-title">我主辦的活動/工作坊</n-h1>
       <n-spin :show="loading">
         <n-result v-if="error" status="error" :title="error" />
         <div v-else>
           <!-- 活動列表 -->
           <div v-if="!selectedEvent" class="event-list">
-            <n-h2>您創建的活動</n-h2>
+            <n-h2 class="section-title">您創建的活動</n-h2>
             <n-empty v-if="events.length === 0" description="您還沒有創建任何活動" />
-            <n-list v-else>
-              <n-list-item v-for="event in events" :key="event.id" class="event-item">
-                <div class="event-info">
-                  <span @click="selectEvent(event)">
-                    {{ event.eventName }} - {{ event.clubName || '工作坊' }}
-                    <n-tag v-if="event.hasPendingMembers" type="warning" size="small" class="warning-tag">
-                      待審核
-                    </n-tag>
-                  </span>
-                  <div class="event-actions">
-                    <n-button size="small" @click="editEvent(event)">編輯</n-button>
-                    <n-button size="small" @click="confirmDelete(event)" type="error">刪除</n-button>
-                  </div>
-                </div>
-              </n-list-item>
-            </n-list>
+            <n-grid x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4" responsive="screen" v-else>
+              <n-grid-item v-for="event in events" :key="event.id">
+                <n-card hoverable class="event-card">
+                  <template #cover>
+                    <img :src="event.coverPhotoUrl || 'default-image.jpg'" alt="活動封面" class="event-cover">
+                  </template>
+                  <n-space vertical>
+                    <n-h3 @click="selectEvent(event)" class="event-name">{{ event.eventName }}</n-h3>
+                    <n-space>
+                      <n-tag :type="event.clubName ? 'success' : 'info'" size="small">
+                        {{ event.clubName || '工作坊' }}
+                      </n-tag>
+                      <n-tag v-if="event.hasPendingMembers" type="warning" size="small">待審核</n-tag>
+                    </n-space>
+                  </n-space>
+                  <template #footer>
+                    <n-space justify="end">
+                      <n-button size="small" @click.stop="editEvent(event)">編輯</n-button>
+                      <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
+                    </n-space>
+                  </template>
+                </n-card>
+              </n-grid-item>
+            </n-grid>
           </div>
 
           <!-- 待審核參與者列表 -->
           <div v-else>
-            <n-h2>{{ selectedEvent.eventName }} - {{ selectedEvent.clubName || '工作坊' }} - 待審核參與者</n-h2>
-            <n-button @click="backToEventList" class="back-button">返回活動列表</n-button>
+            <n-page-header 
+              :title="selectedEvent.eventName" 
+              :subtitle="selectedEvent.clubName || '工作坊'"
+              @back="backToEventList"
+            >
+              <template #extra>
+                <n-tag v-if="selectedEvent.hasPendingMembers" type="warning">待審核</n-tag>
+              </template>
+            </n-page-header>
+            <n-h3>待審核參與者</n-h3>
             <n-empty v-if="pendingParticipants.length === 0" description="沒有待審核的參與者" />
             <n-data-table v-else :columns="columns" :data="pendingParticipants" />
           </div>
@@ -63,8 +79,9 @@ import { ref, onMounted, h } from 'vue';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
 import {
-  NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NEmpty, NList, NListItem,
-  NButton, NDataTable, NTag, useMessage, NModal, NForm, NFormItem, NInput, useDialog
+  NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NH3, NEmpty, NGrid, NGridItem,
+  NButton, NDataTable, NTag, NSpace, useMessage, NModal, NForm, NFormItem, NInput, 
+  useDialog, NPageHeader
 } from 'naive-ui';
 
 const userStore = useUserStore();
@@ -80,26 +97,13 @@ const editingEvent = ref({});
 
 const themeOverrides = {
   common: {
-    primaryColor: '#FFC0CB', // 淡粉紅
-    primaryColorHover: '#FFB6C1', // 稍深的粉紅
-    primaryColorPressed: '#FF69B4', // 更深的粉紅
+    primaryColor: '#8E44AD',
+    primaryColorHover: '#9B59B6',
+    primaryColorPressed: '#7D3C98',
   },
-  Card: {
-    color: '#FFF0F5', // 淡粉紅背景
-  },
-  Button: {
-    textColor: '#8E44AD', // 淡紫色文字
-    border: '1px solid #8E44AD',
-    borderHover: '1px solid #9B59B6',
-    borderPressed: '1px solid #8E44AD',
-    colorHover: '#E8DAEF', // 淡紫色懸停背景
-    colorPressed: '#D2B4DE', // 淡紫色按下背景
-  },
-  List: {
-    color: '#FFE4E1', // 略深的粉色作為列表背景
-  },
-  ListItem: {
-    colorHover: '#FFD1DC', // 懸停時的顏色
+  Tag: {
+    infoColor: '#E6E6FA', // 淡紫色背景
+    infoTextColor: '#8E44AD', // 深紫色文字
   }
 };
 
@@ -118,6 +122,7 @@ const columns = [
             onClick: () => approveParticipant(row.userId),
             loading: row.approving,
             disabled: row.deleting,
+            class: 'approve-button'
           },
           { default: () => row.approving ? '審核中...' : '批准' }
         ),
@@ -128,7 +133,7 @@ const columns = [
             onClick: () => removeParticipant(row.userId),
             loading: row.deleting,
             disabled: row.approving,
-            style: 'margin-left: 8px; background-color: #FF69B4;'
+            class: 'remove-button'
           },
           { default: () => row.deleting ? '刪除中...' : '刪除' }
         )
@@ -144,11 +149,24 @@ const fetchUserEvents = async () => {
       params: { creatorId: userStore.userId }
     });
     events.value = await Promise.all(response.data.map(async event => {
-      const pendingParticipants = await fetchPendingParticipants(event.id);
+      const [pendingParticipants, eventDetail, eventPhotos] = await Promise.all([
+        fetchPendingParticipants(event.id),
+        axios.get(`/eventDetail/${event.id}/show`),
+        axios.get(`/eventPhoto/event/${event.id}`)
+      ]);
+
+      let coverPhotoUrl = null;
+      if (eventPhotos.data && eventPhotos.data.length > 0) {
+        const coverPhoto = eventPhotos.data.find(photo => photo.isCover) || eventPhotos.data[0];
+        coverPhotoUrl = `${import.meta.env.VITE_API_URL}/eventPhoto/${event.id}/${coverPhoto.id}`;
+      }
+
       return {
         ...event,
+        ...eventDetail.data,
         clubName: event.clubName || '工作坊',
-        hasPendingMembers: pendingParticipants.length > 0
+        hasPendingMembers: pendingParticipants.length > 0,
+        coverPhotoUrl: coverPhotoUrl
       };
     }));
   } catch (err) {
@@ -164,6 +182,14 @@ const fetchUserEvents = async () => {
   }
 };
 
+const updateEventPendingStatus = async (eventId) => {
+  const event = events.value.find(e => e.id === eventId);
+  if (event) {
+    const pendingParticipants = await fetchPendingParticipants(eventId);
+    event.hasPendingMembers = pendingParticipants.length > 0;
+  }
+};
+
 const editEvent = (event) => {
   editingEvent.value = { ...event };
   showEditModal.value = true;
@@ -174,7 +200,6 @@ const updateEvent = async () => {
     const response = await axios.put(`/events/${editingEvent.value.id}/edit`, {
       eventName: editingEvent.value.eventName,
       description: editingEvent.value.description,
-      // 根據需要添加其他字段
     });
     if (response.status === 200) {
       const index = events.value.findIndex(e => e.id === editingEvent.value.id);
@@ -214,10 +239,6 @@ const deleteEvent = async (event) => {
   }
 };
 
-const backToEventList = () => {
-  selectedEvent.value = null;
-  pendingParticipants.value = [];
-};
 const selectEvent = async (event) => {
   selectedEvent.value = event;
   loading.value = true;
@@ -246,7 +267,6 @@ const fetchPendingParticipants = async (eventId) => {
   }
 };
 
-//審核成功(status改為1)
 const approveParticipant = async (userId) => {
   const participant = pendingParticipants.value.find(p => p.userId === userId);
   if (!participant) return;
@@ -254,17 +274,16 @@ const approveParticipant = async (userId) => {
   participant.approving = true;
   try {
     await axios.put(`/eventParticipant/approve/${selectedEvent.value.id}/${userId}`);
-    // 從列表中移除已批准的參與者
     pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
+    await updateEventPendingStatus(selectedEvent.value.id);
   } catch (err) {
     console.error('Error approving participant:', err);
-    alert('審核參與者時出錯');
+    message.error('審核參與者時出錯');
   } finally {
     participant.approving = false;
   }
 };
 
-//審核刪除
 const removeParticipant = async (userId) => {
   const participant = pendingParticipants.value.find(p => p.userId === userId);
   if (!participant) return;
@@ -272,14 +291,20 @@ const removeParticipant = async (userId) => {
   participant.deleting = true;
   try {
     await axios.delete(`/eventParticipant/event/${selectedEvent.value.id}/user/${userId}`);
-    // 從列表中移除已刪除的參與者
     pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
+    await updateEventPendingStatus(selectedEvent.value.id);
   } catch (err) {
     console.error('Error removing participant:', err);
-    alert('刪除參與者時出錯');
+    message.error('刪除參與者時出錯');
   } finally {
     participant.deleting = false;
   }
+};
+
+const backToEventList = async () => {
+  selectedEvent.value = null;
+  pendingParticipants.value = [];
+  await fetchUserEvents();
 };
 
 onMounted(() => {
@@ -289,42 +314,53 @@ onMounted(() => {
 
 <style scoped>
 .event-approve-container {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.event-list {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.event-item {
-  cursor: pointer;
-  transition: background-color 0.3s;
-  padding: 10px;
-}
-
-.event-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.event-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.warning-tag {
-  margin-left: 10px;
-}
-
-.event-item:hover {
-  background-color: #FFD1DC;
-}
-
-.back-button {
+.page-title {
+  text-align: center;
   margin-bottom: 20px;
+}
+
+.section-title {
+  margin-bottom: 15px;
+}
+
+.event-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-cover {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+}
+
+.event-name {
+  cursor: pointer;
+}
+
+.event-name:hover {
+  color: #8E44AD;
+}
+
+.approve-button, .remove-button {
+  margin-left: 8px;
+}
+
+.approve-button {
+  background-color: #4CAF50;
+}
+
+.remove-button {
+  background-color: #F44336;
+}
+
+.n-tag {
+  margin-right: 8px;
 }
 </style>

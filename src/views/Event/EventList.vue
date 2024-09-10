@@ -5,87 +5,72 @@
       <div class="ts-content">
         <div class="ts-header is-huge is-center-aligned">工作坊活動列表</div>
         <div class="ts-space"></div>
-        <div class="ts-grid">
-          <div class="column is-14-wide is-centered">
-            <div class="ts-space"></div>
-            <div class="ts-row is-end-aligned">
-              <router-link 
-                :to="{ name: 'event-addWorkshop-link' }" 
-                class="ts-button custom-button"
-                style="margin: 0px 0px 10px 0px ;"
-              >
-                新增工作坊
-              </router-link>
-            </div>
-            <div class="ts-space"></div>
-            
-            <!-- 搜索和排序控件 -->
-            <div class="search-sort-container">
-              <div class="ts-input is-end-icon custom-input search-input">
-                <input 
-                  v-model="searchQuery" 
-                  type="text"
-                  placeholder="搜索工作坊..."
-                  @input="filterEvents"
-                >
-                <i class="search icon"></i>
-              </div>
-              <div class="ts-select custom-select sort-select">
-                <select 
-                  v-model="sortOption" 
-                  @change="sortEvents"
-                >
-                  <option value="dateDesc">日期 (新到舊)</option>
-                  <option value="dateAsc">日期 (舊到新)</option>
-                  <option value="nameAsc">名稱 (A-Z)</option>
-                  <option value="nameDesc">名稱 (Z-A)</option>
-                </select>
-              </div>
-            </div>
-            
-            <div class="ts-space"></div>
+        
+        <!-- 分類標籤 -->
+        <div class="category-tabs">
+          <button class="category-tab active">全部</button>
+          <button class="category-tab">戶外</button>
+          <button class="category-tab">室內</button>
+          <button class="category-tab">混合</button>
+        </div>
 
-            <!-- 工作坊列表 -->
-            <div v-if="loading" class="ts-center">
-              <n-spin size="large" />
-            </div>
-            <div v-else-if="filteredEvents.length === 0" class="ts-center">
-              沒有找到工作坊活動
-            </div>
-            <div v-else>
-              <div 
-                v-for="event in filteredEvents" 
-                :key="event.id" 
-                class="custom-event-box"
+        <!-- 搜索輸入框 -->
+        <div class="search-container">
+          <input 
+            v-model="searchQuery" 
+            type="text"
+            placeholder="來探索有趣的聚會吧"
+            @input="filterEvents"
+          >
+        </div>
+
+        <!-- 新增工作坊按鈕 -->
+        <div class="ts-row is-end-aligned">
+          <router-link 
+            :to="{ name: 'event-addWorkshop-link' }" 
+            class="ts-button custom-button"
+            style="margin: 0px 0px 10px 0px ;"
+          >
+            新增工作坊
+          </router-link>
+        </div>
+
+        <!-- 工作坊列表 -->
+        <div v-if="loading" class="ts-center">
+          <n-spin size="large" />
+        </div>
+        <div v-else-if="filteredEvents.length === 0" class="ts-center">
+          沒有找到工作坊活動
+        </div>
+        <div v-else class="event-grid">
+          <div 
+            v-for="event in filteredEvents" 
+            :key="event.id" 
+            class="event-card"
+            @click="goToEventDetail(event.id)"
+          >
+            <div class="event-image">
+              <img 
+                v-if="event.coverPhotoUrl"
+                :src="event.coverPhotoUrl" 
+                :alt="event.eventName"
               >
-                <div class="ts-content">
-                  <div class="ts-row">
-                    <div class="column is-4-wide">
-                      <div class="event-cover-container" @click="goToEventDetail(event.id)">
-                        <img 
-                          v-if="event.coverPhotoUrl"
-                          :src="event.coverPhotoUrl" 
-                          :alt="event.eventName"
-                          class="event-cover-photo"
-                        >
-                        <div v-else class="no-photo">無照片</div>
-                      </div>
-                    </div>
-                    <div class="column is-6-wide">
-                      <div class="ts-header" @click="goToEventDetail(event.id)">{{ event.eventName }}</div>
-                      <div class="ts-text is-secondary">
-                        <p>創建者: {{ event.creatorName }}</p>
-                        <p>開始時間: {{ formatDate(event.startTime) }}</p>
-                      </div>
-                    </div>
-                    <div class="column is-4-wide is-right-aligned">
-                      <div v-if="canUserEdit(event)" class="action-buttons">
-                        <n-button size="small" @click.stop="editEvent(event)" class="custom-button">編輯</n-button>
-                        <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div v-else class="no-photo">無照片</div>
+            </div>
+            <div class="event-info">
+              <div class="event-tag">報名中</div>
+              <h3 class="event-name">{{ event.eventName }}</h3>
+              <div class="event-creator">
+                <img :src="event.creatorPhotoUrl" :alt="event.creatorName" class="creator-avatar">
+                <span>{{ event.creatorName }}</span>
+              </div>
+              <p class="event-date">{{ formatDate(event.startTime) }} - {{ formatDate(event.endTime) }}</p>
+              <p class="event-location">{{ event.location }}</p>
+              
+              <!-- 添加編輯和刪除按鈕 -->
+              <div v-if="canUserEdit(event)" class="action-buttons">
+                <n-button size="small" @click.stop="editEvent(event)" class="custom-button">編輯</n-button>
+                <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
               </div>
             </div>
           </div>
@@ -151,18 +136,25 @@ const fetchEvents = async () => {
     const response = await axios.get('/events');
     const workshopEvents = response.data.filter(event => event.source === 2);
     
-    // 获取每个事件的 EventDetail 和照片
     const eventsWithDetails = await Promise.all(workshopEvents.map(async (event) => {
       try {
-        const [detailResponse, photosResponse] = await Promise.all([
+        const [detailResponse, photosResponse, creatorPhotoResponse] = await Promise.all([
           axios.get(`/eventDetail/${event.id}/show`),
-          axios.get(`/eventPhoto/event/${event.id}`)
+          axios.get(`/eventPhoto/event/${event.id}`),
+          axios.get(`/user/secure/profile-photo/${event.eventCreatorId}`)
         ]);
-        const firstPhoto = photosResponse.data && photosResponse.data.length > 0 ? photosResponse.data[0] : null;
+        
+        let coverPhotoUrl = null;
+        if (photosResponse.data && photosResponse.data.length > 0) {
+          const coverPhoto = photosResponse.data.find(photo => photo.isCover) || photosResponse.data[0];
+          coverPhotoUrl = `${import.meta.env.VITE_API_URL}/eventPhoto/${event.id}/${coverPhoto.id}`;
+        }
+
         return {
           ...event,
-          startTime: detailResponse.data.startTime,
-          coverPhotoUrl: firstPhoto ? `${import.meta.env.VITE_API_URL}/eventPhoto/${event.id}/${firstPhoto.id}` : null
+          ...detailResponse.data,
+          coverPhotoUrl: coverPhotoUrl,
+          creatorPhotoUrl: creatorPhotoResponse.data || null
         };
       } catch (error) {
         console.error(`獲取事件 ${event.id} 的詳情或照片失敗:`, error);
@@ -206,7 +198,7 @@ const sortEvents = () => {
 
 const formatDate = (dateString) => {
   if (!dateString) return '未設置時間';
-  const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+  const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
   return new Date(dateString).toLocaleDateString('zh-TW', options);
 };
 
@@ -278,84 +270,127 @@ onMounted(() => {
 
 <style scoped>
 .custom-container {
-  width: 80%;
+  width: 90%;
   margin: 0 auto;
 }
 
-.search-sort-container {
+.category-tabs {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.search-input {
-  width: 78%;
+.category-tab {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 5px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
-.sort-select {
-  width: 20%;
+.category-tab.active {
+  font-weight: bold;
+  border-bottom: 2px solid #000;
 }
 
-.custom-event-box {
-  background-color: #FFF;
-  border: 1px solid #FFB6C1;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
+.search-container {
+  margin-bottom: 20px;
+}
+
+.search-container input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.event-card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.custom-event-box:hover {
-  background-color: #FFE4E1;
-  border-color: #DB7093;
-  box-shadow: 0 2px 4px rgba(219, 112, 147, 0.3);
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
-.event-cover-container {
-  width: 200px;
-  height: 150px;
+.event-image {
+  height: 300px;
   overflow: hidden;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f0f0;
 }
 
-.event-cover-photo {
+.event-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
 }
 
-.event-cover-container:hover .event-cover-photo {
-  transform: scale(1.05);
+.event-info {
+  padding: 15px;
+}
+
+.event-tag {
+  display: inline-block;
+  background: #FFD700;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.event-name {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.event-creator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.creator-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.event-date, .event-location {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
 }
 
 .no-photo {
-  font-size: 1rem;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f0f0f0;
   color: #999;
 }
 
-.ts-header {
-  color: #DB7093;
-  transition: color 0.3s ease;
-}
-
-.ts-text.is-secondary {
-  color: #CD5C5C;
-  transition: color 0.3s ease;
-}
-
 .action-buttons {
-  margin-top: 0.5rem;
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .action-buttons .n-button {
-  margin-left: 0.5rem;
+  margin-left: 10px;
 }
 
 .custom-button {

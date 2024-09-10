@@ -36,7 +36,7 @@
                     <n-space justify="space-between">
                       <n-button 
                         quaternary
-                        @click="() => router.push({ name: 'club-detail-link', params: { id: club.id } })"
+                        @click="goToClubDetail(club.id)"
                         class="detail-button"
                       >
                         詳情
@@ -112,9 +112,26 @@ const quitClub = async (clubId) => {
   }
 };
 
+const goToClubDetail = async (clubId) => {
+  try {
+    // 首先檢查用戶是否有權限編輯俱樂部
+    const response = await axios.get(`/clubs/${clubId}/check-edit-permission`);
+    if (response.data.canEdit) {
+      // 如果有權限，直接跳轉到編輯頁面
+      router.push({ name: 'club-edit-link', params: { id: clubId } });
+    } else {
+      // 如果沒有權限，跳轉到詳情頁面
+      router.push({ name: 'club-detail-link', params: { id: clubId } });
+    }
+  } catch (err) {
+    console.error('Error checking edit permission:', err);
+    // 如果出現錯誤，默認跳轉到詳情頁面
+    router.push({ name: 'club-detail-link', params: { id: clubId } });
+  }
+};
+
 onMounted(fetchMyClubs);
 </script>
-
 <style scoped>
 .content-container {
   max-width: 1200px;

@@ -434,7 +434,7 @@ h1 {
   font-weight: bold;
   text-align: center;
   color: #ffffff;
-  background-color: #4CAF50;
+  background-color: palevioletred;
   border: none;
   border-radius: 30px;
   cursor: pointer;

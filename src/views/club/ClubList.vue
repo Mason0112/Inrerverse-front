@@ -1,6 +1,6 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-4xl font-bold text-center text-pink-400 mb-8">所有俱樂部</h1>
+    <h1 class="text-4xl font-bold text-center text-pink-400 mb-8" style="color: #e3bdbd">所有俱樂部</h1>
     <div class="flex justify-end mb-4">
       <router-link :to="{ name: 'club-form-link' }" class="new-club-button">新增俱樂部</router-link>
       <router-link :to="{ name: 'club-favorite-link' }" class="new-club-button">我的收藏</router-link>

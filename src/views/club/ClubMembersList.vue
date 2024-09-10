@@ -12,7 +12,8 @@
     <div v-if="loading" class="text-center py-4">
       <p class="text-xl">加載中...</p>
     </div>
-    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+      role="alert">
       <strong class="font-bold">錯誤：</strong>
       <span class="block sm:inline">{{ error }}</span>
     </div>
@@ -21,19 +22,27 @@
     </div>
     <div v-else>
       <ul class="divide-y divide-gray-200">
-        <li v-for="member in members" :key="member.userId" class="py-4 flex justify-between items-center">
-          <div class="ml-3">
-            <p class="text-sm font-medium text-gray-900">用戶名稱: {{ member.userName }}</p>
-            <p class="text-sm text-gray-500">加入時間: {{ formatDate(member.added) }}</p>
-          </div>
-          <button
-            v-if="isCreator"
-            @click="handleRemoveMember(member.userId)"
-            class="bg-red-500 hover:bg-red-700 text-black font-bold py-1 px-2 rounded"
-          >
-            刪除
-          </button>
-        </li>
+        <li v-for="member in members" :key="member.userId" class="py-4 flex items-center">
+  <div class="flex-shrink-0">
+    <div class="avatar-container">
+      <img v-if="member.photoUrl" :src="member.photoUrl" :alt="member.userName" class="avatar-image">
+      <div v-else class="avatar-default">
+        <span>{{ member.userName.charAt(0).toUpperCase() }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="ml-3 flex-grow">
+    <p class="text-sm font-medium text-gray-900">用戶名稱: {{ member.userName }}</p>
+    <p class="text-sm text-gray-500">加入時間: {{ formatDate(member.added) }}</p>
+  </div>
+  <button
+    v-if="isCreator"
+    @click="handleRemoveMember(member.userId)"
+    class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+  >
+    刪除
+  </button>
+</li>
       </ul>
     </div>
   </div>
@@ -62,7 +71,23 @@ const userStore = useUserStore();
 const fetchMembers = async () => {
   try {
     const response = await axios.get(`/clubMember/club/${props.clubId}/approved-members`);
-    members.value = response.data;
+    const membersData = response.data;
+
+    // 獲取每個成員的頭像
+    const membersWithPhotos = await Promise.all(membersData.map(async (member) => {
+      try {
+        const photoResponse = await axios.get(`/user/secure/profile-photo/${member.userId}`);
+        return {
+          ...member,
+          photoUrl: photoResponse.data || null
+        };
+      } catch (err) {
+        console.error(`Error fetching photo for user ${member.userId}:`, err);
+        return member;
+      }
+    }));
+
+    members.value = membersWithPhotos;
 
     // 確認當前用戶是否為俱樂部創建者
     const clubResponse = await axios.get(`/clubs/${props.clubId}`);
@@ -71,13 +96,13 @@ const fetchMembers = async () => {
     loading.value = false;
   } catch (err) {
     console.error('Error fetching club members or club info:', err);
-   // 处理404错误, 显示无成员的消息而不是跳转404页面
-   if (err.response && err.response.status === 404) {
+    // 处理404错误, 显示无成员的消息而不是跳转404页面
+    if (err.response && err.response.status === 404) {
       members.value = []; // 确保成员列表为空以显示"没有成員"的消息
     } else {
       error.value = err.response?.data || '获取俱乐部成员时出错';
     }
-    
+
     loading.value = false;
   }
 };
@@ -97,5 +122,49 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleString();
 };
 
+
 onMounted(fetchMembers);
 </script>
+
+<style scoped>
+
+.avatar-container {
+  width: 50px;  /* 設置固定寬度 */
+  height: 50px; /* 設置固定高度 */
+  border-radius: 50%; /* 圓形頭像 */
+  overflow: hidden; /* 確保內容不會溢出容器 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d1d5db; /* 默認背景顏色 */
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+}
+
+.avatar-default {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  font-weight: bold;
+  color: #374151;
+}
+.rounded-full {
+  border-radius: 9999px;
+}
+
+
+.bg-gray-300 {
+  background-color: #d1d5db;
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+</style>
