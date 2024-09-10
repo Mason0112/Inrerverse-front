@@ -46,10 +46,17 @@
         </div>
       </div>
       <div class="comment-content">
-        <a @click="navigateToUserPost(comment.userId)">
+        <a @click="navigateToUserPost(comment.userId)" class="a-link">
           <strong class="comment-author">{{ comment.userName }}:</strong>
         </a>
         <p>{{ comment.content }}</p>
+        <button @click="toggleCommentLike(comment)" class="like-button">
+      <font-awesome-icon 
+        :icon="comment.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+        :style="{ color: comment.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+      />
+    <span class="like-count">{{ comment.likeCount || 0 }}</span>
+  </button>
       </div>
     </div>
   </div>
@@ -204,6 +211,37 @@ async function toggleLike() {
   }
 }
 
+  // 檢查評論按讚狀態
+async function checkCommentLikeStatus(comment) {
+  if (!comment || !userId) return;
+  try {
+    const response = await axios.get(`/article/comment/like`, {
+      params: { userId: userId, commentId: comment.id }
+    });
+    comment.isLiked = response.data;
+  } catch (error) {
+    console.error('Error checking comment like status:', error);
+  }
+}
+
+// 切換評論按讚狀態
+async function toggleCommentLike(comment) {
+  if (!comment || !userId) return;
+  try {
+    await axios.post('/article/comment/like', null, {
+      params: { 
+        userId: userId, 
+        commentId: comment.id
+      }
+    });
+    comment.isLiked = !comment.isLiked;
+    comment.likeCount = (comment.likeCount || 0) + (comment.isLiked ? 1 : -1);
+    message.success(comment.isLiked ? '已按讚!' : '已取消讚!');
+  } catch (error) {
+    console.error('Error toggling comment like:', error);
+    message.error('更新評論按讚狀態失敗');
+  }
+}
   
   const handleFavorite = async () => {
     // 實現收藏邏輯
@@ -490,5 +528,29 @@ h1 {
 
 .article-meta a:hover {
   text-decoration: underline;
+}
+
+.a-link {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: none;
+}
+.like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 0.9em;
+  margin-top: 8px;
+}
+
+.like-button:hover {
+  color: #007bff;
+}
+
+.like-count {
+  margin-left: 4px;
 }
   </style>

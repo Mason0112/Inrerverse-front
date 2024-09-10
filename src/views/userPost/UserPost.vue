@@ -386,7 +386,7 @@ function formatDate(dateString) {
         align-items: center;
         justify-content: center;
         margin-bottom: 10px;
-        background-color: rgba(0, 128, 0, 0.16);
+        background-color: rgba(216, 191, 216, 0.7);
         padding: 10px;
     }
 
@@ -396,9 +396,9 @@ function formatDate(dateString) {
     .formatted-content {
     white-space: pre-wrap; /* 保留换行符和空格 */
     }
-
+    
     .comment {
-    border: 1px solid black;
+    border: 1px solid #FFB6C1;
     padding: 10px;
     margin-bottom: 10px;
     display: flex;
