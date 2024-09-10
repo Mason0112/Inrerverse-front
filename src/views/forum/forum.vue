@@ -4,7 +4,13 @@
       <n-list-item>
         <div class="article-container">
           <div class="content-container" @click="enterArticle(oneArticle.id)">
-            <n-thing :title="oneArticle.title" content-style="margin-top: 10px;">
+            <n-thing>
+              <template #header>
+                <div class="article-title">{{ oneArticle.title }}</div>
+              </template>
+              <template #header-extra>
+                <!-- 如果有額外的標題內容,放在這裡 -->
+              </template>
               <template #description>
                 <n-space size="small" style="margin-top: 4px">
                   <n-tag :bordered="false" type="info" size="small">
@@ -12,7 +18,7 @@
                   </n-tag>
                 </n-space>
               </template>
-              <n-ellipsis style="max-width: 240px">
+              <n-ellipsis style="max-width: 240px" class="article-content">
                 {{ oneArticle.content }}
               </n-ellipsis>
             </n-thing>
@@ -132,25 +138,80 @@ async function toggleLike(article) {
   display: flex;
   width: 100%;
   cursor: pointer;
+  background-color: #FEE8E8; /* 整體背景色 */
+  border-radius: 8px;
+  margin-bottom: 15px;
+  overflow: hidden;
 }
 
 .content-container {
   flex-grow: 1;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 使用更具體的選擇器來定位標題區域 */
+:deep(.n-thing) {
+  display: flex;
+  flex-direction: column;
+  background-color: #FEE8E8; /* 整體背景色 */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+:deep(.n-thing-header) {
+  background-color: #FFD6D6; /* 標題背景色略深 */
+  padding: 10px;
+}
+
+:deep(.n-thing-header__title) {
+  font-size: 1.2rem !important;
+  font-weight: 700 !important;
+  color: #1a1a1a !important;
+}
+
+:deep(.n-thing-main) {
+  background-color: #FEE8E8; /* 內容背景色 */
+  padding: 10px;
+}
+
+/* 為內容區域添加特定的類名 */
+.article-content-wrapper {
+  background-color: #FEE8E8;
+  padding: 10px;
+  border-radius: 0 0 8px 8px;
+}
+
+.article-content {
+  font-size: 1.5rem;
+  color: #333;
 }
 
 .image-container {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: default;
+  padding: 10px;
+}
+
+.n-image {
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.n-image:hover {
+  transform: scale(1.05);
 }
 
 .like-container {
   margin-top: 10px;
   cursor: default;
+  padding: 0 15px 15px;
 }
 
 .like-container .font-awesome-icon {

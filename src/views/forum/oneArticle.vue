@@ -46,10 +46,17 @@
         </div>
       </div>
       <div class="comment-content">
-        <a @click="navigateToUserPost(comment.userId)">
+        <a @click="navigateToUserPost(comment.userId)" class="a-link">
           <strong class="comment-author">{{ comment.userName }}:</strong>
         </a>
         <p>{{ comment.content }}</p>
+        <button @click="toggleCommentLike(comment)" class="like-button">
+      <font-awesome-icon 
+        :icon="comment.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+        :style="{ color: comment.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+      />
+    <span class="like-count">{{ comment.likeCount || 0 }}</span>
+  </button>
       </div>
     </div>
   </div>
@@ -204,6 +211,37 @@ async function toggleLike() {
   }
 }
 
+  // 檢查評論按讚狀態
+async function checkCommentLikeStatus(comment) {
+  if (!comment || !userId) return;
+  try {
+    const response = await axios.get(`/article/comment/like`, {
+      params: { userId: userId, commentId: comment.id }
+    });
+    comment.isLiked = response.data;
+  } catch (error) {
+    console.error('Error checking comment like status:', error);
+  }
+}
+
+// 切換評論按讚狀態
+async function toggleCommentLike(comment) {
+  if (!comment || !userId) return;
+  try {
+    await axios.post('/article/comment/like', null, {
+      params: { 
+        userId: userId, 
+        commentId: comment.id
+      }
+    });
+    comment.isLiked = !comment.isLiked;
+    comment.likeCount = (comment.likeCount || 0) + (comment.isLiked ? 1 : -1);
+    message.success(comment.isLiked ? '已按讚!' : '已取消讚!');
+  } catch (error) {
+    console.error('Error toggling comment like:', error);
+    message.error('更新評論按讚狀態失敗');
+  }
+}
   
   const handleFavorite = async () => {
     // 實現收藏邏輯
@@ -286,7 +324,7 @@ const navigateToUserPost = (userId) => {
   </script>
   
   <style scoped>
-  body {
+body {
   font-family: 'Noto Sans TC', sans-serif;
   background-color: #f0f0f0;
   color: #333;
@@ -294,20 +332,23 @@ const navigateToUserPost = (userId) => {
 }
 
 .article-container {
-  max-width: 680px;
+  max-width: 800px;
   margin: 20px auto;
-  background-color: #fff;
+  background-color: #FEE8E8; /* 使用淺粉色背景 */
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 24px;
 }
 
 /* 文章標題 */
 h1 {
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 700;
   margin-bottom: 16px;
-  color: #000;
+  color: #333;
+  background-color: #FFD6D6; /* 標題背景色略深 */
+  padding: 10px;
+  border-radius: 8px;
 }
 
 /* 文章元數據 */
@@ -317,6 +358,9 @@ h1 {
   margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
+  background-color: #FEE8E8;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 /* 文章內容 */
@@ -324,70 +368,82 @@ h1 {
   font-size: 16px;
   line-height: 1.8;
   margin-bottom: 24px;
+  background-color: #FEE8E8;
+  padding: 15px;
+  border-radius: 8px;
 }
 
 /* 文章圖片 */
 .article-photos {
   margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.article-photos img {
+.article-photos .n-image {
   max-width: 100%;
-  border-radius: 4px;
-  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.article-photos .n-image:hover {
+  transform: scale(1.05);
 }
 
 /* 文章操作按鈕 */
 .article-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-bottom: 24px;
+  gap: 10px;
 }
 
-.article-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.article-actions button {
-  background-color: #f0f0f0;
+.article-actions button,
+.like-container button {
+  background-color: #FFD6D6;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
   font-size: 14px;
-  color: #6f7780;
+  color: #333;
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
-.article-actions button:hover {
-  background-color: #e0e0e0;
+.article-actions button:hover,
+.like-container button:hover {
+  background-color: #FFC0C0;
 }
 
 /* 評論區域 */
 .comments-section {
   margin-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #FFD6D6;
   padding-top: 24px;
 }
 
 .comments-section h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   margin-bottom: 16px;
+  color: #333;
 }
 
 .comment {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
+  background-color: #FFF0F0;
+  border: 1px solid #FFD6D6;
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
 }
 
-.comment p {
-  font-size: 14px;
-  margin-bottom: 4px;
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 .comment-date {
@@ -408,44 +464,6 @@ h1 {
   color: #6c757d;
 }
 
-.comment-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.comment span {
-  font-size: 12px;
-  color: #6f7780;
-}
-
-/* 評論表單 */
-.comment-form {
-  margin-top: 24px;
-}
-
-.comment-form textarea {
-  width: 100%;
-  height: 100px;
-  padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  resize: vertical;
-  font-size: 14px;
-}
-
-.comment-form button {
-  background-color: #3397cf;
-  color: #fff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 8px;
-}
 .btn-edit:hover, .btn-delete:hover {
   color: #007bff;
 }
@@ -459,8 +477,36 @@ h1 {
   margin-right: 8px;
 }
 
+/* 評論表單 */
+.comment-form {
+  margin-top: 24px;
+}
+
+.comment-form textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border: 1px solid #FFD6D6;
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 14px;
+  background-color: #FFF0F0;
+}
+
+.comment-form button {
+  background-color: #FFD6D6;
+  color: #333;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 8px;
+}
+
 .comment-form button:hover {
-  background-color: #2c7eb3;
+  background-color: #FFC0C0;
 }
 
 .header {
@@ -475,20 +521,35 @@ h1 {
   flex-grow: 1;
 }
 
+.article-meta a,
 
-
-.article-actions button {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-
-.article-meta a {
-  color: #007bff;
+.a-link {
+  color: rgb(177 151 252);
   cursor: pointer;
   text-decoration: none;
 }
 
-.article-meta a:hover {
+.article-meta a:hover,
+.a-link:hover {
   text-decoration: underline;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  color: #6c757d;
+  font-size: 0.9em;
+  margin-top: 8px;
+}
+
+.like-button:hover {
+  color: rgb(177 151 252);
+}
+
+.like-count {
+  margin-left: 4px;
 }
   </style>
