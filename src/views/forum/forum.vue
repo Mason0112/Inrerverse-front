@@ -1,13 +1,14 @@
 <template>
-  <div class="forum-container">
+ <div class="forum-container">
+    <div class="search-container">
+      <div class="input-group">
+        <input type="text" class="form-control" v-model="searchQuery" placeholder="搜索文章...">
+        <button class="btn search-button" type="button" @click="searchArticles">搜尋</button>
+        <button v-if="isSearching" class="btn return-button" type="button" @click="resetSearch">返回</button>
 
-  <div class="search-container">
-    <div class="input-group mb-3">
-      <input type="text" class="form-control" placeholder="搜尋文章..." aria-label="Recipient's username" aria-describedby="button-addon2">
-      <button class="btn btn-outline-secondary" type="button" id="button-addon2">搜尋</button>
+      </div>
     </div>
-  </div>
-  <div v-for="oneArticle in articleList" :key="oneArticle.id">
+  <div v-for="oneArticle in displayedArticles" :key="oneArticle.id">
     <n-list hoverable>
       <n-list-item>
         <div class="article-container">
@@ -55,7 +56,7 @@
 </template>
     
 <script setup>
-  import {onMounted, ref, inject } from "vue";
+  import {onMounted, ref, computed  } from "vue";
   import axios from '@/plugins/axios';
   import useUserStore from '@/stores/userstore';
   import { useMessage } from 'naive-ui'
@@ -69,6 +70,14 @@
   const clubId=ref(1)
   const router = useRouter();
   const message=useMessage()
+  const searchQuery = ref('');
+  const isSearching = ref(false);
+  const originalArticles = ref([]);
+
+
+  const displayedArticles = computed(() => {
+    return isSearching.value ? articleList.value : originalArticles.value;
+  });
 
   onMounted(function(){
     showClubArticleList(clubId)
@@ -79,8 +88,7 @@ async function showClubArticleList(clubId) {
   try{
     const response = await axios.get(`/club/article/all/${clubId.value}`);
     articleList.value=response.data;
-    
-    // await Promise.all(articleList.value.map(article=> fetchComment(article.id)));
+    originalArticles.value = [...response.data]; // 保存原始文章列表
     await checkLikeStatus();
 
   }catch(error){
@@ -88,7 +96,32 @@ async function showClubArticleList(clubId) {
     message.error("Failed to fetch articles");
   }
 }
+//搜尋文章
+async function searchArticles() {
+  if (!searchQuery.value.trim()) {
+    message.warning("請輸入搜索內容");
+    return;
+  }
+  try {
+    isSearching.value = true;
+    const response = await axios.get('/club/article/search', {
+      params: { title: searchQuery.value }
+    });
+    articleList.value = response.data;
+    await checkLikeStatus();
+    message.success(`找到 ${articleList.value.length} 篇相關文章`);
+  } catch (error) {
+    console.error("Error searching articles:", error);
+    message.error("搜索文章失敗");
+  } 
+}
 
+function resetSearch() {
+  isSearching.value = false;
+  searchQuery.value = '';
+  articleList.value = [...originalArticles.value];
+  message.success("返回文章列表");
+}
 
 async function enterArticle(articleId){
   try{
