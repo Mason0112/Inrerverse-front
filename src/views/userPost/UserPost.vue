@@ -1,32 +1,46 @@
 <template>
-    <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
-        <div v-for="onePost in postList" :key="onePost.id" class="item">
-            <div class="container">
-                <div> {{ formatDate(onePost.added) }}</div>
-                <a @click="navigateToUserPost(onePost.user.id)" class="a-link"> 
-                    <div>{{ onePost.user.nickname }}</div>
-                </a>
-                <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
-                    <p>
-                        {{ onePost.content }}
-                    </p>
-                    <!-- photo -->
-                    <n-carousel
-                    v-if="onePost.photos && onePost.photos.length > 0"
-                    direction="vertical"
-                    dot-placement="right"
-                    mousewheel
-                    style="width: 100%; height: 240px"
-                    >
-                        <n-image
-                        v-for="onePhoto in onePost.photos"
-                        :key="onePhoto.id"
-                        :src="onePhoto.base64Photo" 
-                        :alt="onePhoto.name"
-                        class="image"/>
-                    </n-carousel>
-                </n-ellipsis>
-                <div>
+  <div>
+    <h2 v-if="viewingUserId != currentUserId">
+        查看用戶 {{ viewingUserName || '載入中...' }} 的動態牆
+    </h2>
+    <h2 v-else>這是您的個人動態牆</h2>
+    <!-- 其餘模板保持不變 -->
+</div>
+<n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
+    <div v-for="onePost in postList" :key="onePost.id" class="item">
+        <div class="post-actions">
+            <div v-if="onePost.userId !== null && onePost.user.id == userStore.userId" >
+                <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
+                <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
+            </div>
+        </div>
+        <div class="post-header">
+        <div class="post-date"> {{ formatDate(onePost.added) }}</div>
+        <a @click="navigateToUserPost(onePost.user.id)" class="a-link post-author" > 
+            {{ onePost.user.nickname }}
+        </a>
+        <div>
+            
+            <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
+                    <p>{{ onePost.content }}</p>
+            </n-ellipsis>
+                <!-- photo -->
+                <n-carousel
+                v-if="onePost.photos && onePost.photos.length > 0"
+                direction="vertical"
+                dot-placement="right"
+                mousewheel
+                style="width: 100%; height: 240px"
+                >
+                <n-image
+                v-for="onePhoto in onePost.photos"
+                :key="onePhoto.id"
+                :src="onePhoto.base64Photo" 
+                :alt="onePhoto.name"
+                class="image"/>
+            </n-carousel>
+            </div>
+                <div class="post-like">
                     <font-awesome-icon 
                     :icon="onePost.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
                     @click="toggleLike(onePost)"
@@ -34,43 +48,35 @@
                     />
                     <span class="like-count">{{ onePost.likeCount || 0 }}</span>
                 </div>
-                <div v-if="onePost.userId !== null">
-                    <div v-if="onePost.user.id == userStore.userId">
-                        <button class="btn btn-outline-secondary btn-sm" @click="updatePost(onePost)">編輯</button>
-                        <button class="btn btn-outline-danger btn-sm" @click=deletePost(onePost)>刪除</button>
-                    </div>
-                </div>
                     <!-- 留言 -->
-                    <div v-if="onePost.comments && onePost.comments.length> 0" >
+                    <div v-if="onePost.comments && onePost.comments.length > 0" class="comments-section">
                         <h6>評論區：</h6>
-    <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
-      <div class="comment-main">
-        <div class="comment-content">
-          <div class="comment-user">
-            <a @click="navigateToUserPost(oneComment.user.id)" class="a-link"> 
-              <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
-            </a>
-          </div>
-          <div class="comment-text">{{ oneComment.comment }}</div>
-          <div class="comment-date">{{ formatDate(oneComment.added) }}</div>
-        </div>
-        <div class="comment-like">
-          <font-awesome-icon 
-            :icon="oneComment.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
-            @click="toggleCommentLike(oneComment)"
-            :style="{ color: oneComment.isLiked ? 'red' : 'black', cursor: 'pointer' }"
-          />
-          <span class="like-count">{{ oneComment.likeCount || 0 }}</span>
-        </div>
+  <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
+    <div class="comment-content">
+      <div class="comment-user">
+        <a @click="navigateToUserPost(oneComment.user.id)" class="a-link"> 
+          <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
+        </a>
       </div>
-      <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId" class="comment-actions">
-        <n-button dashed @click="editComment(oneComment)">編輯</n-button>
-        <n-button dashed @click="deleteComment(oneComment, onePost.id)">
-          <font-awesome-icon :icon="['fas', 'trash']" />
-        </n-button>
+      <div class="comment-text">{{ oneComment.comment }}</div>
+      <div class="comment-date">{{ formatDate(oneComment.added) }}</div>
+      <div class="comment-like">
+        <font-awesome-icon 
+          :icon="oneComment.isLiked ? ['fas', 'heart'] : ['far', 'heart']" 
+          @click="toggleCommentLike(oneComment)"
+          :style="{ color: oneComment.isLiked ? 'red' : 'black', cursor: 'pointer' }"
+        />
+        <span class="like-count">{{ oneComment.likeCount || 0 }}</span>
       </div>
     </div>
+    <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId" class="comment-actions">
+      <button class="btn btn-outline-secondary btn-sm" @click="editComment(oneComment)">編輯</button>
+      <button class="btn btn-outline-danger btn-sm" @click="deleteComment(oneComment, onePost.id)">
+        <font-awesome-icon :icon="['fas', 'trash']" />
+      </button>
+    </div>
   </div>
+</div>
                     <!-- 留言輸入框 -->
                     <!-- 把屬性傳給子元件 -->
                     <PostComment 
@@ -84,7 +90,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref, inject, watch } from "vue";
+import {onMounted, ref, watch , computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
@@ -106,37 +112,78 @@ const editingCommentId=ref(null)
 const editedComment =ref(null)
 const message=useMessage()
 const router = useRouter();
-
+const currentUserId = computed(() => userStore.userId);
+const viewingUserId = ref(null);
+const viewingUserName = ref('');
 
 const postList = ref([])
-onMounted(function(){
-    userIdUrl.value = (route.params.id);
-    console.log("userIdUrl:" + userIdUrl)
-    showUserPostList()
-})
+
+function initializeViewingUserId() {
+  viewingUserId.value = route.params.id || currentUserId.value;
+  console.log("Initialized viewingUserId:", viewingUserId.value);
+  console.log("Current logged in userId:", currentUserId.value);
+  if (viewingUserId.value) {
+    fetchUserName();
+    showUserPostList();
+  } else {
+    console.error("viewingUserId is not set");
+  }
+}
+
+onMounted(() => {
+  initializeViewingUserId();
+});
+
 
 // 監聽路由變化
-watch(() => route.params.id, (newId) => {
-  if (newId && newId !== userIdUrl.value) {
-    userIdUrl.value = newId;
-    showUserPostList();
+watch([() => route.params.id, currentUserId], ([newId, newCurrentId]) => {
+  console.log("Route params or current user changed. New ID:", newId, "New current user ID:", newCurrentId);
+  initializeViewingUserId();
+}, { immediate: true });
+
+// 監聽 currentUserId 變化
+watch(currentUserId, (newId) => {
+  console.log("Current user ID changed:", newId);
+  if (!route.params.id) {
+    initializeViewingUserId();
   }
 });
+
+const navigateToUserPost = (userId) => {
+  if (userId && userId.toString() !== viewingUserId.value) {
+    console.log("Navigating to user post:", userId);
+    router.push(`/post/userPost/${userId}`);
+  } else {
+    console.log("Already viewing the requested user's posts or invalid userId");
+  }
+};
+
+async function fetchUserName() {
+  try {
+    const response = await axios.get(`/user/findName/${viewingUserId.value}`);
+    viewingUserName.value = response.data; // API 直接返回暱稱字符串
+    console.log("Fetched user name:", viewingUserName.value);
+  } catch (error) {
+    console.error('Error fetching user name:', error);
+    viewingUserName.value = '未知用戶';
+  }
+}
 
 // 渲染post
 
 async function showUserPostList() {
-    try {
-        const response = await axios.get(`/userPost/showUserAllPost/${userIdUrl.value}`);
-        console.log("userIdUrl:" + userIdUrl.value)
-        console.log("response.data:" + response.data);
-        postList.value = response.data;
-        await Promise.all(postList.value.map(post => fetchComments(post.id)));
-        await checkLikeStatus();
-    } catch (error) {
-        console.error("Error fetching user posts:", error);
-        message.error("Failed to fetch posts");
-    }
+  try {
+    console.log("Fetching posts for viewingUserId:", viewingUserId.value);
+    const response = await axios.get(`/userPost/showUserAllPost/${viewingUserId.value}`);
+    console.log("Response data:", response.data);
+    postList.value = Array.isArray(response.data) ? response.data : [];
+    await Promise.all(postList.value.map(post => fetchComments(post.id)));
+    await checkLikeStatus();
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    message.error("Failed to fetch posts");
+    postList.value = [];
+  }
 }
 
 // 檢查按讚狀態
@@ -345,17 +392,7 @@ async function deleteComment(oneComment, postId){
     }    
 }
 
-const navigateToUserPost = (userId) => {
-  if (userId) {
-    console.log("Navigating to user post:", userId); // 添加日誌
-    // 檢查當前路由是否已經是目標用戶的頁面
 
-      router.push(`/post/userPost/${userId}`);
-
-  } else {
-    console.log("User ID is undefined or null"); // 添加錯誤日誌
-  }
-};
 
     
 
@@ -382,47 +419,128 @@ function formatDate(dateString) {
 </script>
 
 <style scoped>
-    .item {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 10px;
-        background-color: rgb(254, 232, 232);
-        padding: 10px;
-    }
 
-    .item:last-child {
-    margin-bottom: 0;
-    }
+:root{
+  --primary-pink: #FFB6C1;
+  --secondary-pink: #FFC0CB;
+  --light-pink: #FFF0F5;  /* 略微加深的背景色 */
+  --very-light-pink: #FFFAFB; /* 保持不變，用於 post-content */
+  --dark-pink: #FF69B4;
+  --text-color: #333;
+  --background-color: #FFE4E1; /* 更深的背景色 */
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #FF69B4;
+  text-align: center;
+  margin: 30px 0;
+  font-size: 24px;
+}
+
+body {
+  background-color: #FFE4E1;
+  color: #333;
+  font-family: 'Arial', sans-serif;
+}
+.item {
+    position: relative;
+  background-color: #FFF0F5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+}
+.post-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.formatted-content {
+  white-space: pre-wrap;
+  color: #333;
+  line-height: 1.6;
+}
+
+.post-header {
+  margin-bottom: 15px;
+  padding-right: 100px; /* 為按鈕預留空間 */
+}
+
+.post-date {
+  font-size: 0.9em;
+  color: #666;
+}
+.post-like {
+  margin-bottom: 20px; /* 增加與評論區的間距 */
+  padding-bottom: 10px;
+  border-bottom: 1px solid #FFB6C1;
+}
+
+.post-author {
+  font-weight: bold;
+  color: #FF69B4;
+  margin-top: 5px;
+}
+
+.post-content {
+  margin-bottom: 15px;
+  background-color: #FFFAFB;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.comments-section {
+  margin-top: 20px;
+}
+
+.comment {
+    display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border: 1px solid #FFB6C1;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #FFFAFB;
+}
+
+
+.comment-user {
+  font-weight: bold;
+  color: #FF69B4;
+}
+
+.comment-text {
+  margin-top: 5px;
+}
+
+.comment-date {
+  font-size: 0.8em;
+  color: #888;
+  margin-top: 5px;
+}
     .formatted-content {
     white-space: pre-wrap; /* 保留换行符和空格 */
     }
     
-    .comment {
-    border: 1px solid #FFB6C1;
-    padding: 10px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    }
+
     .comment-main {
     flex-grow: 1;
     }
     .comment-content {
-    margin-bottom: 10px;
-    }
-    .comment-user {
-    font-weight: bold;
-    }
-    .comment-text {
-    margin-top: 5px;
-    }
-    .comment-date {
-    font-size: 0.8em;
-    color: #666;
-    margin-top: 5px;
-    }
+  flex-grow: 1;
+  margin-right: 15px;
+}
+
     .comment-like {
     display: flex;
     align-items: center;
@@ -432,28 +550,66 @@ function formatDate(dateString) {
     font-size: 0.9em;
     color: #666;
     }
-    .comment-actions {
-    display: flex;
-    gap: 5px;
-    }
-
-    /* 輪播圖 */
-    .carousel-img {
-        width: 100%;
-        height: auto;
-        object-fit: cover;
-    }
-    .image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
+.comment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
+    /* 輪播圖 */
+    .n-carousel {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 15px;
+}
+    .image {
+    width: auto;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-top: 10px;
+}
 
+.btn {
+  padding: 5px 10px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 0.8em;
+}
+
+.btn-outline-secondary {
+  color: #FF69B4;;
+  border: 1px solid #FF69B4;;
+  background-color: transparent;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #FF69B4;
+  color: white;
+}
+
+.btn-outline-danger {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  background-color: transparent;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
 
 .a-link {
   cursor: pointer;
   color: rgb(177 151 252);
   text-decoration: none;
+  transition: color 0.3s ease
+}
+
+.a-link:hover {
+  color: rgb(147, 121, 222);
 }
 </style>
