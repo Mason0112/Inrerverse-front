@@ -6,7 +6,7 @@
         </div>
         <div class="product-info">
           <div class="product-name">{{ product.name }}</div>
-          <div class="product-price">NT$ {{ formatPrice(product.price) }}</div>
+          <div class="product-price" style="color: rgb(177, 151, 252);">NT$ {{ formatPrice(product.price) }}</div>
         </div>
       </div>
     </div>
@@ -92,7 +92,11 @@
   .product-price {
     font-weight: bold;
     font-size: 1rem;
-    color: #dc3545;
+    color: rgb(177, 151, 252);
     margin-left: 1rem;
+  }
+
+  .price {
+    color: rgb(177, 151, 252);
   }
   </style>

@@ -66,12 +66,26 @@ const emits = defineEmits(["openUpdate","delete"]);
 }
 
 .ts-button.is-secondary {
-  background-color: var(--secondary-color);
-  color: var(--text-color);
+  background-color: rgb(177, 151, 252);
+  color: white;
+}
+
+.ts-button.is-secondary:hover {
+  background-color: rgb(133, 109, 205) ;
+  color: white;
 }
 
 .ts-button.is-danger {
-  background-color: var(--accent-color);
-  color: var(--text-color);
+  background-color: white;
+  color:  rgb(245, 153, 153);
+  border-color:rgb(245, 153, 153) ;
+
+  /* background-color: rgb(245, 153, 153);
+  color: white; */
+}
+
+.ts-button.is-danger:hover {
+    background-color: rgb(245, 153, 153);
+    color: white;
 }
 </style>

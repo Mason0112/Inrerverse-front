@@ -26,29 +26,34 @@
                 </n-card>
               </n-gi>
               <n-gi :span="16">
-                <n-card title="活動詳情" class="detail-card">
-                  <n-descriptions :column="1" bordered>
-                    <n-descriptions-item label="地點">
-                      {{ eventDetail.location }}
-                    </n-descriptions-item>
-                    <n-descriptions-item label="開始時間">
-                      {{ formatDateTime(eventDetail.startTime) }}
-                    </n-descriptions-item>
-                    <n-descriptions-item label="結束時間">
-                      {{ formatDateTime(eventDetail.endTime) }}
-                    </n-descriptions-item>
-                    <n-descriptions-item label="費用">
-                      ${{ eventDetail.fee }}
-                    </n-descriptions-item>
-                    <n-descriptions-item label="人數">
-                      {{ approvedParticipants.length }} / {{ eventDetail.participantMax }}
-                    </n-descriptions-item>
-                  </n-descriptions>
+                <n-card title="活動詳情" class="detail-card" >
+                  <div class="custom-details">
+                    <div class="detail-item">
+                      <div class="detail-label">地點</div>
+                      <div class="detail-content">{{ eventDetail.location }}</div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">開始時間</div>
+                      <div class="detail-content">{{ formatDateTime(eventDetail.startTime) }}</div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">結束時間</div>
+                      <div class="detail-content">{{ formatDateTime(eventDetail.endTime) }}</div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">費用</div>
+                      <div class="detail-content">${{ eventDetail.fee }}</div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">人數</div>
+                      <div class="detail-content">{{ approvedParticipants.length }} / {{ eventDetail.participantMax }}</div>
+                    </div>
+                  </div>
                   <n-space justify="end" style="margin-top: 16px;">
                     <n-button @click="handleParticipation" 
                               :disabled="!canParticipate" 
                               :loading="loading"
-                              :style="{ backgroundColor: '#E6E6FA', color: '#000000' }">
+                              class="participation-button">
                       {{ participationButtonText }}
                     </n-button>
                   </n-space>
@@ -152,7 +157,7 @@ const fetchApprovedParticipants = async () => {
   try {
     const response = await axios.get(`/eventParticipant/event/${route.params.id}/approved-participants`);
     const participantsData = response.data;
-    if(participantsData!=null){
+    if(participantsData.map!=null){
     approvedParticipants.value = await Promise.all(participantsData.map(async (participant) => {
       try {
         const photoResponse = await axios.get(`/user/secure/profile-photo/${participant.userId}`);
@@ -226,22 +231,97 @@ const handleParticipation = async () => {
   if (!canParticipate.value) return;
 
   loading.value = true;
+  let participantResponse = null;
+  let transactionResponse = null;
+
   try {
-    const response = await axios.post('/eventParticipant', {
+    // 首先嘗試加入活動
+    participantResponse = await axios.post('/eventParticipant', {
       eventId: route.params.id,
       userId: userStore.userId
     });
-    if (response.status === 201) {
+    // if (participantResponse.status === 201) {
+    //   message.success('成功提交參加請求');
+    //   participationStatus.value = {
+    //     eventId: route.params.id,
+    //     userId: userStore.userId,
+    //     status: 0
+    //   };
+
+    // 如果加入活動成功，再嘗試進行支付
+    if (participantResponse.status === 201) {
+      // 將 event ID 轉換為五位數格式，使用 padStart 方法
+      const formattedEventId = String(event.value.id).padStart(5, '0');
+      const formattedUserId = String(userStore.userId).padStart(5, '0');
       message.success('成功提交參加請求');
       participationStatus.value = {
         eventId: route.params.id,
         userId: userStore.userId,
-        status: 0
-      };
+        status: 0};
+      
+      transactionResponse = await axios.post('/transaction/add', {
+        transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
+        amount: -eventDetail.value.fee,
+        paymentMethod: '錢包支付',
+        status: 2,
+        user: {
+          id: userStore.userId
+        }
+      });
+
+      // 如果兩個操作都成功
+      if (transactionResponse.status === 201) {
+        message.success(`成功提交參加請求並將從錢包支付${eventDetail.value.fee}元活動款項`, {
+          closable: true,
+          duration: 5000
+        });
+
+        // 更新本地狀態
+        participationStatus.value = {
+          eventId: route.params.id,
+          userId: userStore.userId,
+          status: 0  // 0 表示待審核狀態
+        };
+      }
     }
   } catch (error) {
-    console.error('加入活動失敗:', error);
-    message.error('加入活動失敗');
+    console.error('處理參與請求時發生錯誤:', error);
+
+    // 錯誤處理和回滾邏輯
+    if (participantResponse && participantResponse.status === 201) {
+      // 如果加入活動成功但支付失敗，需要取消加入活動
+      try {
+        await axios.delete(`/eventParticipant/${route.params.id}/${userStore.userId}`);
+        console.log('成功回滾活動參與');
+      } catch (rollbackError) {
+        console.error('回滾活動參與失敗:', rollbackError);
+        message.error('操作失敗，且無法完全回滾。請聯繫客服。', {
+          closable: true,
+          duration: 5000
+        });
+        return;
+      }
+    }
+
+    // 根據錯誤類型顯示不同的錯誤消息
+    if (error.response) {
+      if (error.response.status === 400) {
+        message.error('餘額不足，請先儲值', {
+          closable: true,
+          duration: 5000
+        });
+      } else {
+        message.error('處理參與請求時發生錯誤', {
+          closable: true,
+          duration: 5000
+        });
+      }
+    } else {
+      message.error('網絡錯誤，請稍後再試', {
+        closable: true,
+        duration: 5000
+      });
+    }
   } finally {
     loading.value = false;
   }
@@ -296,6 +376,59 @@ onMounted(() => {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 16px;
+}
+
+.custom-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #f0e6ff;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: rgb(220, 198, 217);
+}
+
+.detail-item:hover {
+  background-color: #e6d9ff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.detail-label {
+  flex: 1;
+  font-weight: bold;
+  color: #6a0dad;
+}
+
+.detail-content {
+  flex: 2;
+  color: #4a0080;
+}
+
+.participation-button {
+  background-color: #9370DB;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+}
+
+.participation-button:hover {
+  background-color: #8A2BE2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.participation-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .participant-item {

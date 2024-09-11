@@ -5,19 +5,18 @@
       <!-- 新增分類表單 -->
       <form @submit.prevent="addCategory" class="add-category-form">
         <div class="input-group">
-          <input v-model="newCategory" placeholder="輸入新分類名稱" required>
+          <input v-model="newCategory" placeholder="輸入新分類名稱" required style="margin-right: 10px;">  
           <button type="submit" class="add-button">新增分類</button>
         </div>
       </form>
-  
+      <br>
       <!-- 分類列表 -->
       <table class="category-table">
         <thead>
           <tr>
             <th>分類名稱</th>
-            <th>
-              操作
-              <div class="operation-label">修改 / 刪除</div>
+            <th style="text-align: center;">
+              修改 / 刪除
             </th>
           </tr>
         </thead>
@@ -30,7 +29,7 @@
               <span v-else>{{ category.name }}</span>
             </td>
             <td class="operation-column">
-              <button v-if="editingId === category.id" @click="updateCategory(category.id)" class="edit-button">
+              <button v-if="editingId === category.id" @click="updateCategory(category.id)" class="edit-button" >
                 <span class="ts-icon is-floppy-disk-icon"></span>
               </button>
               <button v-else @click="startEditing(category)" class="edit-button">
@@ -233,8 +232,8 @@
 }
 
 .add-button {
-  background-color: #FCE797; /* 對比色按鈕 */
-  color: #3A3042; /* 文字顏色 */
+  background-color: #B197FC; /* 對比色按鈕 */
+  color: white; /* 文字顏色 */
   border: none;
   padding: 10px 20px;
   border-radius: 0 5px 5px 0;
@@ -282,18 +281,17 @@
 }
 
 .edit-button, .delete-button {
-  background-color: #97C4FC; /* 輔色按鈕 */
-  color: white;
+  color: rgb(177, 151, 252);
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
   margin: 1.5px;
+  font-size: 21px;
 }
 
 .delete-button {
-  background-color: #FCE797; /* 對比色刪除按鈕 */
-  color: #3A3042; /* 文字顏色 */
+  color: rgb(245, 153, 153); /* 文字顏色 */
 }
 
 .pagination {

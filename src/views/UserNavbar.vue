@@ -50,8 +50,13 @@
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'user-post-link' }" @click="closeDropdown('settings')">動態牆
               </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'user-post-link' , params:{id:userId}}" @click="closeDropdown('settings')">我的動態牆
-              </RouterLink></li>
+              <RouterLink 
+                class="dropdown-item" 
+                :to="{ name: 'user-post-link', params: { id: currentUserId } }" 
+                @click="closeDropdown('settings')"
+                >
+                我的動態牆
+              </RouterLink>
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-forum' }" @click="closeDropdown('settings')">論壇
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-addArticle' }" @click="closeDropdown('settings')">新增文章
@@ -154,7 +159,7 @@ function closeDropdown(menu) {
 }
 
 const userStore = useUserStore();
-const userId=userStore.userId
+const currentUserId = computed(() => userStore.userId);
 function logout() {
   userStore.resetStore();
   axios.defaults.headers.authorization = '';

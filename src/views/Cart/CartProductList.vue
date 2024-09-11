@@ -1,6 +1,6 @@
 <template>
     <div class="cart-product-list">
-      <h3 class="main-title">購物車商品列表</h3>
+      <h3 class="main-title">Interverse商品周邊</h3>
       <div class="product-grid">
         <div class="product-item" v-for="product in products" :key="product.id">
           <CartProductCard :product="product" />
@@ -50,7 +50,7 @@
   .main-title {
     color: var(--primary-color);
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
     font-size: 1.8em;
     font-weight: bold;
   }

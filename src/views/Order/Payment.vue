@@ -39,6 +39,7 @@ import { onMounted, ref, watch } from 'vue';
 import useUserStore from '@/stores/userstore';
 import axiosapi from '@/plugins/axios';
 import { useRouter } from 'vue-router';
+import Swal from 'sweetalert2';
 
 const products = ref([]);
 const total = ref(0);
@@ -123,12 +124,14 @@ function processPayment(detailResponse) {
 }
 
 function processLinePay(orderId) {
+  showWaitingAlert('正在處理 LINE Pay 付款，請稍候...');
   return axiosapi.get(`/api/orders/${orderId}`)
     .then(response => axiosapi.post(`/linePay/pay`, response.data))
     .then(linePayResponse => {
       console.log("linePay", linePayResponse);
       console.log("拿網址", linePayResponse.data.info.paymentUrl.web);
-      window.open(linePayResponse.data.info.paymentUrl.web, '_blank');
+      Swal.close(); // 關閉等待提示
+      window.open(linePayResponse.data.info.paymentUrl.web, '_self');
       return axiosapi.delete(`/cart/clear/${userStore.userId}`);
     });
 }
@@ -138,19 +141,25 @@ function processCOD() {
 }
 
 function processPayPal(orderId) {
-  // 這裡添加 PayPal 的處理邏輯
-  // 例如：
+  showWaitingAlert('正在處理 PayPal 付款，請稍候...');
   return axiosapi.get(`/api/orders/${orderId}`)
-    .then(response => axiosapi.post(`/paypal/request`,response.data))
+    .then(response => axiosapi.post(`/paypal/request`, response.data))
     .then(paypalResponse => {
       console.log("PayPal", paypalResponse);
-      // 假設 PayPal 也返回一個支付 URL
-      paypalResponse.data.payerAction
-      window.open(paypalResponse.data.payerAction, '_blank');
-      return axiosapi.get(`/paypal/self?url=${paypalResponse.data.self}`)
-        .then(response=>{
-          return axiosapi.delete(`/cart/clear/${userStore.userId}`);
-        })
+      if (paypalResponse.data.payerAction) {
+        Swal.close(); // 關閉等待提示
+        // 清空購物車
+        return axiosapi.delete(`/cart/clear/${userStore.userId}`)
+          .then(() => {
+            window.open(paypalResponse.data.payerAction, '_self');
+          });
+      } else {
+        throw new Error("PayPal 未返回有效的支付 URL");
+      }
+    })
+    .catch(error => {
+      Swal.close(); // 確保在出錯時也關閉等待提示
+      throw error;
     });
 }
 
@@ -166,6 +175,19 @@ function finishCheckout() {
 function handleError(error) {
   console.error("Error during checkout:", error);
   // 這裡可以添加更多的錯誤處理邏輯，例如顯示錯誤消息給用戶
+}
+
+function showWaitingAlert(message) {
+  Swal.fire({
+    title: '請稍候',
+    text: message,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    willOpen: () => {
+      Swal.showLoading();
+    }
+  });
 }
 </script>
   
@@ -209,7 +231,7 @@ function handleError(error) {
   display: flex;
   align-items: center;
   padding: 10px;
-  border: 1px solid #B197FC;
+  border: 1px solid #B197FC;  
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -235,8 +257,8 @@ function handleError(error) {
 
 .checkout-button {
   width: 100%;
-  background-color: #FCE797;
-  color: #3A3042;
+  background-color: rgb(252, 177, 177);
+  color: white;
   border: none;
   padding: 15px;
   border-radius: 5px;
@@ -246,11 +268,13 @@ function handleError(error) {
 }
 
 .checkout-button:hover:not(:disabled) {
-  opacity: 0.8;
+  background-color: rgb(255, 165, 165);
+  border: none;
 }
 
 .checkout-button:disabled {
-  background-color: #dfd6fa;
+  background-color: rgb(255, 225, 225);
+  color: white;
   cursor: not-allowed;
 }
 

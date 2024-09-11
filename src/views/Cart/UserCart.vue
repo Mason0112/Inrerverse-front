@@ -8,7 +8,7 @@
                 <div class="ts-box">
                     <table class="ts-table">
                         <thead>
-                            <tr>
+                            <tr class="tr">
                                 <th>#</th>
                                 <th>商品圖片</th>
                                 <th>名稱</th>
@@ -29,12 +29,12 @@
                                 <td>
                                     <div class="quantity-control">
                                         <button @click="decrementQuantity(product)"
-                                            class="ts-button is-fluid is-primary" style="width: 20px;"
-                                            :disabled="product.vol <= 0">-</button>
+                                            class="ts-button is-fluid is-primary" 
+                                            :disabled="product.vol <= 0"><font-awesome-icon icon="fa-solid fa-minus" /></button>
                                         <input type="number" v-model="product.vol" @change="onQuantityChange(product)"
                                             class="ts-input is-small" min="1">
                                         <button @click="incrementQuantity(product)"
-                                            class="ts-button is-fluid is-primary" style="width: 20px;">+</button>
+                                            class="ts-button is-fluid is-primary"><font-awesome-icon icon="fa-solid fa-plus" /></button>
                                     </div>
                                 </td>
                                 <td>NT$ {{ product.price * product.vol }}</td>
@@ -50,11 +50,11 @@
                         <div class="ts-divider"></div>
                         <div class="ts-flex is-vertical">
                             <div class="ts-flex">
-                                <div class="ts-text">總金額：</div>
+                                <div class="ts-text" style="margin-top: 20px;">總金額：</div>
                                 <div class="ts-text is-strong">NT$ {{ calculateTotalAmount }}</div>
                             </div>
                             <div class="ts-space"></div>
-                            <button class="ts-button is-fluid is-primary" @click="proceedToCheckout">前往付款</button>
+                            <button class="ts-button is-fluid is-primary" @click="proceedToCheckout"  style="margin-top: 20px;">前往付款</button>
                         </div>
                     </div>
                 </div>
@@ -224,5 +224,17 @@ body {
 
 .quantity-control button {
     padding: 0 8px;
+}
+
+th {
+background-color: rgb(177, 151, 252) !important;
+color: white !important;
+padding: 0px;
+}
+
+.ts-button {
+    padding: 5px;
+    margin: 2px;
+    width: 5px;
 }
 </style>

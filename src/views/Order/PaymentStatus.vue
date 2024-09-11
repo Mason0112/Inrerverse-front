@@ -8,7 +8,7 @@
                 <div class="ts-box">
                     <table class="ts-table">
                         <thead>
-                            <tr>
+                            <tr class="tr">
                                 <th>訂單編號</th>
                                 <th>狀態</th>
                                 <th>付款方式</th>
@@ -17,6 +17,7 @@
                                 <th>詳細資料</th>
                             </tr>
                         </thead>
+                        <div style="margin-bottom: 7px;"></div>
                         <tbody>
                             <tr v-for="(OrderByStatus, index) in OrdersByStatus" :key="OrdersByStatus.id">
                                 <td>{{ OrderByStatus.id }}</td>
@@ -26,13 +27,13 @@
                                 <td>
                                     <button 
                                         type="button" 
-                                        class="btn btn-primary" 
+                                        class="btn btn-primary cancelbtn" 
                                         @click="corfirm(OrderByStatus.id,4)">
                                         確認訂單取消 
                                     </button>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn btn-primary" @click="openModal(OrderByStatus.orderDetails)">詳細資料</button>
+                                    <button type="button" class="btn btn-primary detailbtn" @click="openModal(OrderByStatus.orderDetails)">詳細資料</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -116,6 +117,26 @@ function corfirm(id,status){
 
 
     
-<style>
-    
+<style scoped> 
+    .cancelbtn {
+    margin-right: 10px;
+    background-color: rgb(244, 162, 162);
+    color: white;
+}
+
+.cancelbtn:active {
+    background-color: rgb(248, 109, 109);
+    color: white;
+}
+
+.ts-table :is(thead,tfoot) tr :is(th,td) {
+    background: rgb(177, 151, 252);
+    color: white;
+    padding: 20px;
+    font-size: 15px;
+}
+
+.detailbtn:active {
+    background-color:rgb(133, 109, 205) ;
+}
 </style>
