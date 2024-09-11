@@ -1,48 +1,46 @@
 <template>
-  <div class="club-members-list">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-2xl font-bold">俱樂部成員</h2>
-      <button @click="$emit('close')" class="text-gray-500 hover:text-gray-700">
+  <div class="club-members-list bg-white shadow-md rounded-lg p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-3xl font-bold text-gray-800">俱樂部成員</h2>
+      <button @click="$emit('close')" class="text-gray-500 hover:text-gray-700 focus:outline-none">
         <span class="sr-only">關閉</span>
         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
+
     <div v-if="loading" class="text-center py-4">
-      <p class="text-xl">加載中...</p>
+      <p class="text-xl text-gray-500">加載中...</p>
     </div>
-    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-      role="alert">
+
+    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
       <strong class="font-bold">錯誤：</strong>
       <span class="block sm:inline">{{ error }}</span>
     </div>
+
     <div v-else-if="members.length === 0" class="text-center py-4">
-      <p class="text-xl">該俱樂部目前沒有成員。</p>
+      <p class="text-xl text-gray-500">該俱樂部目前沒有成員。</p>
     </div>
+
     <div v-else>
-      <ul class="divide-y divide-gray-200">
-        <li v-for="member in members" :key="member.userId" class="py-4 flex items-center">
-  <div class="flex-shrink-0">
-    <div class="avatar-container">
-      <img v-if="member.photoUrl" :src="member.photoUrl" :alt="member.userName" class="avatar-image">
-      <div v-else class="avatar-default">
-        <span>{{ member.userName.charAt(0).toUpperCase() }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="ml-3 flex-grow">
-    <p class="text-sm font-medium text-gray-900">用戶名稱: {{ member.userName }}</p>
-    <p class="text-sm text-gray-500">加入時間: {{ formatDate(member.added) }}</p>
-  </div>
-  <button
-    v-if="isCreator"
-    @click="handleRemoveMember(member.userId)"
-    class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
-  >
-    刪除
-  </button>
-</li>
+      <ul class="member-list">
+        <li v-for="member in members" :key="member.userId" class="member-item">
+          <div class="avatar-container">
+            <img v-if="member.photoUrl" :src="member.photoUrl" :alt="member.userName" class="avatar-image">
+            <div v-else class="avatar-default">
+              <span>{{ member.userName.charAt(0).toUpperCase() }}</span>
+            </div>
+          </div>
+          <div class="member-details">
+            <p class="text-lg font-medium text-gray-900">{{ member.userName }}</p>
+            <p class="text-sm text-gray-500">加入時間: {{ formatDate(member.added) }}</p>
+          </div>
+         <button v-if="isCreator" @click="confirmRemoveMember(member.userId)" class="delete-button">
+  踢除
+</button>
+
+        </li>
       </ul>
     </div>
   </div>
@@ -73,7 +71,6 @@ const fetchMembers = async () => {
     const response = await axios.get(`/clubMember/club/${props.clubId}/approved-members`);
     const membersData = response.data;
 
-    // 獲取每個成員的頭像
     const membersWithPhotos = await Promise.all(membersData.map(async (member) => {
       try {
         const photoResponse = await axios.get(`/user/secure/profile-photo/${member.userId}`);
@@ -89,20 +86,17 @@ const fetchMembers = async () => {
 
     members.value = membersWithPhotos;
 
-    // 確認當前用戶是否為俱樂部創建者
     const clubResponse = await axios.get(`/clubs/${props.clubId}`);
     isCreator.value = clubResponse.data.clubCreator === userStore.userId;
 
     loading.value = false;
   } catch (err) {
     console.error('Error fetching club members or club info:', err);
-    // 处理404错误, 显示无成员的消息而不是跳转404页面
     if (err.response && err.response.status === 404) {
-      members.value = []; // 确保成员列表为空以显示"没有成員"的消息
+      members.value = [];
     } else {
       error.value = err.response?.data || '获取俱乐部成员时出错';
     }
-
     loading.value = false;
   }
 };
@@ -110,11 +104,18 @@ const fetchMembers = async () => {
 const handleRemoveMember = async (userId) => {
   try {
     const response = await axios.delete(`/clubMember/club/${props.clubId}/user/${userId}`);
-    alert(response.data); // 顯示成功消息
-    fetchMembers(); // 刷新成員列表
+    alert(response.data);
+    fetchMembers();
   } catch (err) {
     console.error('Error removing member:', err);
-    alert(err.response.data); // 顯示錯誤消息
+    alert(err.response.data);
+  }
+};
+
+const confirmRemoveMember = async (userId) => {
+  const confirmed = confirm("確定要刪除此成員嗎？");
+  if (confirmed) {
+    handleRemoveMember(userId);
   }
 };
 
@@ -122,27 +123,67 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleString();
 };
 
-
 onMounted(fetchMembers);
 </script>
 
 <style scoped>
+.club-members-list {
+  width: 100%;
+  margin: 25px auto;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+h2 {
+  color: #111827;
+}
+
+/* 移除li的黑點 */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+/* 成員列表的橫向排列 */
+.member-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: left;
+}
+
+.member-item {
+  width: 200px;
+  text-align: center;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  transition: transform 0.3s ease;
+}
+
+.member-item:hover {
+  transform: translateY(-5px);
+}
 
 .avatar-container {
-  width: 50px;  /* 設置固定寬度 */
-  height: 50px; /* 設置固定高度 */
-  border-radius: 50%; /* 圓形頭像 */
-  overflow: hidden; /* 確保內容不會溢出容器 */
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #d1d5db; /* 默認背景顏色 */
+  background-color: #d1d5db;
 }
 
 .avatar-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* 確保圖片填滿容器並保持比例 */
+  object-fit: cover;
 }
 
 .avatar-default {
@@ -151,20 +192,60 @@ onMounted(fetchMembers);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: bold;
   color: #374151;
 }
-.rounded-full {
-  border-radius: 9999px;
+.delete-button {
+  background-color: #ff4d4f; /* 初始紅色 */
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加陰影 */
 }
 
-
-.bg-gray-300 {
-  background-color: #d1d5db;
+.delete-button:hover {
+  background-color: #ff7875; /* 懸停時的顏色變化 */
+  transform: translateY(-2px); /* 懸停時的位移效果 */
 }
 
-.text-gray-700 {
-  color: #374151;
+.delete-button:active {
+  background-color: #d9363e; /* 按壓時的顏色變化 */
+  transform: translateY(0); /* 按壓時的回彈效果 */
+}
+.member-details {
+  margin-top: 10px;
+}
+
+.text-gray-900 {
+  color: #111827;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+button {
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:focus {
+  outline: none;
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6;
 }
 </style>

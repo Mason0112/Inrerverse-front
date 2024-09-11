@@ -1,7 +1,7 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-card class="my-joined-events-container">
-      <n-h1 class="page-title">我參加的活動/工作坊</n-h1>
+      <n-h1 class="page-title"style="color: #e3bdbd">我參加的活動/工作坊</n-h1>
       <n-spin :show="loading">
         <n-result v-if="error" status="error" :title="error" />
         <div v-else>
@@ -15,10 +15,18 @@
                 <n-space vertical>
                   <n-h3 @click="viewEventDetails(event.id)" class="event-name">{{ event.eventName }}</n-h3>
                   <n-space>
-    <n-tag :type="event.clubName ? 'success' : 'info'" size="small">
-      {{ event.clubName || '工作坊' }}
-    </n-tag>
-  </n-space>
+                    <n-tag size="small" :style="event.clubName ? {
+                      backgroundColor: '#FFF0F5', // 更淡的粉紅色背景 (Lavender Blush)
+                      color: '#FF1493', // 深粉紅色文字
+                      borderColor: '#FF69B4' // 深粉紅色邊框
+                    } : {
+                      backgroundColor: '#F0E6FF',
+                      color: '#4B0082', // 靛青色文字
+                      borderColor: '#8A2BE2' // 藍紫色邊框
+                    }">
+                      {{ event.clubName || '工作坊' }}
+                    </n-tag>
+                  </n-space>
                   <span class="event-creator">創建者：{{ event.creatorName }}</span>
                 </n-space>
                 <template #footer>
@@ -40,7 +48,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
-import { 
+import {
   NConfigProvider, NCard, NSpin, NResult, NH1, NH3, NEmpty, NGrid, NGridItem,
   NButton, NSpace, NTag, useMessage
 } from 'naive-ui';

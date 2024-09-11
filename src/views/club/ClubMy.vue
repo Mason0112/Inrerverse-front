@@ -28,32 +28,25 @@
                       <div v-else class="no-photo">無照片</div>
                     </div>
                   </template>
-                  <n-space vertical>
+                  <n-space vertical @click="goToClubDetail(club.id)">
                     <n-text class="club-name">{{ club.clubName }}</n-text>
-                    <n-text type="info">公開: {{ club.isPublic === 1 ? '是' : '否' }}</n-text>
+                    <n-tag :bordered="false" class="public-tag">
+                      公開: {{ club.isPublic === 1 ? '是' : '否' }}
+                    </n-tag>
                   </n-space>
                   <template #footer>
-                    <n-space justify="space-between">
-                      <n-button 
-                        quaternary
-                        @click="goToClubDetail(club.id)"
-                        class="detail-button"
-                      >
-                        詳情
-                      </n-button>
-                      <n-popconfirm
-                        @positive-click="() => quitClub(club.id)"
-                        positive-text="確定"
-                        negative-text="取消"
-                      >
-                        <template #trigger>
-                          <n-button quaternary class="quit-button">
-                            退出社團
-                          </n-button>
-                        </template>
-                        確定要退出這個社團嗎？
-                      </n-popconfirm>
-                    </n-space>
+                    <n-popconfirm
+                      @positive-click="() => quitClub(club.id)"
+                      positive-text="確定"
+                      negative-text="取消"
+                    >
+                      <template #trigger>
+                        <n-button class="quit-button" block quaternary>
+                          退出社團
+                        </n-button>
+                      </template>
+                      確定要退出這個社團嗎？
+                    </n-popconfirm>
                   </template>
                 </n-card>
               </n-gi>
@@ -73,7 +66,7 @@ import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import {
   NSpace, NLayout, NLayoutContent, NH1, NButton, NSpin, NResult,
-  NEmpty, NGrid, NGi, NCard, NImage, NText, NPopconfirm
+  NEmpty, NGrid, NGi, NCard, NImage, NText, NTag, NPopconfirm
 } from 'naive-ui';
 
 const router = useRouter();
@@ -114,24 +107,21 @@ const quitClub = async (clubId) => {
 
 const goToClubDetail = async (clubId) => {
   try {
-    // 首先檢查用戶是否有權限編輯俱樂部
     const response = await axios.get(`/clubs/${clubId}/check-edit-permission`);
     if (response.data.canEdit) {
-      // 如果有權限，直接跳轉到編輯頁面
       router.push({ name: 'club-edit-link', params: { id: clubId } });
     } else {
-      // 如果沒有權限，跳轉到詳情頁面
       router.push({ name: 'club-detail-link', params: { id: clubId } });
     }
   } catch (err) {
     console.error('Error checking edit permission:', err);
-    // 如果出現錯誤，默認跳轉到詳情頁面
     router.push({ name: 'club-detail-link', params: { id: clubId } });
   }
 };
 
 onMounted(fetchMyClubs);
 </script>
+
 <style scoped>
 .content-container {
   max-width: 1200px;
@@ -145,12 +135,12 @@ onMounted(fetchMyClubs);
   flex-direction: column;
   background-color: #fff0f5;
   transition: all 0.3s ease;
-  border: none;  /* 移除邊框 */
+  border: none;
 }
 
 .club-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(227, 189, 189, 0.2);  /* 調整陰影顏色 */
+  box-shadow: 0 4px 12px rgba(227, 189, 189, 0.2);
 }
 
 .club-image {
@@ -178,37 +168,59 @@ onMounted(fetchMyClubs);
 .club-name {
   font-size: 1.25rem;
   font-weight: bold;
-  color: #e3bdbd;
+  color: rgb(218, 112, 112);
 }
 
-:deep(.n-button.detail-button) {
-  color: #e3bdbd;
-}
-
-:deep(.n-button.detail-button:hover) {
-  color: #d3a9a9;
-  background-color: rgba(227, 189, 189, 0.1);
-}
-
-:deep(.n-button.quit-button) {
-  color: #ff69b4;
-}
-
-:deep(.n-button.quit-button:hover) {
-  color: #ff1493;
-  background-color: rgba(255, 105, 180, 0.1);
+.public-tag {
+  background-color: rgba(243, 153, 153, 0.2);
+  border: 1px solid rgb(243, 153, 153);
+  color: rgb(243, 153, 153);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
 :deep(.n-card) {
   background-color: #fff0f5;
-  border: none;  /* 移除卡片邊框 */
+  border: none;
 }
 
 :deep(.n-card-header) {
-  border-bottom: none;  /* 移除卡片頭部邊框 */
+  border-bottom: none;
 }
 
 :deep(.n-card-footer) {
-  border-top: none;  /* 移除卡片底部邊框 */
+  border-top: none;
+  padding: 0;
+}
+
+:deep(.n-card-content) {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.n-card__footer) {
+  margin-top: auto;
+}
+
+.quit-button {
+  background-color: rgba(177, 151, 252, 0.2);
+  border: none;
+  color: rgb(177, 151, 252);
+  font-size: 1rem;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+.quit-button:hover {
+  background-color: rgba(177, 151, 252, 0.3);
+}
+
+:deep(.n-tag) {
+  padding: 0 8px;
+}
+
+:deep(.n-tag:not(.n-tag--bordered) .n-tag__border) {
+  display: none;
 }
 </style>

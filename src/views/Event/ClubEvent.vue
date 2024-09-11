@@ -37,9 +37,6 @@
       </n-grid>
     </n-spin>
 
-<!-- 只有成員可以看到添加活動表單 -->
-    <AddClubEventForm v-if="isMember" :clubId="clubId" @eventAdded="onEventAdded" />
-
     <!-- 編輯模態框 -->
     <n-modal v-model:show="showEditModal">
       <n-card
@@ -141,22 +138,6 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('zh-TW', options);
 };
 
-const onEventAdded = async (newEvent) => {
-  try {
-    // 获取新添加事件的详细信息
-    const detailResponse = await axios.get(`/eventDetail/${newEvent.id}/show`);
-    const eventWithDetail = {
-      ...newEvent,
-      startTime: detailResponse.data.startTime
-    };
-    events.value.unshift(eventWithDetail);
-  } catch (error) {
-    console.error(`获取新添加事件 ${newEvent.id} 的详情失败:`, error);
-    // 如果获取详情失败，仍然添加事件，但没有 startTime
-    events.value.unshift(newEvent);
-    message.error('获取新添加事件的开始时间失败');
-  }
-};
 
 const canUserEdit = (event) => {
   return userStore.userId === event.eventCreatorId;

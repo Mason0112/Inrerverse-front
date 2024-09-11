@@ -27,14 +27,17 @@
     </div>
     <div v-else class="club-grid">
       <div v-for="club in filteredClubs" :key="club.id" class="club-card">
-        <router-link :to="{ name: 'club-detail-link', params: { id: club.id } }">
-          <div class="club-image">
+        <div class="club-image">
+          <router-link :to="{ name: 'club-detail-link', params: { id: club.id } }">
             <img v-if="club.photo" :src="getPhotoUrl(club.photo)" :alt="club.clubName">
             <div v-else class="no-photo">
               無照片
             </div>
-          </div>
-        </router-link>
+          </router-link>
+          <button @click.stop="toggleFavorite(club)" class="favorite-button" :class="{ 'is-favorite': club.isFavorite }">
+            {{ club.isFavorite ? '❤' : '♡' }}
+          </button>
+        </div>
         <div class="club-content">
           <h2 class="club-name">
             <router-link :to="{ name: 'club-detail-link', params: { id: club.id } }">
@@ -187,20 +190,21 @@ onMounted(fetchClubs);
 <style scoped>
 .club-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 1rem;
 }
 
 .club-card {
   display: flex;
   flex-direction: column;
-  height: 500px;
+  height: 350px;
   border: 1px solid #fcd9e6;
   border-radius: 0.5rem;
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
   background-color: #fff0f5;
+  position: relative;
 }
 
 .club-card:hover {
@@ -210,7 +214,7 @@ onMounted(fetchClubs);
 
 .club-image {
   position: relative;
-  height: 300px;
+  height: 250px;
   overflow: hidden;
 }
 
@@ -232,7 +236,7 @@ onMounted(fetchClubs);
 }
 
 .club-content {
-  flex-grow: 1;
+  /* flex-grow: 1; */
   padding: 1rem;
 }
 
@@ -264,36 +268,11 @@ onMounted(fetchClubs);
   margin-top: 0.5rem;
 }
 
-.club-footer {
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.join-button,
 .favorite-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.join-button {
-  flex-grow: 1;
-  background-color: #e3bdbd;
-  color: white;
-  font-weight: bold;
-  margin-right: 0.5rem;
-}
-
-.join-button:hover {
-  background-color: #d3a9a9;
-}
-
-.favorite-button {
-  background-color: #ffd1dc;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 209, 220, 0.8);
   color: #ff69b4;
   font-size: 1.5rem;
   width: 40px;
@@ -302,16 +281,18 @@ onMounted(fetchClubs);
   justify-content: center;
   align-items: center;
   border-radius: 50%;
-  padding: 0;
-  line-height: 1;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
 }
 
 .favorite-button:hover {
-  background-color: #ffb6c1;
+  background-color: rgba(255, 182, 193, 0.9);
 }
 
 .favorite-button.is-favorite {
-  background-color: #ff69b4;
+  background-color: rgba(255, 105, 180, 0.8);
   color: white;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-card class="event-approve-container">
-      <n-h1 class="page-title">我主辦的活動/工作坊</n-h1>
+      <n-h1 class="page-title" style="color: #e3bdbd">我主辦的活動/工作坊</n-h1>
       <n-spin :show="loading">
         <n-result v-if="error" status="error" :title="error" />
         <div v-else>
@@ -11,14 +11,22 @@
             <n-empty v-if="events.length === 0" description="您還沒有創建任何活動" />
             <n-grid x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4" responsive="screen" v-else>
               <n-grid-item v-for="event in events" :key="event.id">
-                <n-card hoverable class="event-card">
+                <n-card hoverable class="event-card" @click="selectEvent(event)">
                   <template #cover>
                     <img :src="event.coverPhotoUrl || 'default-image.jpg'" alt="活動封面" class="event-cover">
                   </template>
                   <n-space vertical>
-                    <n-h3 @click="selectEvent(event)" class="event-name">{{ event.eventName }}</n-h3>
+                    <n-h3 class="event-name">{{ event.eventName }}</n-h3>
                     <n-space>
-                      <n-tag :type="event.clubName ? 'success' : 'info'" size="small">
+                      <n-tag size="small" :style="event.clubName ? {
+                        backgroundColor: '#FFF0F5',
+                        color: '#FF1493',
+                        borderColor: '#FF69B4'
+                      } : {
+                        backgroundColor: '#F0E6FF',
+                        color: '#4B0082',
+                        borderColor: '#8A2BE2'
+                      }">
                         {{ event.clubName || '工作坊' }}
                       </n-tag>
                       <n-tag v-if="event.hasPendingMembers" type="warning" size="small">待審核</n-tag>
@@ -37,11 +45,8 @@
 
           <!-- 待審核參與者列表 -->
           <div v-else>
-            <n-page-header 
-              :title="selectedEvent.eventName" 
-              :subtitle="selectedEvent.clubName || '工作坊'"
-              @back="backToEventList"
-            >
+            <n-page-header :title="selectedEvent.eventName" :subtitle="selectedEvent.clubName || '工作坊'"
+              @back="backToEventList">
               <template #extra>
                 <n-tag v-if="selectedEvent.hasPendingMembers" type="warning">待審核</n-tag>
               </template>
@@ -80,7 +85,7 @@ import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
 import {
   NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NH3, NEmpty, NGrid, NGridItem,
-  NButton, NDataTable, NTag, NSpace, useMessage, NModal, NForm, NFormItem, NInput, 
+  NButton, NDataTable, NTag, NSpace, useMessage, NModal, NForm, NFormItem, NInput,
   useDialog, NPageHeader
 } from 'naive-ui';
 
@@ -100,10 +105,6 @@ const themeOverrides = {
     primaryColor: '#8E44AD',
     primaryColorHover: '#9B59B6',
     primaryColorPressed: '#7D3C98',
-  },
-  Tag: {
-    infoColor: '#E6E6FA', // 淡紫色背景
-    infoTextColor: '#8E44AD', // 深紫色文字
   }
 };
 
@@ -164,7 +165,7 @@ const fetchUserEvents = async () => {
       return {
         ...event,
         ...eventDetail.data,
-        clubName: event.clubName || '工作坊',
+        clubName: event.clubName || null, // 將 '工作坊' 改為 null
         hasPendingMembers: pendingParticipants.length > 0,
         coverPhotoUrl: coverPhotoUrl
       };
@@ -222,7 +223,7 @@ const confirmDelete = (event) => {
     positiveText: '確認刪除',
     negativeText: '取消',
     onPositiveClick: () => deleteEvent(event),
-    onNegativeClick: () => {}
+    onNegativeClick: () => { }
   });
 };
 
@@ -332,6 +333,7 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .event-cover {
@@ -348,7 +350,8 @@ onMounted(() => {
   color: #8E44AD;
 }
 
-.approve-button, .remove-button {
+.approve-button,
+.remove-button {
   margin-left: 8px;
 }
 

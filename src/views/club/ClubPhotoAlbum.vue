@@ -24,32 +24,26 @@
       </button>
     </div>
 
-    <!-- 照片輪播圖 -->
-    <div v-if="photos.length > 0" class="carousel-container">
-      <transition-group name="fade" tag="div" class="carousel-slides">
-        <div v-for="(photo, index) in photos" :key="photo.id" v-show="index === currentIndex" class="carousel-slide">
+    <!-- 顯示照片 -->
+    <div v-if="photos.length > 0">
+      <div class="photo-grid">
+        <div 
+          v-for="(photo, index) in displayPhotos" 
+          :key="photo.id" 
+          class="photo-item"
+          @click="showPhotoModal = true"
+        >
           <img 
             :src="getPhotoUrl(clubId, photo.id)"
             :alt="'俱樂部照片'"
-            @error="handleImageError"
-            :data-retries="0"
+            class="photo"
           >
-          <div class="carousel-caption">
-            <p>上傳者: {{ photo.userName }}</p>
-            <button 
-              v-if="isMember && photo.uploaderId === userStore.userId" 
-              @click.stop="deletePhoto(photo.id)" 
-              class="ts-button is-negative is-small"
-            >
-              刪除
-            </button>
+          <!-- 顯示更多圖片提示 -->
+          <div v-if="index === 2 && photos.length > 3" class="more-photos">
+            <span>+{{ photos.length - 3 }}</span>
           </div>
         </div>
-      </transition-group>
-      
-      <!-- 輪播圖控制按鈕 -->
-      <button @click="prevSlide" class="carousel-control left">&lt;</button>
-      <button @click="nextSlide" class="carousel-control right">&gt;</button>
+      </div>
     </div>
 
     <div v-else-if="!loading" class="ts-center">
@@ -63,13 +57,40 @@
         <p>{{ error }}</p>
       </div>
     </div>
+
+    <!-- 照片模態框 -->
+    <div v-if="showPhotoModal" class="modal-overlay" @click.self="showPhotoModal = false">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 style="color: #e3bdbd;">所有俱樂部照片</h2>
+          <button @click="showPhotoModal = false" class="modal-close">✕</button>
+        </div>
+        <div class="photo-grid-modal">
+          <div v-for="photo in photos" :key="photo.id" class="photo-item-modal">
+            <img 
+              :src="getPhotoUrl(clubId, photo.id)"
+              :alt="'俱樂部照片'"
+              class="photo"
+            >
+            <div class="photo-caption">
+              <p>上傳者: {{ photo.userName }}</p>
+              <button 
+                v-if="isMember && photo.uploaderId === userStore.userId" 
+                @click.stop="deletePhoto(photo.id)" 
+                class="ts-button is-negative is-small"
+              >
+                刪除
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 
@@ -84,15 +105,14 @@ const props = defineProps({
   }
 });
 
-const route = useRoute();
 const userStore = useUserStore();
 
 const photos = ref([]);
+const displayPhotos = ref([]);
 const selectedFile = ref(null);
 const error = ref(null);
 const loading = ref(true);
-const currentIndex = ref(0);
-let autoPlayInterval = null;
+const showPhotoModal = ref(false);
 
 const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0];
@@ -121,28 +141,10 @@ const uploadPhoto = async () => {
     };
     
     photos.value.unshift(newPhoto);
+    updateDisplayPhotos();
     selectedFile.value = null;
   } catch (err) {
     handleApiError(err, '上傳照片失敗');
-  }
-};
-
-const loadNewPhoto = async (photo) => {
-  try {
-    const img = new Image();
-    img.onload = () => {
-      photo.loading = false;
-      photo.url = img.src;
-    };
-    img.onerror = () => {
-      photo.loading = false;
-      photo.error = true;
-    };
-    img.src = getPhotoUrl(props.clubId, photo.id, true);
-  } catch (err) {
-    console.error('Error loading new photo:', err);
-    photo.loading = false;
-    photo.error = true;
   }
 };
 
@@ -163,6 +165,7 @@ const fetchPhotos = async () => {
         ...photo,
         url: getPhotoUrl(props.clubId, photo.id)
       }));
+      updateDisplayPhotos();
     } else {
       error.value = '獲取照片失敗：伺服器回應格式不正確';
     }
@@ -173,32 +176,25 @@ const fetchPhotos = async () => {
   }
 };
 
+const updateDisplayPhotos = () => {
+  displayPhotos.value = photos.value.slice(0, 3);
+};
+
 const deletePhoto = async (photoId) => {
   if (!props.isMember) return;
+
+  // 使用 window.confirm 進行刪除確認
+  const confirmed = window.confirm("您確定要刪除這張照片嗎？");
+  if (!confirmed) return; // 如果用戶選擇取消，則不進行刪除操作
   
   try {
     await axios.delete(`/clubPhoto/delete/${photoId}`, {
       params: { uploaderId: userStore.userId }
     });
     photos.value = photos.value.filter(photo => photo.id !== photoId);
-    if (currentIndex.value >= photos.value.length) {
-      currentIndex.value = photos.value.length - 1;
-    }
+    updateDisplayPhotos();
   } catch (err) {
     handleApiError(err, '刪除照片失敗');
-  }
-};
-
-const handleImageError = (event, photo) => {
-  const img = event.target;
-  const retries = parseInt(img.dataset.retries || '0');
-  if (retries < 3) {
-    setTimeout(() => {
-      img.dataset.retries = retries + 1;
-      img.src = getPhotoUrl(props.clubId, photo.id, true);
-    }, 1000);
-  } else {
-    photo.error = true;
   }
 };
 
@@ -219,64 +215,112 @@ const handleApiError = (err, defaultMessage) => {
   console.error('API 錯誤:', err);
 };
 
-const nextSlide = () => {
-  currentIndex.value = (currentIndex.value + 1) % photos.value.length;
-};
-
-const prevSlide = () => {
-  currentIndex.value = (currentIndex.value - 1 + photos.value.length) % photos.value.length;
-};
-
-const startAutoPlay = () => {
-  autoPlayInterval = setInterval(() => {
-    nextSlide();
-  }, 3000);
-};
-
-const stopAutoPlay = () => {
-  clearInterval(autoPlayInterval);
-};
-
 onMounted(() => {
   fetchPhotos();
-  startAutoPlay();
-});
-
-onUnmounted(() => {
-  stopAutoPlay();
 });
 
 </script>
 
 <style scoped>
-.carousel-container {
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.photo-item {
   position: relative;
-  width: 250px;
-  height: 250px;
-  margin: 0 auto;
-  overflow: hidden;
-}
-
-.carousel-slides {
   width: 100%;
-  height: 100%;
+  padding-top: 100%;
+  overflow: hidden;
+  background-color: #f3f3f3;
 }
 
-.carousel-slide {
+.photo {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
 }
 
-.carousel-slide img {
-  width: 250px;
-  height: 250px;
+.more-photos {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
+  border-radius: 8px;
+}
+
+/* 模態框樣式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+}
+
+.modal-close {
+  background-color: transparent;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.photo-grid-modal {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.photo-item-modal {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;
+  overflow: hidden;
+}
+
+.photo-item-modal img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
-.carousel-caption {
+.photo-caption {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -285,147 +329,41 @@ onUnmounted(() => {
   color: white;
   padding: 5px;
   font-size: 0.8em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.carousel-control {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 1.2em;
-}
-
-.carousel-control.left {
-  left: 5px;
-}
-
-.carousel-control.right {
-  right: 5px;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-:root {
-  --primary-pink: #FFD1DC;
-  --secondary-pink: #FFC0CB;
-  --primary-purple: #E6E6FA;
-  --secondary-purple: #D8BFD8;
-  --text-color: #4A4A4A;
-  --button-hover: #FFB6C1;
-}
-
-/* 全局樣式 */
-body {
-  background-color: var(--primary-pink);
-  color: var(--text-color);
-  font-family: 'Arial', sans-serif;
-}
-
-.ts-container {
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin: 20px auto;
-  max-width: 800px;
-}
-
-/* 標題樣式 */
-.ts-header.is-huge {
-  color: var(--secondary-purple);
-  font-size: 2.5em;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* 按鈕樣式 */
 .ts-button {
-  background-color: var(--primary-purple);
+  background-color: var(--primary-purple); /* 按鈕背景色 */
+  color: white;
+  font-weight: bold;
+  padding: 12px 24px;
   border: none;
-  color: var(--text-color);
-  padding: 10px 20px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 按鈕陰影 */
 }
 
 .ts-button:hover {
-  background-color: var(--button-hover);
+  background-color: var(--secondary-purple); /* 懸停時的背景色變化 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 懸停時加強陰影效果 */
+  transform: translateY(-2px); /* 懸停時按鈕微微上移 */
 }
 
-.ts-button.is-primary {
-  background-color: var(--secondary-purple);
-  color: white;
+.ts-button:active {
+  background-color: #d1b0ff; /* 按壓時的背景色變化 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* 按壓時減少陰影 */
+  transform: translateY(0); /* 按壓時按鈕恢復原狀 */
 }
 
-.ts-button.is-negative {
-  background-color: #FF69B4;
-  color: white;
-}
-
-/* 輸入框樣式 */
-.ts-input input {
-  border: 2px solid var(--secondary-pink);
-  border-radius: 5px;
-  padding: 8px;
-}
-
-/* 輪播圖樣式 */
-.carousel-container {
-  background-color: var(--primary-purple);
-  border-radius: 10px;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.carousel-slide img {
-  border-radius: 8px;
-}
-
-.carousel-caption {
-  background-color: rgba(216, 191, 216, 0.7);
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.carousel-control {
-  background-color: rgba(255, 192, 203, 0.7);
-  color: white;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
-}
-
-/* 錯誤訊息樣式 */
-.ts-notice.is-negative {
-  background-color: #FFB6C1;
-  border-left: 4px solid #FF69B4;
-  color: #8B0000;
-}
-
-/* 動畫效果 */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.fade-enter-active {
-  animation: fadeIn 0.5s ease-out;
-}
-
-.fade-leave-active {
-  animation: fadeIn 0.5s ease-in reverse;
+/* 按鈕禁用狀態樣式 */
+.ts-button:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  box-shadow: none;
 }
 </style>
