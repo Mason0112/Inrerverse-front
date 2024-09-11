@@ -1,4 +1,12 @@
 <template>
+  <div class="forum-container">
+
+  <div class="search-container">
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="搜尋文章..." aria-label="Recipient's username" aria-describedby="button-addon2">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon2">搜尋</button>
+    </div>
+  </div>
   <div v-for="oneArticle in articleList" :key="oneArticle.id">
     <n-list hoverable>
       <n-list-item>
@@ -42,6 +50,7 @@
         </div>
       </n-list-item>
     </n-list>
+  </div>
   </div>
 </template>
     
@@ -134,11 +143,40 @@ async function toggleLike(article) {
 </script>
     
 <style scoped>
+.forum-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.search-container {
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 600px;
+  align-self: center;
+}
+
+.search-button {
+  background-color: #FF9999;
+  color: white;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.search-button:hover {
+  background-color: #FF7777;
+}
+
+.form-control:focus {
+  border-color: #FF9999;
+  box-shadow: 0 0 0 0.2rem rgba(255, 153, 153, 0.25);
+}
+
 .article-container {
   display: flex;
   width: 100%;
   cursor: pointer;
-  background-color: #FEE8E8; /* 整體背景色 */
+  background-color: #FEE8E8;
   border-radius: 8px;
   margin-bottom: 15px;
   overflow: hidden;
@@ -151,36 +189,28 @@ async function toggleLike(article) {
   flex-direction: column;
 }
 
-/* 使用更具體的選擇器來定位標題區域 */
 :deep(.n-thing) {
   display: flex;
   flex-direction: column;
-  background-color: #FEE8E8; /* 整體背景色 */
+  background-color: #FEE8E8;
   border-radius: 8px;
   overflow: hidden;
 }
 
 :deep(.n-thing-header) {
-  background-color: #FFD6D6; /* 標題背景色略深 */
+  background-color: #FFD6D6;
   padding: 10px;
 }
 
 :deep(.n-thing-header__title) {
-  font-size: 1.2rem !important;
-  font-weight: 700 !important;
-  color: #1a1a1a !important;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
 :deep(.n-thing-main) {
-  background-color: #FEE8E8; /* 內容背景色 */
-  padding: 10px;
-}
-
-/* 為內容區域添加特定的類名 */
-.article-content-wrapper {
   background-color: #FEE8E8;
   padding: 10px;
-  border-radius: 0 0 8px 8px;
 }
 
 .article-content {
