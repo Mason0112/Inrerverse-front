@@ -33,14 +33,14 @@
     </n-card>
   </n-config-provider>
 </template>
-  
-  <script setup>
-  import { ref, onMounted, h } from 'vue';
+
+<script setup>
+import { ref, onMounted, h } from 'vue';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
-import { 
-  NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NEmpty, NList, NListItem, 
-  NButton, NDataTable,  NTag, useMessage,
+import {
+  NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NEmpty, NList, NListItem,
+  NButton, NDataTable, NTag, useMessage,
 } from 'naive-ui';
 
 const userStore = useUserStore();
@@ -109,7 +109,7 @@ const columns = [
     }
   }
 ];
-  
+
 const fetchUserEvents = async () => {
   try {
     const response = await axios.get(`/events/creator?creatorId=${userStore.userId}`);
@@ -128,11 +128,11 @@ const fetchUserEvents = async () => {
     loading.value = false;
   }
 };
-  const backToEventList = () => {
-    selectedEvent.value = null;
-    pendingParticipants.value = [];
-  };
-  const selectEvent = async (event) => {
+const backToEventList = () => {
+  selectedEvent.value = null;
+  pendingParticipants.value = [];
+};
+const selectEvent = async (event) => {
   selectedEvent.value = event;
   loading.value = true;
   try {
@@ -160,26 +160,64 @@ const fetchPendingParticipants = async (eventId) => {
   }
 };
 
-  //審核成功(status改為1)
-  const approveParticipant = async (userId) => {
-    const participant = pendingParticipants.value.find(p => p.userId === userId);
-    if (!participant) return;
-  
-    participant.approving = true;
-    try {
-      await axios.put(`/eventParticipant/approve/${selectedEvent.value.id}/${userId}`);
-      // 從列表中移除已批准的參與者
-      pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
-    } catch (err) {
-      console.error('Error approving participant:', err);
-      alert('審核參與者時出錯');
-    } finally {
-      participant.approving = false;
+//審核成功(status改為1)
+const approveParticipant = async (userId) => {
+  const participant = pendingParticipants.value.find(p => p.userId === userId);
+  if (!participant) return;
+
+  participant.approving = true;
+  try {
+    await axios.put(`/eventParticipant/approve/${selectedEvent.value.id}/${userId}`);
+    // 從列表中移除已批准的參與者
+    pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
+
+    // 找出對應的交易
+    const { data: transaction } = await axios.get(`/transaction/transNo/${selectedEvent.value.id}/${userId}`);
+
+    if (transaction) {
+      // 將交易標記為已完成
+      try {
+        // 將原始交易標記為已完成
+        await axios.put(`/transaction/to-completed/${transaction.id}`);
+
+      } catch (transactionError) {
+        console.error('Error updating transaction:', transactionError);
+        console.error('Transaction data:', transaction);
+        if (transactionError.response) {
+          console.error('Server response:', transactionError.response.data);
+        }
+        throw new Error('交易更新失敗');
+      }
+
+       // 創建新的交易
+       const formattedEventId = String(selectedEvent.value.id).padStart(5, '0');
+      const formattedUserId = String(userStore.userId).padStart(5, '0');
+
+      await axios.post('/transaction/add', {
+        transactionNo: `E${formattedEventId}${selectedEvent.value.eventName}U${formattedUserId}A`,  // A=Accept
+        amount: Math.abs(transaction.amount),  // 使用原交易金額的絕對值
+        paymentMethod: '主辦活動/工作坊',
+        status: 1,
+        user: {
+          id: userStore.userId
+        }
+      });
+    } else {
+      console.warn('對應的交易未找到');
     }
-  };
-  
-  //審核刪除
-  const removeParticipant = async (userId) => {
+  } catch (err) {
+    console.error('Error approving participant or updating transactions:', err);
+    if (err.response) {
+      console.error('Server response:', err.response.data);
+    }
+    alert(err.message || '審核參與者或更新交易時出錯');
+  } finally {
+    participant.approving = false;
+  }
+};
+
+//審核刪除
+const removeParticipant = async (userId) => {
   const participant = pendingParticipants.value.find(p => p.userId === userId);
   if (!participant) return;
 
@@ -188,6 +226,16 @@ const fetchPendingParticipants = async (eventId) => {
     await axios.delete(`/eventParticipant/event/${selectedEvent.value.id}/user/${userId}`);
     // 從列表中移除已刪除的參與者
     pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
+
+     // 找出對應的交易
+     const { data: transaction } = await axios.get(`/transaction/transNo/${selectedEvent.value.id}/${userId}`);
+     console.error('Transaction data:', transaction);
+    if (transaction) {
+      // 將交易標記為失敗
+      await axios.put(`/transaction/to-failed/${transaction.id}`);
+    } else {
+      console.warn('對應的交易未找到');
+    }
   } catch (err) {
     console.error('Error removing participant:', err);
     alert('刪除參與者時出錯');
@@ -196,20 +244,22 @@ const fetchPendingParticipants = async (eventId) => {
   }
 };
 
-  onMounted(() => {
-    fetchUserEvents();
-  });
-  </script>
-  
-  <style scoped>
-  .event-approve-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  .event-list {
+onMounted(() => {
+  fetchUserEvents();
+});
+</script>
+
+<style scoped>
+.event-approve-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.event-list {
   border-radius: 8px;
-  overflow: hidden; /* 確保圓角效果能夠應用到子元素 */
+  overflow: hidden;
+  /* 確保圓角效果能夠應用到子元素 */
 }
 
 .event-item {
@@ -229,10 +279,11 @@ const fetchPendingParticipants = async (eventId) => {
 }
 
 .event-item:hover {
-  background-color: #FFD1DC; /* 與 themeOverrides 中的 ListItem.colorHover 保持一致 */
+  background-color: #FFD1DC;
+  /* 與 themeOverrides 中的 ListItem.colorHover 保持一致 */
 }
-  
-  .back-button {
-    margin-bottom: 20px;
-  }
-  </style>
+
+.back-button {
+  margin-bottom: 20px;
+}
+</style>

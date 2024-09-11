@@ -209,7 +209,7 @@ const handleParticipation = async () => {
       const formattedUserId = String(userStore.userId).padStart(5, '0')
       
       transactionResponse = await axios.post('/transaction/add', {
-        transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}`,
+        transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
         amount: -eventDetail.value.fee,
         paymentMethod: '錢包支付',
         status: 2,
