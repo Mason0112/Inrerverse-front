@@ -18,6 +18,7 @@ import CartProductList from "@/views/Cart/CartProductList.vue";
 import ShowProductDetail from "@/views/Cart/ShowProductDetail.vue";
 import UserCart from "@/views/Cart/UserCart.vue";
 import Wallet from "@/components/user/Wallet.vue";
+import UserPostTest from "@/views/test/UserPostTest.vue";
 
 import AdminHome from "@/views/admin/AdminHome.vue";
 import AdminRegister from "@/views/admin/AdminRegister.vue";
@@ -69,6 +70,8 @@ const routes = [
     { path: "/admin/login", name: "admin-login-link", component: AdminLogin },
     { path: "/admin/auth", name: "admin-auth-link", component: AdminAuth },
     { path: "/admin/transaction", name: "admin-transaction-link", component: AdminTransaction },
+    { path: "/userPostTest/:id?", name: "userpost-link", component: UserPostTest },
+
 
     //靖緯
     { path: "/club/all", name: "club-all-link", component: ClubList},
