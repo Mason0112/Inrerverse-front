@@ -1,4 +1,13 @@
 <template>
+  <div>
+    <h2>
+        <p v-if="viewingUserId != currentUserId">
+            查看用戶 {{ viewingUserName || '載入中...' }} 的動態牆
+        </p>
+    </h2>
+    <h2 v-if="viewingUserId == currentUserId">這是您的個人動態牆</h2>
+    <!-- 其餘模板保持不變 -->
+  </div>
     <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
         <div v-for="onePost in postList" :key="onePost.id" class="item">
             <div class="container">
@@ -84,7 +93,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref, watch } from "vue";
+import {onMounted, ref, watch , computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
@@ -106,42 +115,78 @@ const editingCommentId=ref(null)
 const editedComment =ref(null)
 const message=useMessage()
 const router = useRouter();
-
+const currentUserId = computed(() => userStore.userId);
+const viewingUserId = ref(null);
+const viewingUserName = ref('');
 
 const postList = ref([])
+
+function initializeViewingUserId() {
+  viewingUserId.value = route.params.id || currentUserId.value;
+  console.log("Initialized viewingUserId:", viewingUserId.value);
+  console.log("Current logged in userId:", currentUserId.value);
+  if (viewingUserId.value) {
+    fetchUserName();
+    showUserPostList();
+  } else {
+    console.error("viewingUserId is not set");
+  }
+}
+
 onMounted(() => {
-    initializeUserId();
-})
+  initializeViewingUserId();
+});
 
 
 // 監聽路由變化
-watch(() => route.params.id, (newId) => {
-  if (newId && newId !== userIdUrl.value) {
-    initializeUserId();
+watch([() => route.params.id, currentUserId], ([newId, newCurrentId]) => {
+  console.log("Route params or current user changed. New ID:", newId, "New current user ID:", newCurrentId);
+  initializeViewingUserId();
+}, { immediate: true });
+
+// 監聽 currentUserId 變化
+watch(currentUserId, (newId) => {
+  console.log("Current user ID changed:", newId);
+  if (!route.params.id) {
+    initializeViewingUserId();
   }
 });
 
-function initializeUserId() {
-  // 如果路由中有 id 參數，使用它；否則使用當前登錄用戶的 id
-  userIdUrl.value = route.params.id || userStore.userId;
-  console.log("userIdUrl:", userIdUrl.value);
-  showUserPostList();
+const navigateToUserPost = (userId) => {
+  if (userId && userId.toString() !== viewingUserId.value) {
+    console.log("Navigating to user post:", userId);
+    router.push(`/post/userPost/${userId}`);
+  } else {
+    console.log("Already viewing the requested user's posts or invalid userId");
+  }
+};
+
+async function fetchUserName() {
+  try {
+    const response = await axios.get(`/user/findName/${viewingUserId.value}`);
+    viewingUserName.value = response.data; // API 直接返回暱稱字符串
+    console.log("Fetched user name:", viewingUserName.value);
+  } catch (error) {
+    console.error('Error fetching user name:', error);
+    viewingUserName.value = '未知用戶';
+  }
 }
 
 // 渲染post
 
 async function showUserPostList() {
-    try {
-        const response = await axios.get(`/userPost/showUserAllPost/${userIdUrl.value}`);
-        console.log("userIdUrl:" + userIdUrl.value)
-        console.log("response.data:" + response.data);
-        postList.value = response.data;
-        await Promise.all(postList.value.map(post => fetchComments(post.id)));
-        await checkLikeStatus();
-    } catch (error) {
-        console.error("Error fetching user posts:", error);
-        message.error("Failed to fetch posts");
-    }
+  try {
+    console.log("Fetching posts for viewingUserId:", viewingUserId.value);
+    const response = await axios.get(`/userPost/showUserAllPost/${viewingUserId.value}`);
+    console.log("Response data:", response.data);
+    postList.value = Array.isArray(response.data) ? response.data : [];
+    await Promise.all(postList.value.map(post => fetchComments(post.id)));
+    await checkLikeStatus();
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    message.error("Failed to fetch posts");
+    postList.value = [];
+  }
 }
 
 // 檢查按讚狀態
@@ -350,17 +395,7 @@ async function deleteComment(oneComment, postId){
     }    
 }
 
-const navigateToUserPost = (userId) => {
-  if (userId) {
-    console.log("Navigating to user post:", userId); // 添加日誌
-    // 檢查當前路由是否已經是目標用戶的頁面
 
-      router.push(`/post/userPost/${userId}`);
-
-  } else {
-    console.log("User ID is undefined or null"); // 添加錯誤日誌
-  }
-};
 
     
 
