@@ -102,7 +102,7 @@
   .club-card {
     display: flex;
     flex-direction: column;
-    height: 400px;
+    height: 500px;
     border: 1px solid #fcd9e6;
     border-radius: 0.5rem;
     overflow: hidden;
@@ -111,7 +111,7 @@
   }
   
   .club-image {
-    height: 200px;
+    height: 300px;
     overflow: hidden;
   }
   

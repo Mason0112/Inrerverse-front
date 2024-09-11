@@ -1,76 +1,81 @@
 <template>
-  <div class="ts-container is-fluid">
-    <div class="ts-space is-large"></div>
-    <div class="ts-container">
-      <div class="ts-header is-huge is-center-aligned">我加入的俱樂部</div>
-      <div class="ts-space"></div>
-      <div class="ts-grid">
-        <div class="column is-1-wide"></div>
-        <div class="column is-14-wide">
-          <div v-if="loading" class="ts-loader is-large"></div>
-          <div v-else-if="error" class="ts-box is-negative">
-            <div class="ts-content">
-              <strong>錯誤：</strong>{{ error }}
-            </div>
-          </div>
-          <div v-else-if="clubs.length === 0" class="ts-header is-center-aligned">
-            您還沒有加入任何俱樂部。
-          </div>
-          <table v-else class="ts-table">
-            <thead>
-              <tr>
-                <th class="is-center-aligned">照片</th>
-                <th class="is-center-aligned">社團名稱</th>
-                <th class="is-center-aligned">公開</th>
-                <th class="is-center-aligned">操作</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="club in clubs" :key="club.id">
-                <td class="is-center-aligned">
-                  <router-link :to="{ name: 'club-detail-link', params: { id: club.id } }">
-                    <div class="ts-image is-rounded club-photo">
-                      <img 
-                        v-if="club.photo && getPhotoUrl(club.photo)"
+  <n-space vertical size="large">
+    <n-layout>
+      <n-layout-content class="content-container">
+        <n-h1 style="text-align: center; color: #e3bdbd;">我加入的俱樂部</n-h1>
+        <n-space vertical>
+          <n-spin :show="loading">
+            <n-result
+              v-if="error"
+              status="error"
+              :title="error"
+              :description="'獲取俱樂部列表時出錯'"
+            />
+            <n-empty v-else-if="clubs.length === 0" description="您還沒有加入任何俱樂部" />
+            <n-grid v-else x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4 xl:4" responsive="screen">
+              <n-gi v-for="club in clubs" :key="club.id">
+                <n-card class="club-card" hoverable>
+                  <template #cover>
+                    <div class="club-image">
+                      <n-image
+                        v-if="club.photo"
                         :src="getPhotoUrl(club.photo)"
                         :alt="club.clubName"
-                        @error="handleImageError"
-                      >
-                      <div v-else class="ts-icon is-photo-icon"></div>
+                        object-fit="cover"
+                        preview-disabled
+                        class="club-photo"
+                      />
+                      <div v-else class="no-photo">無照片</div>
                     </div>
-                  </router-link>
-                </td>
-                <td class="is-center-aligned">
-                  <span class="club-name">{{ club.clubName }}</span>
-                </td>
-                <td class="is-center-aligned">{{ club.isPublic === 1 ? '是' : '否' }}</td>
-                <td class="is-center-aligned">
-                  <button
-                    @click="quitClub(club.id)"
-                    class="ts-button is-negative is-mini"
-                  >
-                    退出社團
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="column is-1-wide"></div>
-      </div>
-    </div>
-  </div>
+                  </template>
+                  <n-space vertical @click="goToClubDetail(club.id)">
+                    <n-text class="club-name">{{ club.clubName }}</n-text>
+                    <n-tag :bordered="false" class="public-tag">
+                      公開: {{ club.isPublic === 1 ? '是' : '否' }}
+                    </n-tag>
+                  </n-space>
+                  <template #footer>
+                    <n-popconfirm
+                      @positive-click="() => quitClub(club.id)"
+                      positive-text="確定"
+                      negative-text="取消"
+                    >
+                      <template #trigger>
+                        <n-button class="quit-button" block quaternary>
+                          退出社團
+                        </n-button>
+                      </template>
+                      確定要退出這個社團嗎？
+                    </n-popconfirm>
+                  </template>
+                </n-card>
+              </n-gi>
+            </n-grid>
+          </n-spin>
+        </n-space>
+      </n-layout-content>
+    </n-layout>
+  </n-space>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useMessage } from 'naive-ui';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import {
+  NSpace, NLayout, NLayoutContent, NH1, NButton, NSpin, NResult,
+  NEmpty, NGrid, NGi, NCard, NImage, NText, NTag, NPopconfirm
+} from 'naive-ui';
+
+const router = useRouter();
+const message = useMessage();
+const userStore = useUserStore();
 
 const clubs = ref([]);
 const loading = ref(true);
 const error = ref(null);
-const userStore = useUserStore();
 
 const fetchMyClubs = async () => {
   try {
@@ -89,22 +94,28 @@ const getPhotoUrl = (photoName) => {
   return `${import.meta.env.VITE_API_URL}/clubs/photo/${photoName}`;
 };
 
-const handleImageError = (event) => {
-  event.target.style.display = 'none';
-  event.target.nextElementSibling.style.display = 'flex';
-};
-
 const quitClub = async (clubId) => {
-  if (!confirm('確定要退出這個社團嗎？')) {
-    return;
-  }
   try {
     await axios.delete(`/clubMember/user/${userStore.userId}/delete/${clubId}`);
-    alert('您已成功退出社團');
+    message.success('您已成功退出社團');
     clubs.value = clubs.value.filter(club => club.id !== clubId);
   } catch (err) {
     console.error('Error quitting club:', err);
-    alert(err.response?.data?.message || '退出社團時出錯，請稍後再試');
+    message.error(err.response?.data?.message || '退出社團時出錯，請稍後再試');
+  }
+};
+
+const goToClubDetail = async (clubId) => {
+  try {
+    const response = await axios.get(`/clubs/${clubId}/check-edit-permission`);
+    if (response.data.canEdit) {
+      router.push({ name: 'club-edit-link', params: { id: clubId } });
+    } else {
+      router.push({ name: 'club-detail-link', params: { id: clubId } });
+    }
+  } catch (err) {
+    console.error('Error checking edit permission:', err);
+    router.push({ name: 'club-detail-link', params: { id: clubId } });
   }
 };
 
@@ -112,74 +123,104 @@ onMounted(fetchMyClubs);
 </script>
 
 <style scoped>
-/* 自定义粉藕色样式 */
-:deep(.ts-table) {
-  border-color: #e3bdbd;
-}
-
-:deep(.ts-table thead) {
-  background-color: #f5e0e0;
-}
-
-:deep(.ts-table tbody tr:hover) {
-  background-color: #faf0f0;
-}
-
-:deep(.ts-table th),
-:deep(.ts-table td) {
-  text-align: center;
-  vertical-align: middle;
-}
-
-.club-name {
-  color: #e3bdbd;
-  font-weight: bold;
-}
-
-:deep(.ts-button.is-negative) {
-  background-color: #e3bdbd;
-  color: white;
-}
-
-:deep(.ts-button.is-negative:hover) {
-  background-color: #d3a9a9;
-}
-
-:deep(.ts-image.is-rounded) {
-  width: 64px;
-  height: 64px;
-  overflow: hidden;
-  cursor: pointer;
+.content-container {
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 20px;
 }
 
-:deep(.ts-image.is-rounded img) {
+.club-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff0f5;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.club-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(227, 189, 189, 0.2);
+}
+
+.club-image {
+  height: 300px;
+  overflow: hidden;
+}
+
+.club-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-:deep(.ts-icon.is-photo-icon) {
-  width: 64px;
-  height: 64px;
-  background-color: #f5e0e0;
+.no-photo {
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
-  color: #c48888;
-  margin: 0 auto;
+  background-color: #fde8ef;
+  color: #f8a5c2;
+  font-size: 1.2rem;
 }
 
-:deep(.ts-icon.is-photo-icon::before) {
-  content: "📷";
+.club-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: rgb(218, 112, 112);
 }
 
-.club-photo {
-  transition: transform 0.3s ease;
+.public-tag {
+  background-color: rgba(243, 153, 153, 0.2);
+  border: 1px solid rgb(243, 153, 153);
+  color: rgb(243, 153, 153);
+  padding: 2px 8px;
+  border-radius: 4px;
 }
 
-.club-photo:hover {
-  transform: scale(1.1);
+:deep(.n-card) {
+  background-color: #fff0f5;
+  border: none;
+}
+
+:deep(.n-card-header) {
+  border-bottom: none;
+}
+
+:deep(.n-card-footer) {
+  border-top: none;
+  padding: 0;
+}
+
+:deep(.n-card-content) {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+:deep(.n-card__footer) {
+  margin-top: auto;
+}
+
+.quit-button {
+  background-color: rgba(177, 151, 252, 0.2);
+  border: none;
+  color: rgb(177, 151, 252);
+  font-size: 1rem;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+.quit-button:hover {
+  background-color: rgba(177, 151, 252, 0.3);
+}
+
+:deep(.n-tag) {
+  padding: 0 8px;
+}
+
+:deep(.n-tag:not(.n-tag--bordered) .n-tag__border) {
+  display: none;
 }
 </style>

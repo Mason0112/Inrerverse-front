@@ -2,7 +2,7 @@
   <div class="ts-container is-fluid">
     <div class="ts-space is-large"></div>
     <div class="ts-container">
-      <div class="ts-header is-huge is-center-aligned">我創建的俱樂部</div>
+      <div class="ts-header is-huge is-center-aligned"style="color: #e3bdbd">我創建的俱樂部</div>
       <div class="ts-space"></div>
       <div class="ts-grid">
         <div class="column is-1-wide"></div>

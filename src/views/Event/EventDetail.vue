@@ -42,13 +42,26 @@
         </n-space>
 
         <!-- 相簿 -->
-        <EventPhoto :workshopId="route.params.id"  :eventCreatorId="event.eventCreatorId" />
+        <EventPhoto :workshopId="route.params.id" :eventCreatorId="event.eventCreatorId" />
 
         <!-- 已批准的參加者列表 -->
         <n-card title="參加者" v-if="approvedParticipants.length > 0">
           <n-list>
             <n-list-item v-for="participant in approvedParticipants" :key="participant.userId">
-              {{ participant.userName }}
+              <n-thing>
+                <template #avatar>
+                  <div class="avatar-container">
+                    <img v-if="participant.photoUrl" :src="participant.photoUrl" :alt="participant.userName"
+                      class="avatar-image">
+                    <div v-else class="avatar-default">
+                      <span>{{ participant.userName.charAt(0).toUpperCase() }}</span>
+                    </div>
+                  </div>
+                </template>
+                <template #header>
+                  {{ participant.userName }}
+                </template>
+              </n-thing>
             </n-list-item>
           </n-list>
         </n-card>
@@ -74,7 +87,7 @@ import EventPhoto from './EventPhoto.vue';
 import {
   NCard, NSpin, NSpace, NH1, NH2, NDescriptions,
   NDescriptionsItem, NButton, NResult, useMessage,
-  NList, NListItem, NEmpty
+  NList, NListItem, NEmpty, NThing
 } from 'naive-ui';
 
 const route = useRoute();
@@ -106,7 +119,23 @@ const fetchEventDetail = async () => {
 const fetchApprovedParticipants = async () => {
   try {
     const response = await axios.get(`/eventParticipant/event/${route.params.id}/approved-participants`);
-    approvedParticipants.value = response.data;
+    const participantsData = response.data;
+
+    // 獲取每個參加者的頭像
+    const participantsWithPhotos = await Promise.all(participantsData.map(async (participant) => {
+      try {
+        const photoResponse = await axios.get(`/user/secure/profile-photo/${participant.userId}`);
+        return {
+          ...participant,
+          photoUrl: photoResponse.data || null
+        };
+      } catch (err) {
+        console.error(`Error fetching photo for user ${participant.userId}:`, err);
+        return participant;
+      }
+    }));
+
+    approvedParticipants.value = participantsWithPhotos;
   } catch (error) {
     console.error('讀取參加者失敗:', error);
     message.error('讀取參加者失敗');
@@ -235,5 +264,39 @@ onMounted(() => {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+}
+
+.avatar-container {
+  width: 40px;
+  /* 設置固定寬度 */
+  height: 40px;
+  /* 設置固定高度 */
+  border-radius: 50%;
+  /* 圓形頭像 */
+  overflow: hidden;
+  /* 確保內容不會溢出容器 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d1d5db;
+  /* 默認背景顏色 */
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 確保圖片填滿容器並保持比例 */
+}
+
+.avatar-default {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #374151;
 }
 </style>

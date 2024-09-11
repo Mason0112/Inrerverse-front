@@ -1,78 +1,110 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-card class="event-approve-container">
-      <n-h1>我主辦的活動/工作坊</n-h1>
+      <n-h1 class="page-title" style="color: #e3bdbd">我主辦的活動/工作坊</n-h1>
       <n-spin :show="loading">
         <n-result v-if="error" status="error" :title="error" />
         <div v-else>
           <!-- 活動列表 -->
           <div v-if="!selectedEvent" class="event-list">
-            <n-h2>您創建的活動</n-h2>
+            <n-h2 class="section-title">您創建的活動</n-h2>
             <n-empty v-if="events.length === 0" description="您還沒有創建任何活動" />
-            <n-list v-else>
-              <n-list-item v-for="event in events" :key="event.id" @click="selectEvent(event)" class="event-item">
-                <div class="event-info">
-                  {{ event.eventName }} - {{ event.clubName || '工作坊' }}
-                  <n-tag v-if="event.hasPendingMembers" type="warning" size="small" class="warning-tag">
-                    待審核
-                  </n-tag>
-                </div>
-              </n-list-item>
-            </n-list>
+            <n-grid x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4" responsive="screen" v-else>
+              <n-grid-item v-for="event in events" :key="event.id">
+                <n-card hoverable class="event-card" @click="selectEvent(event)">
+                  <template #cover>
+                    <img :src="event.coverPhotoUrl || 'default-image.jpg'" alt="活動封面" class="event-cover">
+                  </template>
+                  <n-space vertical>
+                    <n-h3 class="event-name">{{ event.eventName }}</n-h3>
+                    <n-space>
+                      <n-tag size="small" :style="event.clubName ? {
+                        backgroundColor: '#FFF0F5',
+                        color: '#FF1493',
+                        borderColor: '#FF69B4'
+                      } : {
+                        backgroundColor: '#F0E6FF',
+                        color: '#4B0082',
+                        borderColor: '#8A2BE2'
+                      }">
+                        {{ event.clubName || '工作坊' }}
+                      </n-tag>
+                      <n-tag v-if="event.hasPendingMembers" type="warning" size="small">待審核</n-tag>
+                    </n-space>
+                  </n-space>
+                  <template #footer>
+                    <n-space justify="end">
+                      <n-button size="small" @click.stop="editEvent(event)">編輯</n-button>
+                      <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
+                    </n-space>
+                  </template>
+                </n-card>
+              </n-grid-item>
+            </n-grid>
           </div>
 
           <!-- 待審核參與者列表 -->
           <div v-else>
-            <n-h2>{{ selectedEvent.eventName }} - {{ selectedEvent.clubName || '工作坊' }} - 待審核參與者</n-h2>
-            <n-button @click="backToEventList" class="back-button">返回活動列表</n-button>
+            <n-page-header :title="selectedEvent.eventName" :subtitle="selectedEvent.clubName || '工作坊'"
+              @back="backToEventList">
+              <template #extra>
+                <n-tag v-if="selectedEvent.hasPendingMembers" type="warning">待審核</n-tag>
+              </template>
+            </n-page-header>
+            <n-h3>待審核參與者</n-h3>
             <n-empty v-if="pendingParticipants.length === 0" description="沒有待審核的參與者" />
             <n-data-table v-else :columns="columns" :data="pendingParticipants" />
           </div>
         </div>
       </n-spin>
     </n-card>
+
+    <!-- 編輯活動模態框 -->
+    <n-modal v-model:show="showEditModal">
+      <n-card style="width: 600px" title="編輯活動" :bordered="false" size="huge" role="dialog" aria-modal="true">
+        <n-form>
+          <n-form-item label="活動名稱">
+            <n-input v-model:value="editingEvent.eventName" placeholder="活動名稱" />
+          </n-form-item>
+          <n-form-item label="活動詳情">
+            <n-input v-model:value="editingEvent.description" type="textarea" placeholder="活動詳情" />
+          </n-form-item>
+        </n-form>
+        <template #footer>
+          <n-button @click="updateEvent" type="primary">保存</n-button>
+          <n-button @click="showEditModal = false">取消</n-button>
+        </template>
+      </n-card>
+    </n-modal>
   </n-config-provider>
 </template>
-  
-  <script setup>
-  import { ref, onMounted, h } from 'vue';
+
+<script setup>
+import { ref, onMounted, h } from 'vue';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
-import { 
-  NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NEmpty, NList, NListItem, 
-  NButton, NDataTable,  NTag, useMessage,
+import {
+  NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NH3, NEmpty, NGrid, NGridItem,
+  NButton, NDataTable, NTag, NSpace, useMessage, NModal, NForm, NFormItem, NInput,
+  useDialog, NPageHeader
 } from 'naive-ui';
 
 const userStore = useUserStore();
 const message = useMessage();
+const dialog = useDialog();
 const events = ref([]);
 const selectedEvent = ref(null);
 const pendingParticipants = ref([]);
 const loading = ref(true);
 const error = ref(null);
+const showEditModal = ref(false);
+const editingEvent = ref({});
 
 const themeOverrides = {
   common: {
-    primaryColor: '#FFC0CB', // 淡粉紅
-    primaryColorHover: '#FFB6C1', // 稍深的粉紅
-    primaryColorPressed: '#FF69B4', // 更深的粉紅
-  },
-  Card: {
-    color: '#FFF0F5', // 淡粉紅背景
-  },
-  Button: {
-    textColor: '#8E44AD', // 淡紫色文字
-    border: '1px solid #8E44AD',
-    borderHover: '1px solid #9B59B6',
-    borderPressed: '1px solid #8E44AD',
-    colorHover: '#E8DAEF', // 淡紫色懸停背景
-    colorPressed: '#D2B4DE', // 淡紫色按下背景
-  },
-  List: {
-    color: '#FFE4E1', // 略深的粉色作為列表背景
-  },
-  ListItem: {
-    colorHover: '#FFD1DC', // 懸停時的顏色
+    primaryColor: '#8E44AD',
+    primaryColorHover: '#9B59B6',
+    primaryColorPressed: '#7D3C98',
   }
 };
 
@@ -91,6 +123,7 @@ const columns = [
             onClick: () => approveParticipant(row.userId),
             loading: row.approving,
             disabled: row.deleting,
+            class: 'approve-button'
           },
           { default: () => row.approving ? '審核中...' : '批准' }
         ),
@@ -101,7 +134,7 @@ const columns = [
             onClick: () => removeParticipant(row.userId),
             loading: row.deleting,
             disabled: row.approving,
-            style: 'margin-left: 8px; background-color: #FF69B4;'
+            class: 'remove-button'
           },
           { default: () => row.deleting ? '刪除中...' : '刪除' }
         )
@@ -109,30 +142,105 @@ const columns = [
     }
   }
 ];
-  
+
 const fetchUserEvents = async () => {
+  loading.value = true;
   try {
-    const response = await axios.get(`/events/creator?creatorId=${userStore.userId}`);
+    const response = await axios.get(`/events/creator`, {
+      params: { creatorId: userStore.userId }
+    });
     events.value = await Promise.all(response.data.map(async event => {
-      const pendingParticipants = await fetchPendingParticipants(event.id);
+      const [pendingParticipants, eventDetail, eventPhotos] = await Promise.all([
+        fetchPendingParticipants(event.id),
+        axios.get(`/eventDetail/${event.id}/show`),
+        axios.get(`/eventPhoto/event/${event.id}`)
+      ]);
+
+      let coverPhotoUrl = null;
+      if (eventPhotos.data && eventPhotos.data.length > 0) {
+        const coverPhoto = eventPhotos.data.find(photo => photo.isCover) || eventPhotos.data[0];
+        coverPhotoUrl = `${import.meta.env.VITE_API_URL}/eventPhoto/${event.id}/${coverPhoto.id}`;
+      }
+
       return {
         ...event,
-        clubName: event.clubName || '工作坊',
-        hasPendingMembers: pendingParticipants.length > 0
+        ...eventDetail.data,
+        clubName: event.clubName || null, // 將 '工作坊' 改為 null
+        hasPendingMembers: pendingParticipants.length > 0,
+        coverPhotoUrl: coverPhotoUrl
       };
     }));
-    loading.value = false;
   } catch (err) {
     console.error('Error fetching user events:', err);
-    error.value = '獲取活動列表時出錯';
+    if (err.response && err.response.status === 401) {
+      error.value = '請先登入以查看您的活動';
+    } else {
+      error.value = '獲取活動列表時出錯';
+    }
+    events.value = [];
+  } finally {
     loading.value = false;
   }
 };
-  const backToEventList = () => {
-    selectedEvent.value = null;
-    pendingParticipants.value = [];
-  };
-  const selectEvent = async (event) => {
+
+const updateEventPendingStatus = async (eventId) => {
+  const event = events.value.find(e => e.id === eventId);
+  if (event) {
+    const pendingParticipants = await fetchPendingParticipants(eventId);
+    event.hasPendingMembers = pendingParticipants.length > 0;
+  }
+};
+
+const editEvent = (event) => {
+  editingEvent.value = { ...event };
+  showEditModal.value = true;
+};
+
+const updateEvent = async () => {
+  try {
+    const response = await axios.put(`/events/${editingEvent.value.id}/edit`, {
+      eventName: editingEvent.value.eventName,
+      description: editingEvent.value.description,
+    });
+    if (response.status === 200) {
+      const index = events.value.findIndex(e => e.id === editingEvent.value.id);
+      if (index !== -1) {
+        events.value[index] = { ...events.value[index], ...editingEvent.value };
+      }
+      showEditModal.value = false;
+      message.success('活動更新成功');
+    }
+  } catch (error) {
+    console.error('更新活動失敗:', error);
+    message.error('更新活動失敗');
+  }
+};
+
+const confirmDelete = (event) => {
+  dialog.warning({
+    title: '確認刪除',
+    content: '您確定要刪除這個活動嗎？此操作不可撤銷。',
+    positiveText: '確認刪除',
+    negativeText: '取消',
+    onPositiveClick: () => deleteEvent(event),
+    onNegativeClick: () => { }
+  });
+};
+
+const deleteEvent = async (event) => {
+  try {
+    const response = await axios.delete(`/events/${event.id}`);
+    if (response.status === 200) {
+      events.value = events.value.filter(e => e.id !== event.id);
+      message.success('活動已成功刪除');
+    }
+  } catch (error) {
+    console.error('刪除活動失敗:', error);
+    message.error('刪除活動失敗，請稍後再試');
+  }
+};
+
+const selectEvent = async (event) => {
   selectedEvent.value = event;
   loading.value = true;
   try {
@@ -160,79 +268,102 @@ const fetchPendingParticipants = async (eventId) => {
   }
 };
 
-  //審核成功(status改為1)
-  const approveParticipant = async (userId) => {
-    const participant = pendingParticipants.value.find(p => p.userId === userId);
-    if (!participant) return;
-  
-    participant.approving = true;
-    try {
-      await axios.put(`/eventParticipant/approve/${selectedEvent.value.id}/${userId}`);
-      // 從列表中移除已批准的參與者
-      pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
-    } catch (err) {
-      console.error('Error approving participant:', err);
-      alert('審核參與者時出錯');
-    } finally {
-      participant.approving = false;
-    }
-  };
-  
-  //審核刪除
-  const removeParticipant = async (userId) => {
+const approveParticipant = async (userId) => {
+  const participant = pendingParticipants.value.find(p => p.userId === userId);
+  if (!participant) return;
+
+  participant.approving = true;
+  try {
+    await axios.put(`/eventParticipant/approve/${selectedEvent.value.id}/${userId}`);
+    pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
+    await updateEventPendingStatus(selectedEvent.value.id);
+  } catch (err) {
+    console.error('Error approving participant:', err);
+    message.error('審核參與者時出錯');
+  } finally {
+    participant.approving = false;
+  }
+};
+
+const removeParticipant = async (userId) => {
   const participant = pendingParticipants.value.find(p => p.userId === userId);
   if (!participant) return;
 
   participant.deleting = true;
   try {
     await axios.delete(`/eventParticipant/event/${selectedEvent.value.id}/user/${userId}`);
-    // 從列表中移除已刪除的參與者
     pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
+    await updateEventPendingStatus(selectedEvent.value.id);
   } catch (err) {
     console.error('Error removing participant:', err);
-    alert('刪除參與者時出錯');
+    message.error('刪除參與者時出錯');
   } finally {
     participant.deleting = false;
   }
 };
 
-  onMounted(() => {
-    fetchUserEvents();
-  });
-  </script>
-  
-  <style scoped>
-  .event-approve-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-  .event-list {
-  border-radius: 8px;
-  overflow: hidden; /* 確保圓角效果能夠應用到子元素 */
+const backToEventList = async () => {
+  selectedEvent.value = null;
+  pendingParticipants.value = [];
+  await fetchUserEvents();
+};
+
+onMounted(() => {
+  fetchUserEvents();
+});
+</script>
+
+<style scoped>
+.event-approve-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.event-item {
-  cursor: pointer;
-  transition: background-color 0.3s;
-  padding: 10px;
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-.event-info {
+.section-title {
+  margin-bottom: 15px;
+}
+
+.event-card {
+  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  cursor: pointer;
 }
 
-.warning-tag {
-  margin-left: 10px;
+.event-cover {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
 }
 
-.event-item:hover {
-  background-color: #FFD1DC; /* 與 themeOverrides 中的 ListItem.colorHover 保持一致 */
+.event-name {
+  cursor: pointer;
 }
-  
-  .back-button {
-    margin-bottom: 20px;
-  }
-  </style>
+
+.event-name:hover {
+  color: #8E44AD;
+}
+
+.approve-button,
+.remove-button {
+  margin-left: 8px;
+}
+
+.approve-button {
+  background-color: #4CAF50;
+}
+
+.remove-button {
+  background-color: #F44336;
+}
+
+.n-tag {
+  margin-right: 8px;
+}
+</style>

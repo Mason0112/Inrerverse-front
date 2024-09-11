@@ -25,7 +25,7 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }" @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')">
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-all-link' }" @click="closeDropdown('club')">俱樂部
               </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部審核
+              <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">我創建的俱樂部
               </RouterLink></li>
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-my-link' }" @click="closeDropdown('club')">我的俱樂部
               </RouterLink></li>
