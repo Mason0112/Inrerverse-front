@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref, inject, watch } from "vue";
+import {onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import axios from '@/plugins/axios';
 import useUserStore from '@/stores/userstore';
@@ -109,18 +109,24 @@ const router = useRouter();
 
 
 const postList = ref([])
-onMounted(function(){
-    userIdUrl.value = (route.params.id);
-    showUserPostList()
+onMounted(() => {
+    initializeUserId();
 })
+
 
 // 監聽路由變化
 watch(() => route.params.id, (newId) => {
   if (newId && newId !== userIdUrl.value) {
-    userIdUrl.value = newId;
-    showUserPostList();
+    initializeUserId();
   }
 });
+
+function initializeUserId() {
+  // 如果路由中有 id 參數，使用它；否則使用當前登錄用戶的 id
+  userIdUrl.value = route.params.id || userStore.userId;
+  console.log("userIdUrl:", userIdUrl.value);
+  showUserPostList();
+}
 
 // 渲染post
 
