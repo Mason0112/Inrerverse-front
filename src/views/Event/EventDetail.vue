@@ -221,23 +221,85 @@ const handleParticipation = async () => {
   if (!canParticipate.value) return;
 
   loading.value = true;
+  let participantResponse = null;
+  let transactionResponse = null;
+
   try {
-    const response = await axios.post('/eventParticipant', {
+    // 首先嘗試加入活動
+    participantResponse = await axios.post('/eventParticipant', {
       eventId: route.params.id,
       userId: userStore.userId
     });
-    if (response.status === 201) {
-      message.success('成功提交參加請求');
-      // 立即更新本地狀態
-      participationStatus.value = {
-        eventId: route.params.id,
-        userId: userStore.userId,
-        status: 0  // 設置為待審核狀態
-      };
+
+    // 如果加入活動成功，再嘗試進行支付
+    if (participantResponse.status === 201) {
+      // 將 event ID 轉換為五位數格式，使用 padStart 方法
+      const formattedEventId = String(event.value.id).padStart(5, '0');
+      const formattedUserId = String(userStore.userId).padStart(5, '0')
+      
+      transactionResponse = await axios.post('/transaction/add', {
+        transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
+        amount: -eventDetail.value.fee,
+        paymentMethod: '錢包支付',
+        status: 2,
+        user: {
+          id: userStore.userId
+        }
+      });
+
+      // 如果兩個操作都成功
+      if (transactionResponse.status === 201) {
+        message.success(`成功提交參加請求並將從錢包支付${eventDetail.value.fee}元活動款項`, {
+          closable: true,
+          duration: 5000
+        });
+
+        // 更新本地狀態
+        participationStatus.value = {
+          eventId: route.params.id,
+          userId: userStore.userId,
+          status: 0  // 0 表示待審核狀態
+        };
+      }
     }
   } catch (error) {
-    console.error('加入活動失敗:', error);
-    message.error('加入活動失敗');
+    console.error('處理參與請求時發生錯誤:', error);
+
+    // 錯誤處理和回滾邏輯
+    if (participantResponse && participantResponse.status === 201) {
+      // 如果加入活動成功但支付失敗，需要取消加入活動
+      try {
+        await axios.delete(`/eventParticipant/${route.params.id}/${userStore.userId}`);
+        console.log('成功回滾活動參與');
+      } catch (rollbackError) {
+        console.error('回滾活動參與失敗:', rollbackError);
+        message.error('操作失敗，且無法完全回滾。請聯繫客服。', {
+          closable: true,
+          duration: 5000
+        });
+        return;
+      }
+    }
+
+    // 根據錯誤類型顯示不同的錯誤消息
+    if (error.response) {
+      if (error.response.status === 400) {
+        message.error('餘額不足，請先儲值', {
+          closable: true,
+          duration: 5000
+        });
+      } else {
+        message.error('處理參與請求時發生錯誤', {
+          closable: true,
+          duration: 5000
+        });
+      }
+    } else {
+      message.error('網絡錯誤，請稍後再試', {
+        closable: true,
+        duration: 5000
+      });
+    }
   } finally {
     loading.value = false;
   }
