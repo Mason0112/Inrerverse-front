@@ -26,6 +26,7 @@
           </select>
         </div>
 
+
         <!-- 活動列表 -->
         <n-spin :show="loading">
           <n-result
@@ -39,9 +40,9 @@
             description="該俱樂部目前沒有活動。"
           >
             <template #extra>
-              <n-button v-if="isMember" @click="createNewEvent" type="primary">
+              <!-- <n-button v-if="isMember" @click="createNewEvent" type="primary">
                 創建新活動
-              </n-button>
+              </n-button> -->
             </template>
           </n-empty>
           <n-empty 
