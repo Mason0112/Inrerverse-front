@@ -10,6 +10,9 @@
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="club-activity-tab" data-bs-toggle="tab" data-bs-target="#club-activity" type="button" role="tab" aria-controls="club-activity" aria-selected="false">俱樂部活動</button>
       </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="club-forum-tab" data-bs-toggle="tab" data-bs-target="#club-forum" type="button" role="tab" aria-controls="club-forum" aria-selected="false">俱樂部論壇</button>
+      </li>
     </ul>
     <div style="height: 25px;"></div>
 
@@ -63,6 +66,11 @@
           </div>
         </teleport>
       </div>
+
+       <!-- 新增的第三個標籤：俱樂部論壇 -->
+       <div class="tab-pane fade" id="club-forum" role="tabpanel" aria-labelledby="club-forum-tab">
+        <forum :clubIdtoForum="clubIdtoForum" :isMember="isMember" @event-added="handleEventAdded" />
+      </div>
     </div>
   </div>
 </template>
@@ -76,6 +84,8 @@ import ClubMembersList from '@/views/club/ClubMembersList.vue';
 import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
 import ClubEvent from '../Event/ClubEvent.vue';
 import AddClubEventForm from '../Event/AddClubEventForm.vue';
+import forum from '../forum/forum.vue';
+import createArticle from '../forum/createArticle.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -90,6 +100,8 @@ const isMember = ref(false);
 const isPending = ref(false);
 
 const clubId = route.params.id;
+const clubIdtoForum = ref(route.params.id);  // 使用 ref 來存儲 clubId
+
 
 // 用於控制彈跳式視窗顯示/隱藏的布爾值
 const showModal = ref(false);
@@ -143,6 +155,7 @@ const onEventAdded = (newEvent) => {
 
 onMounted(() => {
   console.log("isMember:", isMember.value);
+  console.log("clubId:", clubId.value);  // 添加這行來檢查 clubId
   fetchClubDetails();
 });
 </script>
