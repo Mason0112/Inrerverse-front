@@ -172,34 +172,35 @@ onMounted(() => {
 
 //搜尋文章
 async function searchArticles() {
-    if (!searchQuery.value.trim()) {
-      message.warning("請輸入搜索內容");
-      return;
-    }
-    try {
-      isSearching.value = true;
-      let response;
-      if (searchQuery.value.startsWith('#')) {
-        // 如果搜索查詢以 # 開頭，則按 hashtag 搜索
-        const hashtag = searchQuery.value.slice(1);
-        response = await axios.get(`/club/article/hashtag/${hashtag}`);
-      } else {
-        // 否則按標題搜索
-        response = await axios.get('/club/article/search', {
-          params: { title: searchQuery.value }
-        });
-      }
-      articleList.value = response.data.map(article => ({
-        ...article,
-        photos: article.photos || []
-      }));
-      await checkLikeStatus();
-      message.success(`找到 ${articleList.value.length} 篇相關文章`);
-    } catch (error) {
-      console.error("Error searching articles:", error);
-      message.error("搜索文章失敗");
-    } 
+  if (!searchQuery.value.trim()) {
+    message.warning("請輸入搜索內容");
+    return;
   }
+  try {
+    isSearching.value = true;
+    let response;
+    if (searchQuery.value.startsWith('#')) {
+      const hashtag = searchQuery.value.slice(1);
+      response = await axios.get(`/club/article/hashtag/${hashtag}`, {
+        params: { clubId: props.clubIdtoForum }
+      });
+    } else {
+      response = await axios.get('/club/article/search', {
+        params: { title: searchQuery.value, clubId: props.clubIdtoForum }
+      });
+    }
+    articleList.value = response.data.map(article => ({
+      ...article,
+      photos: article.photos || []
+    }));
+    console.log("Search results:", articleList.value);
+    await checkLikeStatus();
+    message.success(`找到 ${articleList.value.length} 篇相關文章`);
+  } catch (error) {
+    console.error("Error searching articles:", error);
+    message.error("搜索文章失敗");
+  } 
+}
 
 function resetSearch() {
   isSearching.value = false;
@@ -259,18 +260,24 @@ async function toggleLike(article) {
 }
 
 async function searchByHashtag(hashtag) {
-    try {
-      isSearching.value = true;
-      searchQuery.value = `#${hashtag}`;
-      const response = await axios.get(`/club/article/hashtag/${hashtag}`);
-      articleList.value = response.data;
-      await checkLikeStatus();
-      message.success(`找到 ${articleList.value.length} 篇含有 #${hashtag} 的文章`);
-    } catch (error) {
-      console.error("Error searching articles by hashtag:", error);
-      message.error("搜索文章失敗");
-    }
+  try {
+    isSearching.value = true;
+    searchQuery.value = `#${hashtag}`;
+    const response = await axios.get(`/club/article/hashtag/${hashtag}`, {
+      params: { clubId: props.clubIdtoForum }
+    });
+    articleList.value = response.data.map(article => ({
+      ...article,
+      photos: article.photos || []
+    }));
+    console.log("Hashtag search results:", articleList.value);
+    await checkLikeStatus();
+    message.success(`找到 ${articleList.value.length} 篇含有 #${hashtag} 的文章`);
+  } catch (error) {
+    console.error("Error searching articles by hashtag:", error);
+    message.error("搜索文章失敗");
   }
+}
 // 顯示新增文章的彈出窗口
 
   const showCreateArticleModal = () => {
