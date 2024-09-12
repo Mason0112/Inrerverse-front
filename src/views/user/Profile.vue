@@ -123,6 +123,8 @@ const userData = ref({});
 const photo = ref('');
 
 const isLoading = ref(true);
+const upload = ref(null);
+
 
 onMounted(function () {
   callFind();
@@ -150,15 +152,15 @@ function callFind() {
 
 const selectedFile = ref(null);
 function handleChange({ file }) {
-  // 当选择文件时触发
+  // 選擇照片時觸發改變事件
   selectedFile.value = file;
-  // 用户选择文件并点击“确定”后立即上传
+  // 呼叫上傳的方法，會員選擇完成並點擊'確定'後立即上傳
   uploadPhoto();
 }
 
 async function uploadPhoto() {
   const formData = new FormData();
-  formData.append("file", selectedFile.value.file); // `file` 属性包含实际文件
+  formData.append("file", selectedFile.value.file); // `file` 屬性包含實際文件
 
   try {
     const response = await axios.post(
@@ -170,25 +172,16 @@ async function uploadPhoto() {
         },
       }
     );
-
-    console.log("更新成功", response.data);
     photo.value = response.data;
+
+    // 清除上傳組件的文件列表
+    if (upload.value) {
+      upload.value.clear();
+    }
+
   } catch (error) {
     console.error("更新失敗", error);
   }
-
-  axios
-    .post(`/user/secure/profile-photo/${userId}`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    })
-    .then(function (response) {
-      console.log(response.data);
-    })
-    .catch(function (error) {
-      console.log("error", error);
-    });
 }
 
 </script>

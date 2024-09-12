@@ -542,7 +542,7 @@ const acceptFriendRequest = async () => {
 
 const declineFriendRequest = async () => {
   try {
-    await axios.get(`/decline-request/${currentUserId.value}/${viewingUserId.value}`);
+    await axios.get(`/friend/decline-request/${currentUserId.value}/${viewingUserId.value}`);
     friendStatus.value = 'not_friend';
   } catch (error) {
     console.error('拒絕好友請求時出錯:', error);
