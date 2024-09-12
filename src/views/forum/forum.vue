@@ -41,7 +41,7 @@
           </div>
           <div class="image-container" @click.stop>
             <n-image 
-              v-if="oneArticle.photos && oneArticle.photos.length > 0"
+              v-if="oneArticle.photos && oneArticle.photos.length > 0 && oneArticle.photos[0].base64Photo"
               :src="oneArticle.photos[0].base64Photo" 
               :alt="oneArticle.photos[0].name"
               style="max-width: auto; height: 100px; object-fit: cover;"
@@ -189,7 +189,10 @@ async function searchArticles() {
           params: { title: searchQuery.value }
         });
       }
-      articleList.value = response.data;
+      articleList.value = response.data.map(article => ({
+        ...article,
+        photos: article.photos || []
+      }));
       await checkLikeStatus();
       message.success(`找到 ${articleList.value.length} 篇相關文章`);
     } catch (error) {

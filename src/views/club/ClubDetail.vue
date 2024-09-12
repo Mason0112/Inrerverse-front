@@ -48,8 +48,8 @@
       <!-- 第二個標籤：俱樂部活動 -->
       <div class="tab-pane fade" id="club-activity" role="tabpanel" aria-labelledby="club-activity-tab">
         <!-- 添加活動按鈕，只有成員可以看到 -->
-        <div v-if="isMember" class="mt-4">
-          <button @click="openModal" class="styled-button">
+        <div v-if="isMember" class="mt-4" >
+          <button @click="openModal" class="styled-button" >
             辦活動!
           </button>
         <ClubEvent :clubId="clubId" :isMember="isMember" ref="clubEventComponent" @event-added="handleEventAdded" />
