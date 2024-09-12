@@ -42,20 +42,20 @@
         刪除好友
       </button>
       <div v-else-if="friendStatus === 'pending_received'" class="dropdown">
-        <button 
-          class="btn btn-outline-secondary btn-sm dropdown-toggle" 
-          type="button" 
-          id="friendRequestDropdown" 
-          data-bs-toggle="dropdown" 
-          aria-expanded="false"
-        >
-          回應好友邀請
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="friendRequestDropdown">
-          <li><a class="dropdown-item" href="#" @click="acceptFriendRequest">接受</a></li>
-          <li><a class="dropdown-item" href="#" @click="declineFriendRequest">拒絕</a></li>
-        </ul>
-      </div>
+      <button
+        class="btn btn-outline-secondary btn-sm dropdown-toggle"
+        type="button"
+        id="friendRequestDropdown"
+        @click="toggleDropdown"
+        aria-expanded="false"
+      >
+        回應好友邀請
+      </button>
+      <ul class="dropdown-menu" :class="{ 'show': isDropdownOpen }" aria-labelledby="friendRequestDropdown">
+        <li><a class="dropdown-item" href="#" @click.prevent="acceptFriendRequest">接受</a></li>
+        <li><a class="dropdown-item" href="#" @click.prevent="declineFriendRequest">拒絕</a></li>
+      </ul>
+    </div>
     </div>
   </div>
       
@@ -204,6 +204,7 @@ const postList = ref([])
 const userData = ref({});
 const photo = ref('');
 const friendStatus = ref('not_friend');
+const isDropdownOpen = ref(false);
 
 function initializeViewingUserId() {
   viewingUserId.value = route.params.id || currentUserId.value;
@@ -522,6 +523,10 @@ function callFind() {
   });
 }
 
+const toggleDropdown = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
 //取得好友狀態，初始化時用
 async function fetchFriendStatus() {
   try {
@@ -808,6 +813,10 @@ body {
   font-weight: bold;
   color: #fff;
   background-color: #bbb;
+}
+
+.dropdown-menu.show {
+  display: block;
 }
 
 </style>
