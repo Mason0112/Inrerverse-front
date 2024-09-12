@@ -10,25 +10,58 @@
   <div class="page-container">
     <section class="left-section">
       <div class="user-profile d-flex align-items-center mb-3">
-        <div class="user-avatar me-3">
-          <div v-if="photo" class="avatar-container">
-            <img :src="`${photo}`" :alt="userData.nickname || 'User Photo'" class="rounded-circle"/>
-          </div>
-          <div v-else class="default-avatar rounded-circle">
-            {{ (userData.accountNumber || "無").charAt(0).toUpperCase() }}
-          </div>
-        </div>
-        <h5 class="mb-0 flex-grow-1">{{ userData.nickname }}</h5>
-        <button class="btn btn-outline-secondary btn-sm align-self-end">加好友</button>
+    <div class="user-avatar me-3">
+      <div v-if="userData.photo" class="avatar-container">
+        <img :src="userData.photo" :alt="userData.nickname || '用戶照片'" class="rounded-circle"/>
       </div>
+      <div v-else class="default-avatar rounded-circle">
+        {{ (userData.accountNumber || "無").charAt(0).toUpperCase() }}
+      </div>
+    </div>
+    <h5 class="mb-0 flex-grow-1">{{ userData.nickname }}</h5>
+    <div v-if="viewingUserId != currentUserId" class="align-self-end">
+      <button 
+        v-if="friendStatus === 'not_friend'" 
+        @click="switchFriendStatus"
+        class="btn btn-outline-secondary btn-sm"
+      >
+        加好友
+      </button>
+      <button 
+        v-else-if="friendStatus === 'pending_sent'" 
+        @click="switchFriendStatus"
+        class="btn btn-outline-secondary btn-sm"
+      >
+        取消好友邀請
+      </button>
+      <button 
+        v-else-if="friendStatus === 'friends'" 
+        @click="switchFriendStatus"
+        class="btn btn-outline-secondary btn-sm"
+      >
+        刪除好友
+      </button>
+      <div v-else-if="friendStatus === 'pending_received'" class="dropdown">
+        <button 
+          class="btn btn-outline-secondary btn-sm dropdown-toggle" 
+          type="button" 
+          id="friendRequestDropdown" 
+          data-bs-toggle="dropdown" 
+          aria-expanded="false"
+        >
+          回應好友邀請
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="friendRequestDropdown">
+          <li><a class="dropdown-item" href="#" @click="acceptFriendRequest">接受</a></li>
+          <li><a class="dropdown-item" href="#" @click="declineFriendRequest">拒絕</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
       
       <hr />
       
       <table class="table table-borderless">
-        <tr>
-          <td><font-awesome-icon :icon="['fas', 'envelope']" /></td>
-          <td>{{ userData.email }}</td>
-        </tr>
         <tr>
           <td><font-awesome-icon :icon="['fas', 'location-dot']" /></td>
           <td>{{ userData.country }} , {{ userData.city }}</td>
@@ -42,6 +75,12 @@
           <td>{{ userData.gender }}</td>
         </tr>
       </table>
+      <hr />
+
+      <div>
+        <h5>關於我</h5>
+        <p>{{ userData.bio }}</p>
+      </div>
     </section>
 
 
@@ -161,8 +200,10 @@ const viewingUserName = ref('');
 
 const postList = ref([])
 
+
 const userData = ref({});
 const photo = ref('');
+const friendStatus = ref('not_friend');
 
 function initializeViewingUserId() {
   viewingUserId.value = route.params.id || currentUserId.value;
@@ -171,6 +212,7 @@ function initializeViewingUserId() {
   if (viewingUserId.value) {
     fetchUserName();
     showUserPostList();
+    fetchFriendStatus();
   } else {
     console.error("viewingUserId is not set");
   }
@@ -462,6 +504,7 @@ function formatDate(dateString) {
     return new Intl.DateTimeFormat('zh-TW', options).format(date);
 }
 
+//取得動態牆用戶資訊
 function callFind() {
   Promise.all([
     axios.get(`/user/secure/${viewingUserId.value}`),
@@ -478,6 +521,46 @@ function callFind() {
     console.log("error", error);
   });
 }
+
+//取得好友狀態，初始化時用
+async function fetchFriendStatus() {
+  try {
+    const response = await axios.get(`/friend/friend-status/${currentUserId.value}/${viewingUserId.value}`);
+    friendStatus.value = response.data.status;
+    console.log("好友狀態:", friendStatus.value);
+  } catch (error) {
+    console.error("獲取好友狀態時出錯:", error);
+    friendStatus.value = 'not_friend'; // 設置默認狀態
+  }
+}
+
+const switchFriendStatus = async () => {
+  try {
+    const response = await axios.get(`/friend/switch-status/${currentUserId.value}/${viewingUserId.value}`);
+    friendStatus.value = response.data.status;
+  } catch (error) {
+    console.error('切換好友狀態時出錯:', error);
+  }
+};
+
+const acceptFriendRequest = async () => {
+  try {
+    await axios.get(`/friend/switch-status/${currentUserId.value}/${viewingUserId.value}`);
+    friendStatus.value = 'friends';
+  } catch (error) {
+    console.error('接受好友請求時出錯:', error);
+  }
+};
+
+const declineFriendRequest = async () => {
+  try {
+    await axios.get(`/decline-request/${currentUserId.value}/${viewingUserId.value}`);
+    friendStatus.value = 'not_friend';
+  } catch (error) {
+    console.error('拒絕好友請求時出錯:', error);
+  }
+};
+
 
 </script>
 
