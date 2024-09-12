@@ -15,9 +15,15 @@
             <RouterLink class="nav-link" :to="{ name: 'post-create-link' }">新增動態(暫放)</RouterLink>
           </li>
           <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'club-all-link' }">俱樂部</RouterLink>
+          </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'event-all-link' }">工作坊</RouterLink>
+          </li>
+          <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'product-cart' }">商城</RouterLink>
           </li>
-          <li class="nav-item dropdown">
+          <!-- <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
             @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')" aria-expanded="dropdownStates.club">
               靖緯(暫放) <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.club }" />
@@ -38,7 +44,7 @@
               <li><RouterLink class="dropdown-item" :to="{ name: 'event-my-link' }" @click="closeDropdown('club')">我參加的活動/工作坊
               </RouterLink></li>
             </ul>
-          </li>
+          </li> -->
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
             @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')" aria-expanded="dropdownStates.settings">
@@ -82,6 +88,14 @@
               <RouterLink class="dropdown-item" :to="{ name: 'friend-request-link' }" @click="closeDropdown('person')">我的好友邀請列表
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'user-orders' }" @click="closeDropdown('person')">我的訂單紀錄
+              </RouterLink>
+              <RouterLink class="dropdown-item" :to="{ name: 'club-my-link' }" @click="closeDropdown('club')">我的俱樂部
+              </RouterLink>
+              <RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部審核
+              </RouterLink>
+              <RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">我主辦的活動/工作坊
+              </RouterLink>
+              <RouterLink class="dropdown-item" :to="{ name: 'event-my-link' }" @click="closeDropdown('club')">我參加的活動/工作坊
               </RouterLink>
               <li><a class="dropdown-item" @click="logout(); closeDropdown('person')">登出</a></li>
             </ul>
@@ -213,7 +227,7 @@ function logout() {
 }
 
 .dropdown-menu.show {
-  max-height: 300px; /* 根據實際內容調整此值 */
+  max-height: 400px; /* 根據實際內容調整此值 */
   opacity: 1;
 }
 

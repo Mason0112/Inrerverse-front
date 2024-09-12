@@ -5,13 +5,16 @@
     <!-- 標籤導航 -->
     <ul class="nav nav-tabs" id="clubDetailTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="club-info-tab" data-bs-toggle="tab" data-bs-target="#club-info" type="button" role="tab" aria-controls="club-info" aria-selected="true">俱樂部詳情</button>
+        <button class="nav-link active" id="club-info-tab" data-bs-toggle="tab" data-bs-target="#club-info"
+          type="button" role="tab" aria-controls="club-info" aria-selected="true">俱樂部詳情</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="club-activity-tab" data-bs-toggle="tab" data-bs-target="#club-activity" type="button" role="tab" aria-controls="club-activity" aria-selected="false">俱樂部活動</button>
+        <button class="nav-link" id="club-activity-tab" data-bs-toggle="tab" data-bs-target="#club-activity"
+          type="button" role="tab" aria-controls="club-activity" aria-selected="false">俱樂部活動</button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="club-forum-tab" data-bs-toggle="tab" data-bs-target="#club-forum" type="button" role="tab" aria-controls="club-forum" aria-selected="false">俱樂部論壇</button>
+        <button class="nav-link" id="club-forum-tab" data-bs-toggle="tab" data-bs-target="#club-forum" type="button"
+          role="tab" aria-controls="club-forum" aria-selected="false">俱樂部論壇</button>
       </li>
     </ul>
     <div style="height: 25px;"></div>
@@ -36,9 +39,13 @@
             <p class="club-info"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
             <p class="club-info"><strong>創建者：</strong> {{ club.userName }}</p>
 
-            <p v-if="isMember" class="member-status">歡迎來到俱樂部</p>
-            <p v-else-if="isPending" class="member-status pending">您的申請正在審核中</p>
-
+            <div v-if="isMember" class="member-status">歡迎來到俱樂部</div>
+            <div v-else-if="isPending" class="member-status pending">您的申請正在審核中</div>
+            <div v-else>
+              <button @click="joinClub" class="styled-button">
+                {{ club.isPublic ? '立即加入' : '申請加入' }}
+              </button>
+            </div>
             <ClubPhotoAlbum v-if="club" :clubId="clubId" :isMember="isMember" />
           </div>
         </div>
@@ -52,23 +59,23 @@
           <button @click="openModal" class="styled-button">
             辦活動!
           </button>
-        <ClubEvent :clubId="clubId" :isMember="isMember" ref="clubEventComponent" @event-added="handleEventAdded" />
+          <ClubEvent :clubId="clubId" :isMember="isMember" ref="clubEventComponent" @event-added="handleEventAdded" />
 
         </div>
 
         <!-- 使用 teleport 將彈跳式視窗傳送到 body 元素中 -->
-      <teleport to="body">
-        <div v-if="showModal" class="modal-overlay" @click="closeModal">
-          <div class="modal-content" @click.stop>
-            <button @click="closeModal" class="close-button">&times;</button>
-            <AddClubEventForm :clubId="clubId" @eventAdded="onEventAdded" />
+        <teleport to="body">
+          <div v-if="showModal" class="modal-overlay" @click="closeModal">
+            <div class="modal-content" @click.stop>
+              <button @click="closeModal" class="close-button">&times;</button>
+              <AddClubEventForm :clubId="clubId" @eventAdded="onEventAdded" />
+            </div>
           </div>
-        </div>
-      </teleport>
+        </teleport>
       </div>
 
-       <!-- 新增的第三個標籤：俱樂部論壇 -->
-       <div class="tab-pane fade" id="club-forum" role="tabpanel" aria-labelledby="club-forum-tab">
+      <!-- 新增的第三個標籤：俱樂部論壇 -->
+      <div class="tab-pane fade" id="club-forum" role="tabpanel" aria-labelledby="club-forum-tab">
         <forum :clubIdtoForum="clubIdtoForum" :isMember="isMember" @event-added="handleEventAdded" />
       </div>
     </div>
@@ -117,6 +124,29 @@ const closeModal = () => {
 };
 
 const clubEventComponent = ref(null);
+
+const joinClub = async () => {
+  try {
+    const status = club.value.isPublic ? 1 : 0; // 如果是公開俱樂部,直接設置狀態為1
+    const response = await axios.post('/clubMember', {
+      clubId: clubId,
+      userId: userStore.userId,
+      status: status
+    });
+    if (response.status === 201) {
+      if (club.value.isPublic) {
+        isMember.value = true;
+        message.success('您已成功加入俱樂部！');
+      } else {
+        isPending.value = true;
+        message.success('已成功提交加入申請，請等待審核。');
+      }
+    }
+  } catch (error) {
+    console.error('Error joining club:', error);
+    message.error('加入俱樂部失敗，請稍後再試。');
+  }
+};
 
 // 處理活動添加後的邏輯
 const handleEventAdded = (newEvent) => {
@@ -318,7 +348,8 @@ h1 {
     flex-direction: column;
   }
 
-  .club-left-section, .club-right-section {
+  .club-left-section,
+  .club-right-section {
     width: 100%;
     padding: 0;
   }

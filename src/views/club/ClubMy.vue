@@ -35,18 +35,9 @@
                     </n-tag>
                   </n-space>
                   <template #footer>
-                    <n-popconfirm
-                      @positive-click="() => quitClub(club.id)"
-                      positive-text="確定"
-                      negative-text="取消"
-                    >
-                      <template #trigger>
-                        <n-button class="quit-button" block quaternary>
-                          退出社團
-                        </n-button>
-                      </template>
-                      確定要退出這個社團嗎？
-                    </n-popconfirm>
+                    <n-button class="quit-button" block quaternary @click="confirmQuit(club.id)">
+                      退出社團
+                    </n-button>
                   </template>
                 </n-card>
               </n-gi>
@@ -66,7 +57,7 @@ import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import {
   NSpace, NLayout, NLayoutContent, NH1, NButton, NSpin, NResult,
-  NEmpty, NGrid, NGi, NCard, NImage, NText, NTag, NPopconfirm
+  NEmpty, NGrid, NGi, NCard, NImage, NText, NTag
 } from 'naive-ui';
 
 const router = useRouter();
@@ -92,6 +83,12 @@ const fetchMyClubs = async () => {
 const getPhotoUrl = (photoName) => {
   if (!photoName) return null;
   return `${import.meta.env.VITE_API_URL}/clubs/photo/${photoName}`;
+};
+
+const confirmQuit = (clubId) => {
+  if (window.confirm('確定要退出這個社團嗎？')) {
+    quitClub(clubId);
+  }
 };
 
 const quitClub = async (clubId) => {
