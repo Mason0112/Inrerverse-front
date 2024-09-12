@@ -371,6 +371,7 @@ h1 {
   background-color: #FEE8E8;
   padding: 15px;
   border-radius: 8px;
+  white-space: pre-wrap;
 }
 
 /* 文章圖片 */
@@ -437,6 +438,7 @@ h1 {
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
+  white-space: pre-wrap;
 }
 
 .comment-header {
