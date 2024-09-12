@@ -376,10 +376,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #f0e6ff;
+  background-color: #b396b4;
   border-radius: 8px;
   transition: all 0.3s ease;
-  background-color: rgb(220, 198, 217);
+  background-color: rgb(235, 221, 233);
 }
 
 .detail-item:hover {
