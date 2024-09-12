@@ -146,7 +146,7 @@ function callCreate() {
     });
 }
 
-// 处理文件选择
+// 處理文件选择
 function handleFileUpload(event) {
     console.log("file",event)
     fileObject.value = event;
