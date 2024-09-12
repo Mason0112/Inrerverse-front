@@ -240,24 +240,12 @@ const handleParticipation = async () => {
       eventId: route.params.id,
       userId: userStore.userId
     });
-    // if (participantResponse.status === 201) {
-    //   message.success('成功提交參加請求');
-    //   participationStatus.value = {
-    //     eventId: route.params.id,
-    //     userId: userStore.userId,
-    //     status: 0
-    //   };
 
     // 如果加入活動成功，再嘗試進行支付
     if (participantResponse.status === 201) {
       // 將 event ID 轉換為五位數格式，使用 padStart 方法
       const formattedEventId = String(event.value.id).padStart(5, '0');
-      const formattedUserId = String(userStore.userId).padStart(5, '0');
-      message.success('成功提交參加請求');
-      participationStatus.value = {
-        eventId: route.params.id,
-        userId: userStore.userId,
-        status: 0};
+      const formattedUserId = String(userStore.userId).padStart(5, '0')
       
       transactionResponse = await axios.post('/transaction/add', {
         transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
