@@ -10,6 +10,9 @@
       <li class="nav-item" role="presentation">
         <button class="nav-link" id="club-activity-tab" data-bs-toggle="tab" data-bs-target="#club-activity" type="button" role="tab" aria-controls="club-activity" aria-selected="false">俱樂部活動</button>
       </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="club-forum-tab" data-bs-toggle="tab" data-bs-target="#club-forum" type="button" role="tab" aria-controls="club-forum" aria-selected="false">俱樂部論壇</button>
+      </li>
     </ul>
     <div style="height: 25px;"></div>
 
@@ -29,7 +32,7 @@
           <!-- 右側：俱樂部詳情與相簿 -->
           <div class="club-right-section">
             <h2 class="club-name">{{ club.clubName }}</h2>
-            <p class="club-info"><strong>描述：</strong> {{ club.description }}</p>
+            <p class="club-info"><strong></strong> {{ club.description }}</p>
             <p class="club-info"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
             <p class="club-info"><strong>創建者：</strong> {{ club.userName }}</p>
 
@@ -44,24 +47,29 @@
 
       <!-- 第二個標籤：俱樂部活動 -->
       <div class="tab-pane fade" id="club-activity" role="tabpanel" aria-labelledby="club-activity-tab">
-        <ClubEvent :clubId="clubId" :isMember="isMember" @event-added="handleEventAdded" />
-
         <!-- 添加活動按鈕，只有成員可以看到 -->
         <div v-if="isMember" class="mt-4">
           <button @click="openModal" class="styled-button">
             辦活動!
           </button>
+        <ClubEvent :clubId="clubId" :isMember="isMember" ref="clubEventComponent" @event-added="handleEventAdded" />
+
         </div>
 
         <!-- 使用 teleport 將彈跳式視窗傳送到 body 元素中 -->
-        <teleport to="body">
-          <div v-if="showModal" class="modal-overlay" @click="closeModal">
-            <div class="modal-content" @click.stop>
-              <button @click="closeModal" class="close-button">&times;</button>
-              <AddClubEventForm :clubId="clubId" @eventAdded="onEventAdded" />
-            </div>
+      <teleport to="body">
+        <div v-if="showModal" class="modal-overlay" @click="closeModal">
+          <div class="modal-content" @click.stop>
+            <button @click="closeModal" class="close-button">&times;</button>
+            <AddClubEventForm :clubId="clubId" @eventAdded="onEventAdded" />
           </div>
-        </teleport>
+        </div>
+      </teleport>
+      </div>
+
+       <!-- 新增的第三個標籤：俱樂部論壇 -->
+       <div class="tab-pane fade" id="club-forum" role="tabpanel" aria-labelledby="club-forum-tab">
+        <forum :clubIdtoForum="clubIdtoForum" :isMember="isMember" @event-added="handleEventAdded" />
       </div>
     </div>
   </div>
@@ -76,6 +84,8 @@ import ClubMembersList from '@/views/club/ClubMembersList.vue';
 import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
 import ClubEvent from '../Event/ClubEvent.vue';
 import AddClubEventForm from '../Event/AddClubEventForm.vue';
+import forum from '../forum/forum.vue';
+import createArticle from '../forum/createArticle.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -90,6 +100,8 @@ const isMember = ref(false);
 const isPending = ref(false);
 
 const clubId = route.params.id;
+const clubIdtoForum = ref(route.params.id);  // 使用 ref 來存儲 clubId
+
 
 // 用於控制彈跳式視窗顯示/隱藏的布爾值
 const showModal = ref(false);
@@ -104,9 +116,14 @@ const closeModal = () => {
   showModal.value = false;
 };
 
+const clubEventComponent = ref(null);
+
 // 處理活動添加後的邏輯
 const handleEventAdded = (newEvent) => {
   // 在這裡可以添加更新活動列表的邏輯
+  if (clubEventComponent.value) {
+    clubEventComponent.value.fetchClubEvents();
+  }
 };
 
 const getPhotoUrl = (photoName) => {
@@ -135,6 +152,7 @@ const fetchClubDetails = async () => {
   }
 };
 
+
 const onEventAdded = (newEvent) => {
   console.log("New event added:", newEvent);
   closeModal(); // 關閉彈跳式視窗
@@ -143,6 +161,7 @@ const onEventAdded = (newEvent) => {
 
 onMounted(() => {
   console.log("isMember:", isMember.value);
+  console.log("clubId:", clubId.value);  // 添加這行來檢查 clubId
   fetchClubDetails();
 });
 </script>

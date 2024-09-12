@@ -47,7 +47,7 @@
         <input type="number" id="participantMax" v-model="eventDetailData.participantMax" min="1" required
           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
       </div>
-      <button type="submit" class=" text-white font-bold py-2 px-4 rounded "style="background-color: pink;">
+      <button type="submit" class=" text-white font-bold py-2 px-4 rounded "style="background-color: purple;">
         新增活動
       </button>
     </form>

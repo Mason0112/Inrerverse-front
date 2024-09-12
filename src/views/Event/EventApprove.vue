@@ -35,7 +35,7 @@
                   <template #footer>
                     <n-space justify="end">
                       <n-button size="small" @click.stop="editEvent(event)">編輯</n-button>
-                      <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
+                      <n-button size="small" @click.stop="confirmDelete(event)" type="error" style="background-color: purple">刪除</n-button>
                     </n-space>
                   </template>
                 </n-card>
@@ -318,7 +318,7 @@ const approveParticipant = async (userId) => {
     if (err.response) {
       console.error('Server response:', err.response.data);
     }
-    alert(err.message || '審核參與者或更新交易時出錯');
+    // alert(err.message || '審核參與者或更新交易時出錯');
   } finally {
     participant.approving = false;
   }
@@ -409,7 +409,7 @@ onMounted(() => {
 }
 
 .remove-button {
-  background-color: #F44336;
+  background-color: #f1cfe9;
 }
 
 .n-tag {

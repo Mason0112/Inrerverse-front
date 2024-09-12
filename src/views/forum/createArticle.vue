@@ -1,5 +1,6 @@
 <template>
   <n-space vertical>
+    <!-- 現有的輸入框 -->
     <n-input v-model:value="title" type="text" placeholder="有創意的文章標題" />
     <n-input
       type="textarea"
@@ -9,6 +10,18 @@
         minRows: 3
       }"
     />
+    <!-- 新增的 hashtag 輸入框 -->
+    <n-input v-model:value="hashtagInput" type="text" placeholder="輸入 hashtag (用空格分隔多個標籤)" @keyup.enter="addHashtag"/>
+    <!-- 顯示已添加的 hashtags -->
+    <n-space v-if="hashtags.length > 0">
+  <template v-for="tag in hashtags" :key="tag">
+    <n-tag closable @close="removeHashtag(tag)">
+      {{ tag }}
+    </n-tag>
+  </template>
+</n-space>
+<div v-else>No hashtags added yet</div>
+    <!-- 現有的上傳和提交按鈕 -->
     <n-upload
       ref="upload"
       :custom-request="customRequest"
@@ -34,6 +47,9 @@ const userStore = useUserStore();
 let userId = userStore.userId;
 const upload = ref(null)
 
+// 新增的 hashtag 相關變量
+const hashtagInput = ref('')
+const hashtags = ref([])
 
 onMounted(() => {
   console.log('Component mounted. User ID:', userId);
@@ -58,24 +74,19 @@ const handleChange = (options) => {
 // 修改後的提交函數
 async function submit() {
   try {
-      console.log('Sending data:', {
-      content: content.value,
-      title: title.value,
-      club: { id: 1 },
-      user: { id: userId }
-      });
-
-      const articleDTO = {
+    // 處理可能還未添加的最後一個hashtag
+    if (hashtagInput.value.trim()) {
+      addHashtag();
+    }
+    const articleDTO = {
       title: title.value,
       content: content.value,
       clubId: 1,
-      userId: userId
+      userId: userId,
+      hashtags: hashtags.value  // 添加 hashtags
     };
 
-    // console.log(articleDTO)
-
     const articleResponse = await axios.post('/club/article', articleDTO);
-
     console.log('Article response:', articleResponse);
     const articleId = articleResponse.data.id
 
@@ -95,6 +106,7 @@ async function submit() {
     content.value = '';
     title.value = ''
     fileList.value = [];
+    hashtags.value = [];  // 清空 hashtags
     if (upload.value) {
       upload.value.clear();
     }
@@ -117,6 +129,19 @@ async function submit() {
     alert('提交失敗: ' + (error.response?.data?.message || error.message));
   }
 }
+
+// 新增的 hashtag 相關方法
+function addHashtag() {
+  const newTags = hashtagInput.value.split(' ').filter(tag => tag.trim() !== '')
+  hashtags.value = [...new Set([...hashtags.value, ...newTags])]
+  hashtagInput.value = ''
+  console.log("Current hashtags:", hashtags.value) // 新增這行
+}
+
+function removeHashtag(tag) {
+  hashtags.value = hashtags.value.filter(t => t !== tag)
+}
+
 </script>
 
 <style>
