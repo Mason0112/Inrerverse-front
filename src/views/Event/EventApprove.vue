@@ -35,7 +35,7 @@
                   <template #footer>
                     <n-space justify="end">
                       <n-button size="small" @click.stop="editEvent(event)">編輯</n-button>
-                      <n-button size="small" @click.stop="confirmDelete(event)" type="error">刪除</n-button>
+                      <n-button size="small" @click.stop="confirmDelete(event)" type="error" style="background-color: purple">刪除</n-button>
                     </n-space>
                   </template>
                 </n-card>
@@ -409,7 +409,7 @@ onMounted(() => {
 }
 
 .remove-button {
-  background-color: #F44336;
+  background-color: #f1cfe9;
 }
 
 .n-tag {

@@ -29,7 +29,7 @@
           <!-- 右側：俱樂部詳情與相簿 -->
           <div class="club-right-section">
             <h2 class="club-name">{{ club.clubName }}</h2>
-            <p class="club-info"><strong>描述：</strong> {{ club.description }}</p>
+            <p class="club-info"><strong></strong> {{ club.description }}</p>
             <p class="club-info"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
             <p class="club-info"><strong>創建者：</strong> {{ club.userName }}</p>
 
@@ -44,24 +44,24 @@
 
       <!-- 第二個標籤：俱樂部活動 -->
       <div class="tab-pane fade" id="club-activity" role="tabpanel" aria-labelledby="club-activity-tab">
-        <ClubEvent :clubId="clubId" :isMember="isMember" @event-added="handleEventAdded" />
-
         <!-- 添加活動按鈕，只有成員可以看到 -->
         <div v-if="isMember" class="mt-4">
           <button @click="openModal" class="styled-button">
             辦活動!
           </button>
+        <ClubEvent :clubId="clubId" :isMember="isMember" ref="clubEventComponent" @event-added="handleEventAdded" />
+
         </div>
 
         <!-- 使用 teleport 將彈跳式視窗傳送到 body 元素中 -->
-        <teleport to="body">
-          <div v-if="showModal" class="modal-overlay" @click="closeModal">
-            <div class="modal-content" @click.stop>
-              <button @click="closeModal" class="close-button">&times;</button>
-              <AddClubEventForm :clubId="clubId" @eventAdded="onEventAdded" />
-            </div>
+      <teleport to="body">
+        <div v-if="showModal" class="modal-overlay" @click="closeModal">
+          <div class="modal-content" @click.stop>
+            <button @click="closeModal" class="close-button">&times;</button>
+            <AddClubEventForm :clubId="clubId" @eventAdded="onEventAdded" />
           </div>
-        </teleport>
+        </div>
+      </teleport>
       </div>
     </div>
   </div>
@@ -104,9 +104,14 @@ const closeModal = () => {
   showModal.value = false;
 };
 
+const clubEventComponent = ref(null);
+
 // 處理活動添加後的邏輯
 const handleEventAdded = (newEvent) => {
   // 在這裡可以添加更新活動列表的邏輯
+  if (clubEventComponent.value) {
+    clubEventComponent.value.fetchClubEvents();
+  }
 };
 
 const getPhotoUrl = (photoName) => {
@@ -134,6 +139,7 @@ const fetchClubDetails = async () => {
     loading.value = false;
   }
 };
+
 
 const onEventAdded = (newEvent) => {
   console.log("New event added:", newEvent);

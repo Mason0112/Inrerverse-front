@@ -8,7 +8,7 @@
           <n-empty v-if="events.length === 0" description="您還沒有參加任何活動" />
           <n-grid x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4" responsive="screen" v-else>
             <n-grid-item v-for="event in events" :key="event.id">
-              <n-card hoverable class="event-card">
+              <n-card hoverable class="event-card"@click="viewEventDetails(event.id)">
                 <template #cover>
                   <img :src="event.coverPhotoUrl || 'default-image.jpg'" alt="活動封面" class="event-cover">
                 </template>
