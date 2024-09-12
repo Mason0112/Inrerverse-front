@@ -318,7 +318,7 @@ const approveParticipant = async (userId) => {
     if (err.response) {
       console.error('Server response:', err.response.data);
     }
-    alert(err.message || '審核參與者或更新交易時出錯');
+    // alert(err.message || '審核參與者或更新交易時出錯');
   } finally {
     participant.approving = false;
   }
