@@ -50,7 +50,7 @@
   @import url('https://fonts.googleapis.com/css2?family=VT323&family=Noto+Sans+TC&display=swap');
   
   .y2k-footer {
-    background: linear-gradient(45deg, #e8a798, #f0e4e4);
+    background:#fafafa;
     color: #8e7474;
     font-family: 'VT323', 'Noto Sans TC', 'Microsoft YaHei', sans-serif;
     padding: 40px 0;
