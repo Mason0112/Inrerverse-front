@@ -11,9 +11,9 @@
           <li class="nav-item">
             <RouterLink class="nav-link active" aria-current="page" :to="{ name: 'home-link' }">首頁</RouterLink>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'post-create-link' }">新增動態(暫放)</RouterLink>
-          </li>
+          </li> -->
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'club-all-link' }">俱樂部</RouterLink>
           </li>
@@ -239,6 +239,34 @@ function logout() {
 .dropdown-menu.show {
   transition: max-height 0.5s ease-in, opacity 0.3s ease-in, visibility 0s;
   visibility: visible;
+}
+
+/* 確保下拉菜單不會超出視窗 */
+.navbar-nav .dropdown-menu {
+  right: 0;
+  left: auto;
+  max-width: 200px; /* 調整此值以適應您的需求 */
+  width: max-content;
+}
+
+/* 為長文字項添加省略號 */
+.navbar-nav .dropdown-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 確保下拉菜單在小屏幕上也能正確顯示 */
+@media (max-width: 991.98px) {
+  .navbar-nav .dropdown-menu {
+    position: static;
+    float: none;
+    width: auto;
+    margin-top: 0;
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+  }
 }
 
 </style>

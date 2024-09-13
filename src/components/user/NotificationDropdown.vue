@@ -283,10 +283,14 @@ watch(
   transition: max-height 0.5s ease-out, opacity 0.3s ease-out,
     visibility 0s 0.5s;
   visibility: hidden;
+  right: 0;
+  left: auto;
+  width: 300px;  /* 設定一個固定寬度 */
+  max-width: 90vw;  /* 確保在小屏幕上不會太寬 */
 }
 
 .dropdown-menu.show {
-  max-height: 300px;
+  max-height: 400px;  /* 稍微增加最大高度 */
   opacity: 1;
   overflow-y: auto;
   transition: max-height 0.5s ease-in, opacity 0.3s ease-in, visibility 0s;
@@ -311,6 +315,9 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 10px 15px;
+  white-space: normal;  /* 允許文本換行 */
+  word-break: break-word;  /* 確保長單詞也能換行 */
 }
 
 .font-weight-bold {
@@ -319,5 +326,17 @@ watch(
 
 .dropdown-item span {
   cursor: pointer;
+}
+
+/* 為小屏幕設備調整樣式 */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    position: fixed;
+    top: 60px;  /* 調整這個值以匹配您的導航欄高度 */
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: none;
+  }
 }
 </style>
