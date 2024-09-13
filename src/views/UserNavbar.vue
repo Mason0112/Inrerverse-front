@@ -48,13 +48,11 @@
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
             @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')" aria-expanded="dropdownStates.settings">
-              勁甫(暫放) <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.settings }" />
+              會員動態牆 <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.settings }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
               :class="{ 'show': dropdownStates.settings }" @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')">
               <li><RouterLink class="dropdown-item" :to="{ name: 'post-create-link' }" @click="closeDropdown('settings')">新增動態
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'user-post-link' }" @click="closeDropdown('settings')">動態牆
               </RouterLink></li>
               <RouterLink 
                 class="dropdown-item" 
