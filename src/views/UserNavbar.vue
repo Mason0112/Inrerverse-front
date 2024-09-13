@@ -246,4 +246,32 @@ function logout() {
   visibility: visible;
 }
 
+/* 確保下拉菜單不會超出視窗 */
+.navbar-nav .dropdown-menu {
+  right: 0;
+  left: auto;
+  max-width: 200px; /* 調整此值以適應您的需求 */
+  width: max-content;
+}
+
+/* 為長文字項添加省略號 */
+.navbar-nav .dropdown-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 確保下拉菜單在小屏幕上也能正確顯示 */
+@media (max-width: 991.98px) {
+  .navbar-nav .dropdown-menu {
+    position: static;
+    float: none;
+    width: auto;
+    margin-top: 0;
+    background-color: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+}
+
 </style>
