@@ -78,7 +78,7 @@ onMounted(() => {
   const productId = route.params.id;
   getProductById(productId);
   getProductPhotos(productId);
-  getUserCartCount(userStore.userId);
+  //getUserCartCount(userStore.userId);
 });
 
 

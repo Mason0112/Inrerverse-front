@@ -147,10 +147,10 @@ function processPayPal(orderId) {
     .then(paypalResponse => {
       console.log("PayPal", paypalResponse);
       if (paypalResponse.data.payerAction) {
-        Swal.close(); // 關閉等待提示
-        // 清空購物車
-        return axiosapi.delete(`/cart/clear/${userStore.userId}`)
+        return axiosapi.get(`/paypal/self?url=${paypalResponse.data.self}`)
+          .then(() => axiosapi.delete(`/cart/clear/${userStore.userId}`))
           .then(() => {
+            Swal.close(); // 關閉等待提示
             window.open(paypalResponse.data.payerAction, '_self');
           });
       } else {
