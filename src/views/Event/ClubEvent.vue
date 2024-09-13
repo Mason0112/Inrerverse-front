@@ -65,7 +65,7 @@
                 <div v-else class="no-photo">無照片</div>
               </div>
               <div class="event-info">
-                <div class="event-tag">進行中</div>
+                <div class="event-tag">報名中</div>
                 <h3 class="event-name">{{ event.eventName }}</h3>
                 <div class="event-creator">
                   <img :src="event.creatorPhotoUrl" :alt="event.creatorName" class="creator-avatar">
@@ -350,7 +350,7 @@ defineExpose({ fetchClubEvents });
 }
 
 .event-image {
-  height: 200px;
+  height: 300px;
   overflow: hidden;
 }
 
@@ -398,7 +398,7 @@ defineExpose({ fetchClubEvents });
 }
 
 .no-photo {
-  height: 200px;
+  height: 300px;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -15,18 +15,12 @@
             <n-grid :cols="24" :x-gap="12">
               <n-gi :span="8">
                 <n-card class="event-photo-card" :bordered="false">
-                  <n-image
-                    :src="coverPhotoUrl"
-                    :preview-disabled="true"
-                    object-fit="cover"
-                    width="300"
-                    height="300"
-                    class="square-photo"
-                  />
+                  <n-image :src="coverPhotoUrl" :preview-disabled="true" object-fit="cover" width="300" height="300"
+                    class="square-photo" />
                 </n-card>
               </n-gi>
               <n-gi :span="16">
-                <n-card title="活動詳情" class="detail-card" >
+                <n-card title="活動詳情" class="detail-card">
                   <div class="custom-details">
                     <div class="detail-item">
                       <div class="detail-label">地點</div>
@@ -46,14 +40,13 @@
                     </div>
                     <div class="detail-item">
                       <div class="detail-label">人數</div>
-                      <div class="detail-content">{{ approvedParticipants.length }} / {{ eventDetail.participantMax }}</div>
+                      <div class="detail-content">{{ approvedParticipants.length }} / {{ eventDetail.participantMax }}
+                      </div>
                     </div>
                   </div>
                   <n-space justify="end" style="margin-top: 16px;">
-                    <n-button @click="handleParticipation" 
-                              :disabled="!canParticipate" 
-                              :loading="loading"
-                              class="participation-button">
+                    <n-button @click="handleParticipation" :disabled="!canParticipate" :loading="loading"
+                      class="participation-button">
                       {{ participationButtonText }}
                     </n-button>
                   </n-space>
@@ -86,21 +79,15 @@
             </n-card>
 
             <n-card title="活動相簿" class="photo-card">
-              <EventPhoto 
-                :workshopId="route.params.id" 
-                :eventCreatorId="event.eventCreatorId" 
-              />
+              <EventPhoto :workshopId="route.params.id" :eventCreatorId="event.eventCreatorId" />
             </n-card>
 
             <n-card title="參加者" class="participants-card">
               <n-scrollbar style="max-height: 300px">
                 <n-space v-if="approvedParticipants.length > 0" justify="start" align="center" :wrap="true">
-                  <div v-for="participant in approvedParticipants" :key="participant.userId" class="participant-item">
-                    <n-avatar
-                      :src="participant.photoUrl || defaultAvatarUrl"
-                      :fallback-src="defaultAvatarUrl"
-                      :size="50"
-                    />
+                  <div v-for="participant in approvedParticipants" :key="participant.userId" class="participant-item"
+                    @click="goToUserPost(participant.userId)"> <n-avatar :src="participant.photoUrl || defaultAvatarUrl"
+                      :fallback-src="defaultAvatarUrl" :size="50" />
                     <span class="participant-name">{{ participant.userName }}</span>
                   </div>
                 </n-space>
@@ -130,7 +117,9 @@ import {
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-
+const goToUserPost = (userId) => {
+  router.push({ name: 'user-post-link', params: { id: userId } });
+};
 const event = ref({});
 const eventDetail = ref(null);
 const loading = ref(true);
@@ -157,19 +146,20 @@ const fetchApprovedParticipants = async () => {
   try {
     const response = await axios.get(`/eventParticipant/event/${route.params.id}/approved-participants`);
     const participantsData = response.data;
-    if(participantsData.map!=null){
-    approvedParticipants.value = await Promise.all(participantsData.map(async (participant) => {
-      try {
-        const photoResponse = await axios.get(`/user/secure/profile-photo/${participant.userId}`);
-        return {
-          ...participant,
-          photoUrl: photoResponse.data || null
-        };
-      } catch (err) {
-        console.error(`Error fetching photo for user ${participant.userId}:`, err);
-        return participant;
-      }
-    }));}
+    if (participantsData.map != null) {
+      approvedParticipants.value = await Promise.all(participantsData.map(async (participant) => {
+        try {
+          const photoResponse = await axios.get(`/user/secure/profile-photo/${participant.userId}`);
+          return {
+            ...participant,
+            photoUrl: photoResponse.data || null
+          };
+        } catch (err) {
+          console.error(`Error fetching photo for user ${participant.userId}:`, err);
+          return participant;
+        }
+      }));
+    }
   } catch (error) {
     console.error('讀取參加者失敗:', error);
     // message.error('讀取參加者失敗');
@@ -246,7 +236,7 @@ const handleParticipation = async () => {
       // 將 event ID 轉換為五位數格式，使用 padStart 方法
       const formattedEventId = String(event.value.id).padStart(5, '0');
       const formattedUserId = String(userStore.userId).padStart(5, '0')
-      
+
       transactionResponse = await axios.post('/transaction/add', {
         transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
         amount: -eventDetail.value.fee,
@@ -359,7 +349,11 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.detail-card, .stats-card, .description-card, .photo-card, .participants-card {
+.detail-card,
+.stats-card,
+.description-card,
+.photo-card,
+.participants-card {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -398,7 +392,14 @@ onMounted(() => {
   flex: 2;
   color: #4a0080;
 }
+.participant-item {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
 
+.participant-item:hover {
+  transform: translateY(-5px);
+}
 .participation-button {
   background-color: #9370DB;
   color: white;

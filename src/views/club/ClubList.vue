@@ -48,14 +48,6 @@
             須審核
           </div>
         </div>
-        <div class="club-footer">
-          <!-- <button @click="joinClub(club)" class="join-button">
-            加入
-          </button> -->
-          <button @click="toggleFavorite(club)" class="favorite-button" :class="{ 'is-favorite': club.isFavorite }">
-            {{ club.isFavorite ? '❤' : '♡' }}
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -214,7 +206,7 @@ onMounted(fetchClubs);
 
 .club-image {
   position: relative;
-  height: 250px;
+  height: 350px;
   overflow: hidden;
 }
 
@@ -236,8 +228,12 @@ onMounted(fetchClubs);
 }
 
 .club-content {
-  /* flex-grow: 1; */
+  flex-grow: 1;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100px; /* 固定高度 */
 }
 
 .club-name {
@@ -265,7 +261,11 @@ onMounted(fetchClubs);
   font-size: 0.875rem;
   font-weight: bold;
   display: inline-block;
-  margin-top: 0.5rem;
+  align-self: flex-start; /* 確保標籤靠左對齊 */
+  margin-top: auto; /* 將標籤推到底部 */
+  width: auto; /* 讓標籤寬度自適應內容 */
+  min-width: 70px; /* 設置最小寬度，可以根據需要調整 */
+  text-align: center; /* 文字居中 */
 }
 
 .favorite-button {
