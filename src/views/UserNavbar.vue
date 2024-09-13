@@ -11,9 +11,9 @@
           <li class="nav-item">
             <RouterLink class="nav-link active" aria-current="page" :to="{ name: 'home-link' }">首頁</RouterLink>
           </li>
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'post-create-link' }">新增動態(暫放)</RouterLink>
-          </li>
+          </li> -->
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'club-all-link' }">俱樂部</RouterLink>
           </li>
