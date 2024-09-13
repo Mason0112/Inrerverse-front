@@ -61,10 +61,7 @@
                 >
                 我的動態牆
               </RouterLink>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-forum' }" @click="closeDropdown('settings')">論壇
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-addArticle' }" @click="closeDropdown('settings')">新增文章
-              </RouterLink></li>
+
             </ul>
           </li>
           <!-- Other items -->
