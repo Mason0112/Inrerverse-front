@@ -115,40 +115,61 @@
             <div v-if="onePost.comments && onePost.comments.length > 0" class="comments-section">
               <h6>評論區：</h6>
               <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
-                <div class="comment-content">
-                  <div class="comment-user">
-                    <a @click="navigateToUserPost(oneComment.user.id)" class="a-link">
-                      <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
-                    </a>
-                  </div>
-                  <div class="comment-text">{{ oneComment.comment }}</div>
-                  <div class="comment-date">{{ formatDate(oneComment.added) }}</div>
-                  <div class="comment-like">
-                    <font-awesome-icon :icon="oneComment.isLiked ? ['fas', 'heart'] : ['far', 'heart']"
-                      @click="toggleCommentLike(oneComment)"
-                      :style="{ color: oneComment.isLiked ? 'red' : 'black', cursor: 'pointer' }" />
-                    <span class="like-count">{{ oneComment.likeCount || 0 }}</span>
-                  </div>
-                </div>
-                <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId"
-                  class="comment-actions">
-                  <button class="btn btn-outline-secondary btn-sm" @click="editComment(oneComment)">編輯</button>
-                  <button class="btn btn-outline-danger btn-sm" @click="deleteComment(oneComment, onePost.id)">
-                    <font-awesome-icon :icon="['fas', 'trash']" />
-                  </button>
-                </div>
-              </div>
-            </div>
-            <!-- 留言輸入框 -->
-            <!-- 把屬性傳給子元件 -->
-            <PostComment :postId="onePost.id" @comment-added="handleCommentAdded(onePost.id, $event)"></PostComment>
-          </div>
-        </div>
-        <updatePostModal ref="updatePostModal" :post="selectedPost" @update:onePost="handlePostUpdate">
-        </updatePostModal>
-      </n-infinite-scroll>
+  <div class="comment-content">
+    <div class="comment-user">
+      <a @click="navigateToUserPost(oneComment.user.id)" class="a-link">
+        <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
+      </a>
+    </div>
+    <div v-if="editingCommentId === oneComment.id" class="edit-comment-form">
+      <n-input
+        v-model:value="editedComment"
+        type="textarea"
+        placeholder="編輯您的評論"
+        :autosize="{ minRows: 3, maxRows: 5 }"
+        class="edit-comment-textarea"
+      />
+      <div class="edit-comment-actions">
+        <n-button type="primary" size="small" @click="saveComment(oneComment)">
+          <template #icon><i class="fas fa-check"></i></template>
+          保存
+        </n-button>
+        <n-button type="default" size="small" @click="cancelEdit">
+          <template #icon><i class="fas fa-times"></i></template>
+          取消
+        </n-button>
+      </div>
+    </div>
+    <div v-else class="comment-text">{{ oneComment.comment }}</div>
+    <div class="comment-date">{{ formatDate(oneComment.added) }}</div>
+    <div class="comment-like">
+      <font-awesome-icon :icon="oneComment.isLiked ? ['fas', 'heart'] : ['far', 'heart']"
+        @click="toggleCommentLike(oneComment)"
+        :style="{ color: oneComment.isLiked ? 'red' : 'black', cursor: 'pointer' }" />
+      <span class="like-count">{{ oneComment.likeCount || 0 }}</span>
     </div>
   </div>
+  <div v-if="oneComment.userId !== null && oneComment.user.id == userStore.userId" class="comment-actions">
+    <n-button v-if="editingCommentId !== oneComment.id" type="primary" size="small" @click="editComment(oneComment)">
+      <template #icon><i class="fas fa-edit"></i></template>
+      編輯
+    </n-button>
+    <button class="btn btn-outline-danger btn-sm" @click="deleteComment(oneComment, onePost.id)">
+      <font-awesome-icon :icon="['fas', 'trash']" />
+    </button>
+  </div>
+</div>
+</div>
+</div>
+<!-- 留言輸入框 -->
+<!-- 把屬性傳給子元件 -->
+<PostComment :postId="onePost.id" @comment-added="handleCommentAdded(onePost.id, $event)"></PostComment>
+</div>
+</n-infinite-scroll>
+</div>
+<updatePostModal ref="updatePostModal" :post="selectedPost" @update:onePost="handlePostUpdate">
+</updatePostModal>
+</div>
 </template>
 
 <script setup>
@@ -422,6 +443,7 @@ function deletePost(onePost) {
 function editComment(oneComment) {
   editingCommentId.value = oneComment.id
   editedComment.value = oneComment.comment
+  console.log("開始編輯" +editedComment.value)
 }
 
 function cancelEdit() {
@@ -431,16 +453,27 @@ function cancelEdit() {
 
 async function saveComment(oneComment) {
   try {
-    const response = await axios.put(`/postComment/${oneComment.id}`, { newComment: editedComment.value })
-    //更新前端畫面
-    oneComment.comment = editedComment.value
-
-    //重置編輯狀態
-    editingCommentId.value = null
-    editedComment.value = ''
+  const response = await axios.put(`/postComment/${oneComment.id}`, {
+      id: oneComment.id,
+      comment: editedComment.value
+    });
+    console.log("editedComment.value:" +  editedComment.value)
+    console.log(response.data);
+    // 更新前端数据
+    const postIndex = postList.value.findIndex(post => post.comments.some(comment => comment.id === oneComment.id));
+    if (postIndex !== -1) {
+      const commentIndex = postList.value[postIndex].comments.findIndex(comment => comment.id === oneComment.id);
+      if (commentIndex !== -1) {
+        postList.value[postIndex].comments[commentIndex].comment = editedComment.value;
+      }
+    }
+    // 重置编辑状态
+    editingCommentId.value = null;
+    editedComment.value = '';
+    message.success('成功更新評論');
   } catch (error) {
-    console.error('更新評論失敗', error)
-    //可以添加錯誤處理邏輯 (顯示錯誤提示)
+    console.error('更新評論失敗', error);
+    message.error('更新評論失敗');
   }
 }
 
@@ -683,6 +716,7 @@ body {
 .comment-content {
   flex-grow: 1;
   margin-right: 15px;
+  white-space: pre-wrap;
 }
 
 .comment-like {
@@ -822,5 +856,71 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+}
+.comment {
+  transition: all 0.3s ease;
+  border: 1px solid #FFB6C1;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: #FFFAFB;
+}
+
+.edit-comment-form {
+  background-color: #FFF0F5;
+  border-radius: 8px;
+  padding: 15px;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.edit-comment-textarea {
+  margin-bottom: 10px;
+}
+
+.edit-comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* Naive UI 按钮样式覆盖 */
+:deep(.n-button) {
+  background-color: #FF69B4;
+  border-color: #FF69B4;
+  color: white;
+}
+
+:deep(.n-button:hover) {
+  background-color: #FF1493;
+  border-color: #FF1493;
+}
+
+:deep(.n-button--default) {
+  background-color: #FFC0CB;
+  border-color: #FFC0CB;
+  color: #333;
+}
+
+:deep(.n-button--default:hover) {
+  background-color: #FFB6C1;
+  border-color: #FFB6C1;
+}
+
+:deep(.n-input) {
+  border-color: #FFB6C1;
+}
+
+:deep(.n-input:focus) {
+  border-color: #FF69B4;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
 }
 </style>
