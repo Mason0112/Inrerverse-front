@@ -168,7 +168,7 @@ const isOpen = (categoryName) => openCategories.value.has(categoryName);
 <style scoped>
 .sidebar {
   width: 250px;
-  background-color: #f5f5f5;
+  background-color: #f4f3f1;
   padding: 20px;
   height: 100vh;
   position: fixed;

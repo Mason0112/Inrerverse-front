@@ -222,7 +222,8 @@ body {
 .main-content {
   flex-grow: 1;
   margin-left: 250px;
-  padding: 20px;
+  background-color: #DECEBF;
+  /* padding: 20px; */
 }
 
 @media (max-width: 768px) {
