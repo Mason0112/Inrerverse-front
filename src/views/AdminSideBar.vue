@@ -1,7 +1,7 @@
 <template>
   <div class="sidebar">
     <div class="user-info">
-      <img src="" alt="User Avatar" class="avatar" />
+      <img src="/interverse admin logo.png" alt="User Avatar" class="avatar" />
       <span class="email">{{ nickname }}</span>
     </div>
     <nav>
@@ -221,8 +221,9 @@ const isOpen = (categoryName) => openCategories.value.has(categoryName);
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 100px;
+  height: 100px;
+  object-fit: contain; /* New line */
   border-radius: 50%;
   margin-right: 10px;
 }
