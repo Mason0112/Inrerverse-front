@@ -1,9 +1,10 @@
 <template>
+  <div class="fullscreen-container">
   <div class="container">
-    <div class="row">
+    <div class="row h-100">
       <div class="col-lg-10 col-xl-9 mx-auto">
         <div
-          class="card flex-row my-5 border-0 shadow rounded-3 overflow-hidden"
+          class="card flex-row border-0 shadow rounded-3 overflow-hidden"
         >
           <div class="card-img-left d-none d-md-flex">
             <!-- Background image for card set in CSS! -->
@@ -14,6 +15,7 @@
               :display-errors="false"
               ref="form$"
               :endpoint="false"
+              class="custom-vueform"
             >
               <StaticElement name="register_title" content="新增員工" tag="h1" />
               <StaticElement name="divider" tag="hr" />
@@ -71,6 +73,8 @@
       </div>
     </div>
   </div>
+      
+</div>
 </template>
 
 <script setup>
@@ -143,11 +147,17 @@ function register() {
 </script>
 
 <style scoped>
+.fullscreen-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
 .card-img-left {
-  width: 45%;
-  /* Link to your background image using in the property below! 
+  width: 100%;
     background: scroll center
-      url("https://source.unsplash.com/WEQbe2jBg40/414x512"); */
+      url("/admin\ register\ pic.jpg");
   background-size: cover;
 }
 
@@ -155,4 +165,34 @@ function register() {
   color: white;
   background-color: #ea4335;
 }
+
+/* Custom styles for Vueform */
+.custom-vueform :deep(.vf-primary-color) {
+  --vf-primary-color: 104, 117, 109 !important;  /* #68756D in RGB */
+  --vf-primary-darker-color: 78, 88, 82 !important;  /* Slightly darker shade for hover effects */
+}
+
+.custom-vueform :deep(.vf-bg-primary) {
+  background-color: rgb(var(--vf-primary-color)) !important;
+}
+
+.custom-vueform :deep(.vf-border-primary) {
+  border-color: rgb(var(--vf-primary-color)) !important;
+}
+
+.custom-vueform :deep(.vf-text-primary) {
+  color: rgb(var(--vf-primary-color)) !important;
+}
+
+/* .custom-vueform :deep(.vf-btn-primary:hover) {
+  background-color: rgb(var(--vf-primary-darker-color)) !important;
+} */
+
+.custom-vueform :deep(.vf-input:focus),
+.custom-vueform :deep(.vf-select:focus) {
+  border-color: #B57B66 !important;
+  box-shadow: 0 0 0 3px rgba(181, 123, 102, 0.3) !important;
+}
+
+
 </style>
