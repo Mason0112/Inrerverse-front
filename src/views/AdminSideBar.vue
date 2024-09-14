@@ -38,10 +38,7 @@
             新增員工
           </RouterLink>
           <RouterLink to="/admin/register" class="nav-item">
-            Updates
-          </RouterLink>
-          <RouterLink to="/admin/register" class="nav-item">
-            Forums
+            員工列表
           </RouterLink>
         </div>
       </div>
@@ -57,13 +54,7 @@
         </div>
         <div v-if="isOpen('Finance')" class="dropdown-content">
           <RouterLink to="/admin/transaction" class="nav-item">
-            處理中報表
-          </RouterLink>
-          <RouterLink to="/admin/register" class="nav-item">
-            Updates
-          </RouterLink>
-          <RouterLink to="/admin/register" class="nav-item">
-            Forums
+            平台交易列表
           </RouterLink>
         </div>
       </div>
@@ -101,16 +92,13 @@
         </div>
         <div v-if="isOpen('More')" class="dropdown-content">
           <RouterLink to="/admin/home" class="nav-item">
-            <i class="icon icon-all-mail"></i>
-            All Mail
+            通知設定
           </RouterLink>
           <RouterLink to="/admin/home" class="nav-item">
-            <i class="icon icon-social"></i>
-            Social
+            隱私設定
           </RouterLink>
           <RouterLink to="/admin/home" class="nav-item">
-            <i class="icon icon-promo"></i>
-            Promo
+            修改密碼
           </RouterLink>
           <a class="nav-item" @click="logoutAdmin()">登出</a>
         </div>
@@ -168,7 +156,7 @@ const isOpen = (categoryName) => openCategories.value.has(categoryName);
 <style scoped>
 .sidebar {
   width: 250px;
-  background-color: #f5f5f5;
+  background-color: #f4f3f1;
   padding: 20px;
   height: 100vh;
   position: fixed;

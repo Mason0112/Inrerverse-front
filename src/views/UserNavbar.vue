@@ -179,84 +179,93 @@ function logout() {
 
 
 <style scoped>
+.navbar {
+  background-color: var(--background-color) !important;
+  padding: 1rem 2rem; /* 增加導航欄的內邊距 */
+}
+
+.nav-link {
+  color: var(--text-color) !important;
+  font-size: 1.2rem; /* 增加字體大小 */
+  margin: 0 0.8rem; /* 增加導航項之間的間距 */
+  padding: 0.5rem 1rem; /* 增加導航項的內邊距 */
+  font-weight: bold;
+}
+
+.nav-link:hover {
+  color: var(--accent-color) !important;
+}
+
+.dropdown-menu {
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px rgba(151, 113, 91, 0.1);
+}
+
+.dropdown-item {
+  color: var(--text-color);
+  font-size: 1.1rem; /* 增加下拉菜單項的字體大小 */
+  padding: 0.7rem 1.5rem; /* 增加下拉菜單項的內邊距 */
+}
+
+.dropdown-item:hover {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
 .arrow {
   font-size: 0.75em;
-  /* Adjust the size of the arrow */
 }
 
 .rotate {
   transform: rotate(180deg);
-  /* Rotate the arrow when the dropdown is open */
-  transition: transform 0.5s ease; /* 增加旋轉時間到0.5秒 */
-}
-
-.dropdown-item {
-  padding: 10px 20px;
-  color: #000;
-}
-
-.dropdown-item:hover {
-  background-color: #f1f1f1;
+  transition: transform 0.5s ease;
 }
 
 .dropdown-toggle::after {
   display: none;
-  /* Hide default Bootstrap dropdown arrow */
 }
 
 .dropdown-toggle {
   display: flex;
   align-items: center;
   gap: 4px;
-  /* Adjust the gap between the text and the icon */
 }
 
 .dropdown-menu {
   display: block;
   border: none;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.5s ease-out, opacity 0.3s ease-out;
-  opacity: 0;
-}
-
-.dropdown-menu.show {
-  max-height: 400px; /* 根據實際內容調整此值 */
-  opacity: 1;
-}
-
-.dropdown-toggle .fa-caret-down {
-  transition: transform 0.5s ease; /* 確保非旋轉狀態也有相同的過渡效果 */
-}
-
-/* 添加淡入淡出效果 */
-.dropdown-menu {
   transition: max-height 0.5s ease-out, opacity 0.3s ease-out, visibility 0s 0.5s;
+  opacity: 0;
   visibility: hidden;
 }
 
 .dropdown-menu.show {
+  max-height: 500px; /* 增加最大高度以適應更大的字體 */
+  opacity: 1;
   transition: max-height 0.5s ease-in, opacity 0.3s ease-in, visibility 0s;
   visibility: visible;
 }
 
-/* 確保下拉菜單不會超出視窗 */
+.dropdown-toggle .fa-caret-down {
+  transition: transform 0.5s ease;
+}
+
 .navbar-nav .dropdown-menu {
   right: 0;
   left: auto;
-  max-width: 200px; /* 調整此值以適應您的需求 */
+  max-width: 250px; /* 增加最大寬度以適應更大的字體 */
   width: max-content;
 }
 
-/* 為長文字項添加省略號 */
 .navbar-nav .dropdown-item {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* 確保下拉菜單在小屏幕上也能正確顯示 */
 @media (max-width: 991.98px) {
   .navbar-nav .dropdown-menu {
     position: static;
@@ -267,6 +276,14 @@ function logout() {
     border: 0;
     box-shadow: none;
   }
+  
+  .nav-link {
+    margin: 0.5rem 0; /* 在小屏幕上調整間距 */
+  }
 }
 
+/* 添加一個過渡效果使變化更平滑 */
+.navbar, .nav-link, .dropdown-item {
+  transition: all 0.3s ease;
+}
 </style>
