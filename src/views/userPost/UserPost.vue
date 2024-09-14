@@ -80,7 +80,30 @@
 
 
     <div class="main-content">
-
+      <!-- 新增: 創建貼文部分 -->
+      <div class="create-post-section">
+          <n-space vertical>
+            <n-input
+              type="textarea"
+              placeholder="你在想什麼?"
+              v-model:value="newPostContent"
+              :autosize="{
+                minRows: 3
+              }"
+            />
+            <n-upload
+              ref="upload"
+              :custom-request="customRequest"
+              :default-file-list="fileList"
+              list-type="image-card"
+              @change="handleChange"
+            >
+              上傳圖片
+            </n-upload>
+            <n-button tertiary @click="submitNewPost">提交</n-button>
+          </n-space>
+        </div>
+<!-- 貼文列表 -->
       <n-infinite-scroll style="height: 80%" :distance="10" @load="handleLoad">
         <div v-for="onePost in postList" :key="onePost.id" class="item">
           <div class="post-actions">
@@ -91,21 +114,29 @@
           </div>
           <div class="post-header">
             <div class="post-date"> {{ formatDate(onePost.added) }}</div>
-            <a @click="navigateToUserPost(onePost.user.id)" class="a-link post-author">
-              {{ onePost.user.nickname }}
-            </a>
-            <div>
+            <div class="post-content-layout">
+    <div class="user-info-column">
+      <img v-if="onePost.user.avatar" :src="onePost.user.avatar" alt="User Avatar" class="user-avatar">
+      <div v-else class="default-avatar">{{ onePost.user.nickname.charAt(0).toUpperCase() }}</div>
+      <a @click="navigateToUserPost(onePost.user.id)" class="a-link post-author">
+        {{ onePost.user.nickname }}
+      </a>
+    </div>
 
-              <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
-                <p>{{ onePost.content }}</p>
-              </n-ellipsis>
-              <!-- photo -->
-              <n-carousel v-if="onePost.photos && onePost.photos.length > 0" direction="vertical" dot-placement="right"
-                mousewheel style="width: 100%; height: 240px">
-                <n-image v-for="onePhoto in onePost.photos" :key="onePhoto.id" :src="onePhoto.base64Photo"
-                  :alt="onePhoto.name" class="image" />
-              </n-carousel>
-            </div>
+    <div class="post-text-column">
+      <n-ellipsis expand-trigger="click" line-clamp="2" :tooltip="false" class="formatted-content">
+        <p>{{ onePost.content }}</p>
+      </n-ellipsis>
+    </div>
+
+    <div class="post-image-column">
+      <n-carousel v-if="onePost.photos && onePost.photos.length > 0" direction="vertical" dot-placement="right"
+        mousewheel style="width: 100%; height: 240px">
+        <n-image v-for="onePhoto in onePost.photos" :key="onePhoto.id" :src="onePhoto.base64Photo"
+          :alt="onePhoto.name" class="image" />
+      </n-carousel>
+    </div>
+  </div>
             <div class="post-like">
               <font-awesome-icon :icon="onePost.isLiked ? ['fas', 'heart'] : ['far', 'heart']"
                 @click="toggleLike(onePost)" :style="{ color: onePost.isLiked ? 'red' : 'black', cursor: 'pointer' }" />
@@ -117,10 +148,12 @@
               <div v-for="oneComment in onePost.comments" :key="oneComment.id" class="comment">
   <div class="comment-content">
     <div class="comment-user">
+      <img v-if="oneComment.user && oneComment.user.avatar" :src="oneComment.user.avatar" alt="User Avatar" class="user-avatar">
+      <div v-else class="default-avatar">{{ (oneComment.user?.nickname || '未知用戶').charAt(0).toUpperCase() }}</div>
       <a @click="navigateToUserPost(oneComment.user.id)" class="a-link">
         <span>{{ oneComment.user?.nickname || '未知用戶' }}:</span>
       </a>
-    </div>
+                </div>
     <div v-if="editingCommentId === oneComment.id" class="edit-comment-form">
       <n-input
         v-model:value="editedComment"
@@ -208,6 +241,10 @@ const friendStatus = ref('not_friend');
 const isDropdownOpen = ref(false);
 const isLoading = ref(true);
 
+const newPostContent = ref('')
+const fileList = ref([])
+const upload = ref(null)
+
 function initializeViewingUserId() {
   viewingUserId.value = route.params.id || currentUserId.value;
   console.log("Initialized viewingUserId:", viewingUserId.value);
@@ -269,12 +306,35 @@ async function showUserPostList() {
     const response = await axios.get(`/userPost/showUserAllPost/${viewingUserId.value}`);
     console.log("Response data:", response.data);
     postList.value = Array.isArray(response.data) ? response.data : [];
+
+    // 獲取每個貼文作者的頭像
+    for (let post of postList.value) {
+      post.user.avatar = await fetchUserAvatar(post.user.id);
+      
+      // 獲取每個評論作者的頭像
+      if (post.comments && post.comments.length > 0) {
+        for (let comment of post.comments) {
+          comment.user.avatar = await fetchUserAvatar(comment.user.id);
+        }
+      }
+    }
     await Promise.all(postList.value.map(post => fetchComments(post.id)));
     await checkLikeStatus();
   } catch (error) {
     console.error("Error fetching user posts:", error);
     message.error("Failed to fetch posts");
     postList.value = [];
+  }
+}
+
+// 新增函數來獲取用戶頭像
+async function fetchUserAvatar(userId) {
+  try {
+    const response = await axios.get(`/user/secure/profile-photo/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user avatar:', error);
+    return null;
   }
 }
 
@@ -320,46 +380,34 @@ async function updateLikeCount(post) {
 }
 
 //渲染comment
-function fetchComments(postId) {
-  axios.get(`/postComment/${postId}`)
-    .then(response => {
-      const postIndex = postList.value.findIndex(post => post.id === postId);
-      if (postIndex !== -1) {
-        postList.value[postIndex].comments = response.data
+async function fetchComments(postId) {
+  try {
+    const response = await axios.get(`/postComment/${postId}`);
+    const postIndex = postList.value.findIndex(post => post.id === postId);
+    
+    if (postIndex !== -1) {
+      const comments = response.data;
+      // 為每個評論獲取用戶頭像
+      for (let comment of comments) {
+        comment.user.avatar = await fetchUserAvatar(comment.user.id);
       }
-    })
-    .catch(error => {
-      console.error(`Error fetching comments for post ${postId}:`, error);
-    })
+      postList.value[postIndex].comments = comments;
+    }
+  } catch (error) {
+    console.error(`Error fetching comments for post ${postId}:`, error);
+  }
 }
 
-//渲染PostPhoto
-// function fetchPhoto(postId){
-//     axios.get(`/postPhoto/${postId}`)
-//     .then(response=>  {
-//         const postIndex = postList.value.findIndex(post => post.id === postId);
-//         if(postIndex !== -1){
-//             postList.value[postIndex].photos = response.data
-//         }
-//     })
-//     .catch(error => {
-//         console.error(`Error fetching photos for post ${postId}:`, error)
-//     })
-// }
-
 //即時更新comment
-function handleCommentAdded(postId, newComment) {
-  //在 postList 中尋找 ID 等於 postId 的貼文。findIndex 方法會返回該貼文在陣列中的索引。如果沒有找到，返回 -1    
+async function handleCommentAdded(postId, newComment) {
   const postIndex = postList.value.findIndex(post => post.id === postId);
-  // 如果找到了對應的貼文
   if (postIndex !== -1) {
-    // 如果該貼文尚未有留言，則初始化為空陣列
     if (!postList.value[postIndex].comments) {
       postList.value[postIndex].comments = []
     }
-    // 更新留言後保留 user.nickname，如果 newComment.user 不存在，則使用預設的 userNickname
     newComment.user = newComment.user || { nickname: userNickname }
-    // 將新留言添加到對應貼文的留言列表中
+    // 獲取新評論作者的頭像
+    newComment.user.avatar = await fetchUserAvatar(newComment.user.id);
     postList.value[postIndex].comments.push(newComment)
   }
 }
@@ -538,6 +586,58 @@ function callFind() {
   });
 }
 
+const customRequest = ({file, onFinish, onError}) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file.file);
+  reader.onload = () => {
+    file.url = reader.result;
+    onFinish();
+  }
+  reader.onerror = (error) => {
+    onError(error)
+  }
+}
+
+const handleChange = (options) => {
+  fileList.value = options.fileList
+}
+
+async function submitNewPost() {
+  try {
+    const postResponse = await axios.post('/userPost', {
+      content: newPostContent.value,
+      user: {
+        id: userId
+      }
+    })
+    const postId = postResponse.data.id
+
+    for(const file of fileList.value) {
+      const formData = new FormData();
+      formData.append('file', file.file);
+      formData.append('postId', postId)
+
+      await axios.post('/postPhoto', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+    }
+    message.success('貼文發布成功');
+    newPostContent.value = '';
+    fileList.value = [];
+    if(upload.value) {
+      upload.value.clear()
+    }
+    // 重新加載貼文列表
+    await showUserPostList();
+  } catch(error) {
+    console.error('發布貼文失敗', error);
+    message.error('發布貼文失敗');
+  }
+}
+
+
 //好友邀請回應的dropdown
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -628,7 +728,7 @@ h2 {
   width: 250px;
   padding-right: 20px;
   border-right: 1px solid var(--primary-pink);
-  background-color: #FFF0F5; /* 淺粉紅色,比 page-container 稍深 */
+  /* background-color: #FFF0F5; 淺粉紅色,比 page-container 稍深 */
   border-radius: 10px 0 0 10px;
 }
 
@@ -636,33 +736,52 @@ h2 {
 .main-content {
   flex: 1;
   padding-left: 20px;
-  background-color: #FFFFFF; /* 純白色 */
+  background-color: #FFF5EE; /* 純白色 */
   border-radius: 0 10px 10px 0;
 }
 
 /* 帖子项目样式 */
 .item {
-  background-color: var(--very-light-pink);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  padding: 20px;
+  background-color: #FFFFFF;
+  border: 30px solid var(--primary-pink);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  padding: 25px;
+  position: relative;
+  transition: all 0.3s ease;
 }
 
-/* 帖子头部 */
+.item:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* 貼文頭部樣式 */
 .post-header {
-  margin-bottom: 15px;
+  border-bottom: 1px solid var(--light-pink);
+
 }
 
 .post-date {
   font-size: 0.9em;
-  color: #666;
+  color: #888;
 }
 
-.post-author {
+
+post-author {
   font-weight: bold;
   color: var(--dark-pink);
+  font-size: 1.1em;
   margin-top: 5px;
+}
+
+/* Post 內容樣式 */
+.formatted-content {
+  background-color: var(--very-light-pink);
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
 }
 
 /* 点赞部分 */
@@ -679,17 +798,32 @@ h2 {
   font-size: 1.2em; /* 增加圖標大小 */
 }
 
-/* 评论区 */
+/* 點讚部分樣式 */
+.post-like {
+  background-color: var(--very-light-pink);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+/* 評論區樣式 */
 .comments-section {
+  background-color: var(--light-pink);
+  border-radius: 8px;
+  padding: 15px;
   margin-top: 20px;
 }
 
 .comment {
+  background-color: #FFFFFF;
   border: 1px solid var(--primary-pink);
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  background-color: var(--very-light-pink);
+  transition: all 0.3s ease;
+}
+
+.comment:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 按钮样式 */
@@ -769,12 +903,11 @@ h2 {
   height: 100vh;
 }
 
-/* 轮播图样式 */
+/* 圖片輪播樣式 */
 .n-carousel {
+  background-color: var(--light-pink);
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 15px;
+  padding: 10px;
 }
 
 .image {
@@ -829,13 +962,7 @@ h2 {
     flex-direction: column;
   }
 
-  .left-section {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--primary-pink);
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-  }
+
 
   .main-content {
     padding-left: 0;
@@ -944,4 +1071,103 @@ h2 {
   font-weight: bold;
   color: #FF69B4; /* 使用深粉色 */
 }
+
+/* 創建貼文部分樣式 */
+.create-post-section {
+  background-color: white;
+  border: 2px dashed var(--primary-pink);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  padding: 25px;
+}
+
+/* 使用者頭貼樣式 */
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-avatar, .default-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.default-avatar {
+  background-color: var(--primary-pink);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.comment-user {
+  display: flex;
+  align-items: center;
+}
+
+.comment-user .user-avatar,
+.comment-user .default-avatar {
+  width: 25px;
+  height: 25px;
+  margin-right: 8px;
+}
+
+.left-section .user-avatar {
+  width: 80px;  /* 調整為更大的尺寸 */
+  height: 80px; /* 調整為更大的尺寸 */
+  margin-right: 15px;
+}
+
+.left-section .avatar-container,
+.left-section .default-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.left-section .avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.left-section .default-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 32px; /* 調整字體大小 */
+  font-weight: bold;
+  color: white;
+  background-color: var(--primary-pink);
+}
+
+/* 用戶資料區域樣式 */
+.left-section .user-profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.left-section .flex-grow-1 {
+  flex-grow: 1;
+}
+
+.left-section h5 {
+  margin-bottom: 5px;
+  font-size: 1.2em;
+  color: var(--dark-pink);
+}
+
+/* 調整按鈕樣式 */
+.left-section .btn-outline-secondary {
+  font-size: 0.9em;
+  padding: 5px 10px;
+}
+
 </style>
