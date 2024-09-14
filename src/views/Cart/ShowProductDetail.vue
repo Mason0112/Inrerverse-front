@@ -284,7 +284,7 @@ function getUserCartCount(userId) {
 }
 
 .ts-button.is-primary:hover {
-  background-color: #9F7EFC;
+  background-color:  var( --background-color);
   transform: translateY(-2px);
 }
 

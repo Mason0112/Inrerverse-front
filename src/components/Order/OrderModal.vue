@@ -136,7 +136,7 @@ watch(() => props.order, (newOrder) => {
 }
 
 .ts-table thead th {
-    background-color: rgb(252, 192, 192);
+    background-color: var( --background-color);
     color: white;
     font-weight: 600;
     text-transform: uppercase;
@@ -147,7 +147,7 @@ watch(() => props.order, (newOrder) => {
 
 .ts-table tbody td {
     padding: 1rem;
-    border-bottom: 1px solid rgb(252, 192, 192);
+    border-bottom: var( --border-color);
     transition: background-color 0.3s ease;
 }
 
@@ -156,7 +156,7 @@ watch(() => props.order, (newOrder) => {
 }
 
 .ts-table tbody tr:hover td {
-    background-color: rgb(254, 248, 248);
+    background-color: var( --background-color);
 }
 
 .modal-footer {
@@ -168,7 +168,7 @@ watch(() => props.order, (newOrder) => {
 }
 
 .btn-secondary {
-    background-color: rgb(177, 151, 252);
+    background-color: var( --background-color);
     border: none;
     color: white;
     padding: 0.5rem 1rem;
@@ -178,7 +178,7 @@ watch(() => props.order, (newOrder) => {
 }
 
 .btn-secondary:hover {
-    background-color: rgb(134, 112, 200);
+    background-color:var( --background-color);
     color: white;
     transform: translateY(-1px);
     box-shadow: 0 2px 5px rgba(177, 151, 252, 0.2);

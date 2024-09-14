@@ -20,7 +20,7 @@ const emits = defineEmits(["openUpdate","delete"]);
 
 <style scoped>
 .product-card {
-  background-color: white;
+  background-color: var(--secondary-colo);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(177, 151, 252, 0.1);
@@ -66,26 +66,26 @@ const emits = defineEmits(["openUpdate","delete"]);
 }
 
 .ts-button.is-secondary {
-  background-color: rgb(177, 151, 252);
+  background-color: var( --background-color);
   color: white;
 }
 
 .ts-button.is-secondary:hover {
-  background-color: rgb(133, 109, 205) ;
+  background-color: var( --background-color);
   color: white;
 }
 
 .ts-button.is-danger {
   background-color: white;
-  color:  rgb(245, 153, 153);
-  border-color:rgb(245, 153, 153) ;
+  color: var( --primary-color);
+  border-color:var( --border-color);
 
   /* background-color: rgb(245, 153, 153);
   color: white; */
 }
 
 .ts-button.is-danger:hover {
-    background-color: rgb(245, 153, 153);
+    background-color: var( --background-color);
     color: white;
 }
 </style>
