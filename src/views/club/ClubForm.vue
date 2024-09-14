@@ -3,8 +3,8 @@
     <n-h1>新增俱樂部</n-h1>
     <n-spin :show="loading">
       <n-form @submit.prevent="submitForm" label-placement="left" label-width="auto" require-mark-placement="right-hanging">
-        <n-form-item label="社團名稱" required>
-          <n-input v-model:value="club.clubName" placeholder="請輸入社團名稱" />
+        <n-form-item label="俱樂部名稱" required>
+          <n-input v-model:value="club.clubName" placeholder="請輸入俱樂部名稱" />
         </n-form-item>
         
         <n-form-item label="描述">

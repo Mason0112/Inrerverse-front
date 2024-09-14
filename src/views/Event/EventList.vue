@@ -16,7 +16,7 @@
           <input 
             v-model="searchQuery" 
             type="text"
-            placeholder="來探索有趣的聚會吧"
+            placeholder="來探索有趣的工作坊吧"
             @input="filterEvents"
           >
         </div>
