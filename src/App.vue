@@ -77,24 +77,25 @@ if (userStore.userId) {
 
 <style >
 :root {
-  --primary-color: #B197FC;
-  --secondary-color: #97C4FC;
-  --accent-color: #FCB197;
-  --background-color: #FAFAFA;
-  --text-color: #3A3042;
-  --light-text-color: #6C6474;
-  --border-color: #D4C4FC;
+  --primary-color: #E4BAB6;
+  --secondary-color: #F3D2A8;
+  --accent-color: #97715B;
+  --background-color: #FBE4E1;
+  --text-color: #6B5147;
+  --light-text-color: #97715B;
+  --border-color: #E4BAB6;
 }
 
 body {
   color: var(--text-color);
+  background-color: var(--background-color);
 }
 
 .ts-box, .modal-content {
   background-color: #FAFAFA;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(177, 151, 252, 0.1);
+  box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
 }
 
 .ts-table {
@@ -129,11 +130,11 @@ body {
 
 .btn-primary, .ts-button.is-primary {
   background-color: var(--primary-color);
-  color: #FAFAFA;
+  color: var(--text-color);
 }
 
 .btn-primary:hover, .ts-button.is-primary:hover {
-  background-color: #9F7EFC;
+  background-color: #D9A8A3;
 }
 
 .btn-secondary {
@@ -142,16 +143,16 @@ body {
 }
 
 .btn-secondary:hover {
-  background-color: #7AAEFB;
+  background-color: #EEC48D;
 }
 
 .btn-danger, .btn-warning {
   background-color: var(--accent-color);
-  color: var(--text-color);
+  color: #FAFAFA;
 }
 
 .btn-danger:hover, .btn-warning:hover {
-  background-color: #FB9D7A;
+  background-color: #85614D;
 }
 
 .ts-breadcrumb {
@@ -161,7 +162,7 @@ body {
 }
 
 .ts-breadcrumb .item {
-  color: var(--primary-color);
+  color: var(--accent-color);
   font-weight: 600;
 }
 
@@ -176,12 +177,12 @@ input[type="text"], input[type="number"], select {
 input[type="text"]:focus, input[type="number"]:focus, select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.2);
+  box-shadow: 0 0 0 2px rgba(228, 186, 182, 0.2);
 }
 
 .modal-header {
   background-color: var(--primary-color);
-  color: #FAFAFA;
+  color: var(--text-color);
 }
 
 .modal-footer {
@@ -192,7 +193,7 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-} 
+}
 
 .fade-in {
   animation: fadeIn 0.3s ease-in-out;
@@ -200,17 +201,16 @@ input[type="text"]:focus, input[type="number"]:focus, select:focus {
 
 /* 響應式設計 */
 @media (max-width: 768px) {
-    .cart-container {
-      flex-direction: column;
-    }
-
-    .checkout-summary {
-      width: 100%;
-    }
+  .cart-container {
+    flex-direction: column;
+  }
+  .checkout-summary {
+    width: 100%;
+  }
 }
+
 body {
-  margin-top: 20px;
-  background: #fafafa;
+  margin-top: 10px;
 }
 </style>
 
