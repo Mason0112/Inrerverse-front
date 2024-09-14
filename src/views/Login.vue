@@ -9,12 +9,12 @@
             <p>還沒有帳號嗎？
               <RouterLink class="bold-link" :to="{ name: 'register-link' }"> 點我註冊</RouterLink>
             </p>
-            <a class="btn btn-outline-dark w-100" href="#">
+            <!-- <a class="btn btn-outline-dark w-100" href="#">
                     <span class="d-flex justify-content-center align-items-center">
                       <img class="avatar me-2" src="../assets/google-icon.svg" alt="Image Description">
                       使用google登入
                     </span>
-                  </a>
+                  </a> -->
             <hr />
 
             <Vueform :display-errors="false" ref="form$" :endpoint="false">
@@ -109,22 +109,57 @@ function login() {
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding-top: 10vh;  /* 添加頂部內邊距 */
-  background-color: #f8f9fa;
+  padding-top: 10vh;
+  background-color: var(--background-color);
+}
+
+.card {
+  background-color: #FAFAFA;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
+}
+
+.card-body {
+  color: var(--text-color);
+}
+
+h2 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
 }
 
 .bold-link {
   font-weight: bold;
-  color: black;
+  color: var(--accent-color);
   text-decoration: none;
 }
 
+.bold-link:hover {
+  color: var(--primary-color);
+}
+
+.btn-outline-dark {
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.btn-outline-dark:hover {
+  color: #FAFAFA;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
 .avatar {
-    position: relative;
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    border-radius: .3125rem;
+  position: relative;
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: .3125rem;
+}
+
+hr {
+  border-color: var(--border-color);
 }
 @media (max-width: 576px) {
   .card-body {

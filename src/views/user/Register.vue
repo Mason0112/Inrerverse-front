@@ -12,7 +12,6 @@
               <StaticElement name="divider" tag="hr" />
 
               <TextElement name="accountNumber" placeholder="請輸入帳號" rules="required" />
-              <!-- :messages="{}" -->
 
               <TextElement name="password" input-type="password"
                 :rules="['required', 'min:8', 'same:password_confirmation']" field-name="Password"
@@ -148,8 +147,8 @@ function register() {
   background-size: cover;
 }
 
-.btn-google {
-  color: white;
-  background-color: #ea4335;
+.card {
+  background-color: #FAFAFA;
 }
+
 </style>
