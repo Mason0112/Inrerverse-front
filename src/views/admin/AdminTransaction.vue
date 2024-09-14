@@ -152,7 +152,7 @@ const expense = computed(() => {
 
 // 計算總金額
 const totalAmount = computed(() => {
-  return (parseFloat(income.value) + parseFloat(expense.value)).toFixed(2);
+  return (parseFloat(income.value) + parseFloat(expense.value));
 });
 
 const fetchTransactions = async () => {
