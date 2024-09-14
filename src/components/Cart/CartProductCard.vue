@@ -92,11 +92,11 @@
   .product-price {
     font-weight: bold;
     font-size: 1rem;
-    color: rgb(177, 151, 252);
+    color: var(--primary-color);
     margin-left: 1rem;
   }
 
   .price {
-    color: rgb(177, 151, 252);
+    color: var(--primary-color);
   }
   </style>

@@ -122,7 +122,7 @@ function openModal(order){
 
 <style scoped>
 .ts-breadcrumb.is-stepped.is-divided {
-  background-color: rgb(177, 151, 252) ;
+  background-color: var( --background-color) ;
   padding: 15px;
   border-radius: 8px;
   margin-bottom: 20px;
@@ -139,17 +139,17 @@ function openModal(order){
 }
 
 .btn-primary:active {
-    background-color: rgb(112, 89, 179) ;
+    background-color: var( --background-color);
 }
 
 .cancelbtn {
     margin-right: 10px;
-    background-color: rgb(245, 153, 153);
+    background-color: var(--secondary-color);
     color: white;
 }
 
 .cancelbtn:active {
-    background-color: rgb(248, 109, 109);
+    background-color: var(--secondary-color);
     color: white;
 }
 </style>

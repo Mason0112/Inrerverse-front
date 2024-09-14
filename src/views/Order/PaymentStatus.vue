@@ -120,23 +120,23 @@ function corfirm(id,status){
 <style scoped> 
     .cancelbtn {
     margin-right: 10px;
-    background-color: rgb(244, 162, 162);
+    background-color: var(--primary-color);
     color: white;
 }
 
 .cancelbtn:active {
-    background-color: rgb(248, 109, 109);
+    background-color: var(--primary-color);
     color: white;
 }
 
 .ts-table :is(thead,tfoot) tr :is(th,td) {
-    background: rgb(177, 151, 252);
+    background:var( --background-color);
     color: white;
     padding: 20px;
     font-size: 15px;
 }
 
 .detailbtn:active {
-    background-color:rgb(133, 109, 205) ;
+    background-color:var( --background-color) ;
 }
 </style>

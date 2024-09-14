@@ -193,7 +193,7 @@ function showWaitingAlert(message) {
   
   <style scoped>
 .payment-selection {
-  background-color: #F8F7FF;
+  background-color: var( --background-color);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(177, 151, 252, 0.2);
@@ -206,7 +206,7 @@ function showWaitingAlert(message) {
 }
 
 .payment-header {
-  background-color: #B197FC;
+  background-color: var( --background-color);
   padding: 15px;
 }
 
@@ -231,14 +231,14 @@ function showWaitingAlert(message) {
   display: flex;
   align-items: center;
   padding: 10px;
-  border: 1px solid #B197FC;  
+  border: 1px solid var( --border-color);  
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .payment-option:hover {
-  background-color: #F8F7FF;
+  background-color: var( --background-color);
 }
 
 .payment-option input[type="radio"] {
@@ -247,7 +247,7 @@ function showWaitingAlert(message) {
 
 .payment-divider {
   height: 1px;
-  background-color: #dfd6fa;
+  background-color: var( --background-color);
   margin: 0 20px;
 }
 
@@ -257,7 +257,7 @@ function showWaitingAlert(message) {
 
 .checkout-button {
   width: 100%;
-  background-color: rgb(252, 177, 177);
+  background-color: var( --background-color);
   color: white;
   border: none;
   padding: 15px;
@@ -268,18 +268,18 @@ function showWaitingAlert(message) {
 }
 
 .checkout-button:hover:not(:disabled) {
-  background-color: rgb(255, 165, 165);
+  background-color: var( --background-color);
   border: none;
 }
 
 .checkout-button:disabled {
-  background-color: rgb(255, 225, 225);
+  background-color: var( --background-color);
   color: white;
   cursor: not-allowed;
 }
 
 .checkout-button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.5);
+  box-shadow: 0 0 0 2px var(--border-color);
 }
 </style>
