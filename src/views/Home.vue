@@ -1,15 +1,14 @@
 <template>
   <div class="home-page">
 
-     <!-- <div class="mosaic-grid">
-      <div v-for="(post, index) in posts" :key="post.postId" 
-           :class="['mosaic-item', `item-${index % 5 + 1}`]"
-           @click="navigateToShareDetails(post.postId)">
-        <img :src="getImageUrl(post)" :alt="post.userName" />
+     <div class="mosaic-grid">
+      <div v-for="num in 18" :key="num" 
+      :class="['mosaic-item', `item-${(num - 1) % 5 + 1}`]">
+      <img :src="`http://localhost:8080/interverse/products/10/${48 - num}`" :alt="`Image ${19 - num}`" />
         <div class="mosaic-caption">
         </div>
       </div>
-    </div> -->
+    </div>
 
     <div class="featured-products-wrapper">
       <div class="featured-products">
@@ -75,6 +74,51 @@ function learnMore() {
 </script>
 
 <style scoped>
+
+.item-1 { grid-column: span 2; grid-row: span 2; }
+.item-2 { grid-column: span 1; grid-row: span 1; }
+.item-3 { grid-column: span 1; grid-row: span 1; }
+.item-4 { grid-column: span 1; grid-row: span 2; }
+.item-5 { grid-column: span 1; grid-row: span 1; }
+
+
+.mosaic-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 150px;
+  gap: 10px;
+  padding: 20px;
+}
+
+.mosaic-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.mosaic-item:hover {
+  transform: scale(1.05);
+}
+
+.mosaic-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(232, 204, 204, 0.7); /* 粉藕色半透明背景 */
+  color: #4a3636; /* 深棕色文字 */
+  padding: 10px;
+}
+
+.mosaic-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
 .home-page {
   width: 100%;
   background-color: #FBE4E1;
