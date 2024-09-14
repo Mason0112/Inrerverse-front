@@ -584,67 +584,74 @@ const declineFriendRequest = async () => {
 
 
 </script>
-
 <style scoped>
+/* 全局变量定义 */
 :root {
   --primary-pink: #FFB6C1;
   --secondary-pink: #FFC0CB;
   --light-pink: #FFF0F5;
-  /* 略微加深的背景色 */
   --very-light-pink: #FFFAFB;
-  /* 保持不變，用於 post-content */
   --dark-pink: #FF69B4;
   --text-color: #333;
   --background-color: #FFE4E1;
-  /* 更深的背景色 */
 }
 
-.container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-h2 {
-  color: #FF69B4;
-  text-align: center;
-  margin: 30px 0;
-  font-size: 24px;
-}
-
-body {
-  background-color: #FFE4E1;
-  color: #333;
+/* 整体页面样式 */
+.user-post-page {
+  width: 100%;
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-family: 'Arial', sans-serif;
 }
 
+/* 标题样式 */
+h2 {
+  color: #97715B;
+  text-align: center;
+  margin: 30px 0;
+  font-size: 2.5em;
+}
+
+/* 页面容器 */
+.page-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #FFF5EE; /* 淺蜜桃色 */
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+/* 左侧部分 */
+.left-section {
+  width: 250px;
+  padding-right: 20px;
+  border-right: 1px solid var(--primary-pink);
+  background-color: #FFF0F5; /* 淺粉紅色,比 page-container 稍深 */
+  border-radius: 10px 0 0 10px;
+}
+
+/* 主内容区 */
+.main-content {
+  flex: 1;
+  padding-left: 20px;
+  background-color: #FFFFFF; /* 純白色 */
+  border-radius: 0 10px 10px 0;
+}
+
+/* 帖子项目样式 */
 .item {
-  position: relative;
-  background-color: #FFF0F5;
+  background-color: var(--very-light-pink);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
   padding: 20px;
 }
 
-.post-actions {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  gap: 5px;
-}
-
-.formatted-content {
-  white-space: pre-wrap;
-  color: #333;
-  line-height: 1.6;
-}
-
+/* 帖子头部 */
 .post-header {
   margin-bottom: 15px;
-  padding-right: 100px;
-  /* 為按鈕預留空間 */
 }
 
 .post-date {
@@ -652,91 +659,117 @@ body {
   color: #666;
 }
 
-.post-like {
-  margin-bottom: 20px;
-  /* 增加與評論區的間距 */
-  padding-bottom: 10px;
-  border-bottom: 1px solid #FFB6C1;
-}
-
 .post-author {
   font-weight: bold;
-  color: #FF69B4;
+  color: var(--dark-pink);
   margin-top: 5px;
 }
 
-.post-content {
-  margin-bottom: 15px;
-  background-color: #FFFAFB;
-  border-radius: 6px;
-  margin-bottom: 15px;
+/* 点赞部分 */
+.post-like,
+.comment-like {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.1em; /* 增加字體大小 */
 }
 
+.post-like .font-awesome-icon,
+.comment-like .font-awesome-icon {
+  font-size: 1.2em; /* 增加圖標大小 */
+}
+
+/* 评论区 */
 .comments-section {
   margin-top: 20px;
 }
 
 .comment {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border: 1px solid #FFB6C1;
+  border: 1px solid var(--primary-pink);
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  background-color: #FFFAFB;
+  background-color: var(--very-light-pink);
 }
 
-
-.comment-user {
-  font-weight: bold;
-  color: #FF69B4;
+/* 按钮样式 */
+.btn {
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 1.1em;
 }
 
-.comment-text {
-  margin-top: 5px;
+.btn-outline-secondary {
+  color: #97715B;
+  border: 1px solid #97715B;
+  background-color: transparent;
 }
 
-.comment-date {
-  font-size: 0.8em;
-  color: #888;
-  margin-top: 5px;
+.btn-outline-secondary:hover {
+  background-color: #97715B;
+  color: white;
 }
 
-.formatted-content {
-  white-space: pre-wrap;
-  /* 保留换行符和空格 */
+.btn-outline-danger {
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  background-color: transparent;
 }
 
-
-.comment-main {
-  flex-grow: 1;
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
 }
 
-.comment-content {
-  flex-grow: 1;
-  margin-right: 15px;
-  white-space: pre-wrap;
+/* 链接样式 */
+.a-link {
+  cursor: pointer;
+  color: #97715B;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
-.comment-like {
+.a-link:hover {
+  color: var(--dark-pink);
+}
+
+/* 用户头像 */
+.avatar-container,
+.default-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--secondary-pink);
+}
+
+.avatar-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 5px;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background-color: var(--primary-pink);
 }
 
-.like-count {
-  font-size: 0.9em;
-  color: #666;
-}
-
-.comment-actions {
+/* 加载指示器 */
+.loading-indicator {
   display: flex;
-  flex-direction: column;
-  gap: 5px;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
-/* 輪播圖 */
+/* 轮播图样式 */
 .n-carousel {
   border-radius: 8px;
   overflow: hidden;
@@ -752,175 +785,163 @@ body {
   margin-top: 10px;
 }
 
-.btn {
-  padding: 5px 10px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  font-size: 0.8em;
+/* Naive UI 组件样式覆盖 */
+:deep(.n-button) {
+  background-color: #F3D2A8;
+  border-color: #F3D2A8;
+  color: #97715B;
 }
 
-.btn-outline-secondary {
-  color: #FF69B4;
-  ;
-  border: 1px solid #FF69B4;
-  ;
-  background-color: transparent;
+:deep(.n-button:hover) {
+  background-color: #EEC48D;
+  border-color: #EEC48D;
 }
 
-.btn-outline-secondary:hover {
-  background-color: #FF69B4;
-  color: white;
+:deep(.n-button--default) {
+  background-color: var(--secondary-pink);
+  border-color: var(--secondary-pink);
+  color: var(--text-color);
 }
 
-.btn-outline-danger {
-  color: #dc3545;
-  border: 1px solid #dc3545;
-  background-color: transparent;
+:deep(.n-button--default:hover) {
+  background-color: var(--primary-pink);
+  border-color: var(--primary-pink);
 }
 
-.btn-outline-danger:hover {
-  background-color: #dc3545;
-  color: white;
+:deep(.n-input) {
+  border-color: var(--primary-pink);
 }
 
-.a-link {
-  cursor: pointer;
-  color: rgb(177 151 252);
-  text-decoration: none;
-  transition: color 0.3s ease
+:deep(.n-input:focus) {
+  border-color: var(--dark-pink);
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
 }
 
-.a-link:hover {
-  color: rgb(147, 121, 222);
-}
-
-.page-container {
-  display: flex;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
-
-.left-section {
-  width: 250px;
-  padding-right: 20px;
-  border-right: 1px solid var(--primary-pink);
-}
-
-.main-content {
-  flex: 1;
-  padding-left: 20px;
-}
-
-.user-profile {
-  padding: 10px 0;
-}
-
-.user-avatar {
-  flex-shrink: 0;
-}
-
-.avatar-container,
-.default-avatar {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+:deep(.n-image) {
+  border-radius: 8px;
   overflow: hidden;
-  background-color: #e0e0e0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.avatar-container img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .page-container {
+    flex-direction: column;
+  }
+
+  .left-section {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--primary-pink);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+
+  .main-content {
+    padding-left: 0;
+  }
 }
 
-.default-avatar {
+@media (max-width: 768px) {
+  .btn {
+    font-size: 0.9em;
+    padding: 6px 12px;
+  }
+
+  h2 {
+    font-size: 2em;
+  }
+}
+
+@media (max-width: 480px) {
+  .item {
+    padding: 15px;
+  }
+
+  .avatar-container,
+  .default-avatar {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.n-carousel {
+  background-color: #FFF5EE; /* 非常淺的粉紅色 */
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.comments-section {
+  background-color: #FFF5EE; /* 淺蜜桃色 */
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+/* 2. onePost的按鈕調整 */
+.post-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  font-weight: bold;
-  color: #fff;
-  background-color: #bbb;
+  gap: 5px;
 }
 
-.dropdown-menu.show {
-  display: block;
+.post-actions .btn {
+  padding: 5px 10px;
+  font-size: 0.8em;
+  margin: 2px
 }
 
-.loading-indicator {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+/* 確保.item有相對定位 */
+.item {
+  position: relative;
+  /* 其他現有樣式保持不變 */
 }
+
+/* 3. oneComment的按鈕調整 */
 .comment {
-  transition: all 0.3s ease;
-  border: 1px solid #FFB6C1;
+  border: 1px solid #FFB6C1; /* 淺粉色邊框 */
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  background-color: #FFFAFB;
-}
-
-.edit-comment-form {
-  background-color: #FFF0F5;
-  border-radius: 8px;
-  padding: 15px;
-  margin-top: 10px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-.edit-comment-textarea {
-  margin-bottom: 10px;
-}
-
-.edit-comment-actions {
+  background-color: #FFFFFF; /* 白色背景 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 輕微陰影效果 */
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.comment-content {
+  flex: 1;
 }
 
 .comment-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 10px;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: 10px;
 }
 
-/* Naive UI 按钮样式覆盖 */
-:deep(.n-button) {
-  background-color: #FF69B4;
-  border-color: #FF69B4;
-  color: white;
+.comment-actions .btn,
+.comment-actions .n-button {
+  padding: 3px 8px;
+  font-size: 0.8em;
 }
 
-:deep(.n-button:hover) {
-  background-color: #FF1493;
-  border-color: #FF1493;
+/* 調整評論內容的佈局 */
+.comment-text {
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
-:deep(.n-button--default) {
-  background-color: #FFC0CB;
-  border-color: #FFC0CB;
-  color: #333;
+.comment-date {
+  font-size: 0.8em;
+  color: #666;
 }
 
-:deep(.n-button--default:hover) {
-  background-color: #FFB6C1;
-  border-color: #FFB6C1;
-}
-
-:deep(.n-input) {
-  border-color: #FFB6C1;
-}
-
-:deep(.n-input:focus) {
-  border-color: #FF69B4;
-  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
+.comment-user {
+  font-weight: bold;
+  color: #FF69B4; /* 使用深粉色 */
 }
 </style>
