@@ -210,7 +210,7 @@
 
 .main-title {
   text-align: center;
-  color: #B197FC; /* 主色 */
+  color: var(--primary-color); /* 主色 */
   margin-bottom: 20px;
   font-weight: bold;
 }
@@ -226,13 +226,13 @@
 .input-group input {
   flex-grow: 1;
   padding: 10px;
-  border: 1px solid #B197FC; /* 主色邊框 */
+  border: 1px solid var(--primary-color); /* 主色邊框 */
   border-radius: 5px 0 0 5px;
   color: #3A3042; /* 文字顏色 */
 }
 
 .add-button {
-  background-color: #B197FC; /* 對比色按鈕 */
+  background-color:  var(--background-color); /* 對比色按鈕 */
   color: white; /* 文字顏色 */
   border: none;
   padding: 10px 20px;
@@ -248,13 +248,13 @@
 }
 
 .category-table th, .category-table td {
-  border: 1px solid #dfd6fa; /* 主色邊框 */
+  border: 1px solid var(--primary-color); /* 主色邊框 */
   padding: 10px;
   color: #3A3042; /* 文字顏色 */
 }
 
 .category-table th {
-  background-color: #B197FC; /* 主色表頭 */
+  background-color: var(--background-color); /* 主色表頭 */
   color: white;
 }
 
@@ -270,7 +270,7 @@
 
 .operation-label {
   font-size: 0.8em;
-  color: #97C4FC; /* 輔色標籤 */
+  color: var(--secondary-color); /* 輔色標籤 */
   margin-top: 5px;
 }
 
@@ -281,7 +281,7 @@
 }
 
 .edit-button, .delete-button {
-  color: rgb(177, 151, 252);
+  color: var(--primary-color);
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -291,7 +291,7 @@
 }
 
 .delete-button {
-  color: rgb(245, 153, 153); /* 文字顏色 */
+  color: var(--primary-color); /* 文字顏色 */
 }
 
 .pagination {
