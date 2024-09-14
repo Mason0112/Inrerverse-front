@@ -195,11 +195,12 @@ async function uploadPhoto() {
 .profile-section,
 .details-section {
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--background-color);
   border-radius: 5px;
   margin-bottom: 20px;
   text-align: center;
   align-items: center;
+  box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
 }
 
 .profile-info {
@@ -208,7 +209,7 @@ async function uploadPhoto() {
   border-collapse: collapse;
   font-size: 0.9rem;
   text-align: left;
-  color: #6c757d;
+  color: var(--text-color);
 }
 
 .profile-info td {
@@ -219,6 +220,7 @@ async function uploadPhoto() {
 .profile-info td:first-child {
   width: 30px;
   text-align: center;
+  color: var(--accent-color);
 }
 
 .about-section {
@@ -228,15 +230,23 @@ async function uploadPhoto() {
 
 .section-title {
   font-weight: bold;
-  color: #007bff;
+  color: var(--accent-color);
 }
 
 .form-control {
   margin-bottom: 15px;
+  border-color: var(--border-color);
 }
 
 .actions .btn {
   margin-left: 10px;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: none;
+}
+
+.actions .btn:hover {
+  background-color: var(--primary-color);
 }
 
 .gutters {
@@ -262,11 +272,12 @@ async function uploadPhoto() {
   height: 100px;
   border-radius: 50%;
   margin-bottom: 15px;
+  border: 3px solid var(--primary-color);
 }
 
 .default-avatar {
-  background-color: #ccc;
-  color: #fff;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -279,5 +290,35 @@ async function uploadPhoto() {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  color: var(--accent-color);
+}
+
+/* 新增樣式 */
+.nav-tabs .nav-link {
+  color: var(--text-color);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+h3, h5 {
+  color: var(--accent-color);
+}
+
+.btn {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  border: none;
+}
+
+.btn:hover {
+  background-color: var(--primary-color);
+}
+
+/* 添加過渡效果 */
+.btn, .nav-link, .form-control {
+  transition: all 0.3s ease;
 }
 </style>

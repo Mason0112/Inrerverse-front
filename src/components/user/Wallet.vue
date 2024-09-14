@@ -57,6 +57,7 @@
           <n-space>
             <n-radio value="creditCard">信用卡支付</n-radio>
             <n-radio value="linePay">LINE Pay</n-radio>
+            <n-radio value="linePay">PayPal</n-radio>
           </n-space>
         </n-radio-group>
         <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="100" step="100"/>
@@ -252,34 +253,140 @@ function withdraw() {
   margin: 0 auto;
   padding: 20px;
   font-size: 16px;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
+}
+
+.balance-section {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.balance-section h6 {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.action-buttons .btn {
+  font-size: 0.95em;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-secondary {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: var(--background-color);
+}
+
+.btn-secondary:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  color: var(--text-color);
+}
+
+.list-group-item {
+  padding: 18px;
+  background-color: var(--background-color);
+  border-color: var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.list-group-item:hover {
+  background-color: var(--primary-color);
 }
 
 .amount {
   font-size: 1.15em;
   font-weight: bold;
+  color: var(--accent-color);
 }
 
 .balance {
   font-size: 0.85em;
+  color: var(--text-color);
 }
 
 .date {
-  color: #555;
-}
-
-.list-group-item {
-  padding: 18px;
-}
-
-.btn {
-  font-size: 0.95em;
+  color: var(--text-color);
 }
 
 .badge {
   font-size: 0.9em;
 }
-/* 確保詳細信息內容靠左對齊 */
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-success {
+  background-color: #28a745 !important;
+}
+
+.badge.bg-info {
+  background-color: #17a2b8 !important;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+}
+
+.accordion-button {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: var(--primary-color);
+  color: var(--accent-color);
+}
+
 .accordion-body {
   text-align: left;
+  background-color: var(--background-color);
+  color: var(--text-color);
 }
+
+/* Naive UI 組件樣式覆蓋 */
+:deep(.n-card) {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+:deep(.n-button) {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+}
+
+:deep(.n-button:hover) {
+  background-color: var(--primary-color);
+}
+
+:deep(.n-input-number) {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+:deep(.n-radio) {
+  color: var(--text-color);
+}
+
+:deep(.n-radio__dot) {
+  background-color: var(--accent-color);
+}
+
 </style>

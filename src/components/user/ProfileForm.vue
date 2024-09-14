@@ -184,5 +184,22 @@ function cancelUpdate() {
 <style scope>
 .update-form {
   width: 75%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--background-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
+}
+
+.section-title {
+  color: var(--accent-color);
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .update-form {
+    width: 100%;
+  }
 }
 </style>
