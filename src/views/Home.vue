@@ -4,12 +4,11 @@
      <div class="mosaic-grid">
       <div v-for="num in 18" :key="num" 
       :class="['mosaic-item', `item-${(num - 1) % 5 + 1}`]">
-      <img :src="`http://localhost:8080/interverse/products/10/${48 - num}`" :alt="`Image ${19 - num}`" />
+      <img :src="`http://localhost:8080/interverse/products/10/${69 - num}`" :alt="`Image ${18 - num}`" />
         <div class="mosaic-caption">
         </div>
       </div>
     </div>
-
     <div class="featured-products-wrapper">
       <div class="featured-products">
         <div
@@ -18,30 +17,30 @@
           :key="index"
           @click="navigateToProductDetails(product.id)"
         >
-          <div class="product-image-container">
+          <div class="product-image-container" style="height: 300px; width: 300px;">
             <img :src="product.image" :alt="product.name" />
           </div>
           <div class="product-name">{{ product.name }}</div>
         </div>
       </div>
-      <div class="shop-now-section" @click="navigateToShop">
-        <span>立即購物</span>
+      <div class="shop-now-section" @click="navigateToShop" style="width: 200px;">
+        <span style="font-size: 70px;">立即購物</span>
       </div>
     </div>
 
     <div class="separator"></div>
 
-    <div class="club-article">
+    <div class="club-article" >
       <div class="article-image">
         <div class="cookie-border">
-          <div class="cloud-shape"></div>
+          <div class="cloud-shape" ></div>
         </div>
       </div>
       <div class="article-content">
-        <h2>加入我們的俱樂部</h2>
-        <p>我們的俱樂部為生活中比較不方便交到朋友的人提供了一個理想的平台。在這裡，您可以參加各種有趣的活動，結識志同道合的朋友。每個俱樂部都有自己獨特的內部活動，無論您的興趣是什麼，都能找到適合自己的小組。</p>
-        <p>從讀書會到戶外探險，從烹飪課程到藝術工作坊，我們的活動豐富多樣。加入我們，開啟一段充滿驚喜和友誼的旅程！</p>
-        <button @click="learnMore">了解更多</button>
+        <h2 style="font-size: 70px;">加入我們的俱樂部</h2>
+        <h4 >我們的俱樂部為生活中比較不方便交到朋友的人提供了一個理想的平台。在這裡，您可以參加各種有趣的活動，結識志同道合的朋友。每個俱樂部都有自己獨特的內部活動，無論您的興趣是什麼，都能找到適合自己的小組。</h4>
+        <h4>從讀書會到戶外探險，從烹飪課程到藝術工作坊，我們的活動豐富多樣。加入我們，開啟一段充滿驚喜和友誼的旅程！</h4>
+        <button @click="learnMore" style="font-size: 25px; margin: 15px 0px 0px 0px ; font-weight: bold;" >了解更多</button>
       </div>
     </div>
   </div>
@@ -75,11 +74,11 @@ function learnMore() {
 
 <style scoped>
 
-.item-1 { grid-column: span 2; grid-row: span 2; }
+.item-1 { grid-column: span 1; grid-row: span 1; }
 .item-2 { grid-column: span 1; grid-row: span 1; }
 .item-3 { grid-column: span 1; grid-row: span 1; }
 .item-4 { grid-column: span 1; grid-row: span 2; }
-.item-5 { grid-column: span 1; grid-row: span 1; }
+.item-5 { grid-column: span 2; grid-row: span 2; }
 
 
 .mosaic-grid {
@@ -211,15 +210,16 @@ function learnMore() {
 }
 
 .article-image {
-  flex: 1;
+  flex: 0 0 35%; /* This sets the image section to 35% of the container width */
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 0;
 }
 
 .cookie-border {
-  width: 300px;
-  height: 300px;
+  width: 350px;
+  height: 350px;
   border: 15px solid #E4BAB6;
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   overflow: hidden;
@@ -229,19 +229,18 @@ function learnMore() {
 }
 
 .cloud-shape {
-  width: 250px;
-  height: 250px;
-  background-image: url('Capybaras.gif');
+  width: 300px;
+  height: 300px;
+  background-image: url('/public/Capybaras.gif');
   background-size: cover;
   background-position: center;
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 }
 
 .article-content {
-  flex: 1;
-  padding-left: 50px;
+  flex: 0 0 65%; /* This sets the content section to 65% of the container width */
+  padding-left: 0;
 }
-
 .article-content h2 {
   font-size: 2.5em;
   color: #97715B;
