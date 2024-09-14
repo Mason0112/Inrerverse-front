@@ -1,4 +1,5 @@
 <template>
+  <div class="container-fluid">
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
   <!-- Background -->
   <rect width="1200" height="800" fill="#DECEBF"/> <!-- Homepage background color -->
@@ -36,7 +37,7 @@
   <text x="630" y="570" font-family="Arial" font-size="14" fill="#68756D">訂單 #12346 - $85</text>
   <text x="630" y="600" font-family="Arial" font-size="14" fill="#68756D">訂單 #12347 - $200</text>
 </svg>
-
+</div>
 </template>
 
 <script setup>
@@ -61,4 +62,6 @@ onMounted(() => {
 })
 </script>
 
-<style></style>
+<style>
+
+</style>

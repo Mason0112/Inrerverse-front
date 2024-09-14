@@ -197,7 +197,7 @@ function logout() {
 }
 
 .dropdown-menu {
-  background-color: var(--background-color);
+  background-color: #fafafa;
   border: 1px solid var(--border-color);
   box-shadow: 0 4px 6px rgba(151, 113, 91, 0.1);
 }

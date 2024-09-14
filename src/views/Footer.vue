@@ -8,7 +8,7 @@
         </div>
         <div class="footer-section">
           <h3>關於我們</h3>
-          <p>But horizontal lines can only be a full pixel high.</p>
+          <p>一個充滿活力互動的平台</p>
           <button class="y2k-button">更多資訊</button>
           <button class="y2k-button">聯繫我們</button>
         </div>

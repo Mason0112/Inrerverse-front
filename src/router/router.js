@@ -6,7 +6,6 @@ import Forbidden from "@/views/result/Forbidden.vue";
 import NotFound from "@/views/result/NotFound.vue";
 import Login from "@/views/Login.vue";
 import Register from "@/views/user/Register.vue";
-import Notification from "@/views/user/Notification.vue";
 import CreatePost from "@/views/userPost/CreatePost.vue";
 import UserPost from "@/views/userPost/UserPost.vue";
 import Friend from "@/views/user/Friend.vue";

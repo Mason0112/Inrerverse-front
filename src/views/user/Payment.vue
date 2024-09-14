@@ -1,42 +1,41 @@
 <template>
-  <div class="payment-form">
-    <form
-      @submit.prevent="handleSubmit"
-      id="payment-form"
-      aria-label="信用卡支付表單"
-    >
-      <h2>Stripe付款</h2>
-      <div class="card-icons">
-        <font-awesome-icon :icon="['fab', 'cc-visa']" />
-        <font-awesome-icon :icon="['fab', 'cc-mastercard']" />
-        <font-awesome-icon :icon="['fab', 'cc-amex']" />
-        <font-awesome-icon :icon="['fab', 'cc-discover']" />
-        <font-awesome-icon :icon="['fab', 'cc-jcb']" />
-      </div>
-      <div class="form-group">
-        <label>儲值金額</label>
-        <div class="amount">$ {{ amount }}</div>
-      </div>
-      <div class="form-group">
-        <label for="name">金融卡姓名</label>
-        <input type="text" id="name" required/>
-      </div>
-      <div class="form-group">
-        <label for="card-element" aria-label="信用卡資訊輸入區域"
-          >金融卡資訊</label
-        >
-        <div id="card-element">
-          <!-- A Stripe Element will be inserted here. -->
+  <div class="payment-container">
+    <div class="payment-header">
+      <img src="/interverse navlogo.png" alt="Interverse Logo" class="logo">
+      <h1>Stripe 付款</h1>
+    </div>
+    <div class="payment-form">
+      <form @submit.prevent="handleSubmit" id="payment-form" aria-label="信用卡支付表單">
+        <div class="card-icons">
+          <font-awesome-icon :icon="['fab', 'cc-visa']" />
+          <font-awesome-icon :icon="['fab', 'cc-mastercard']" />
+          <font-awesome-icon :icon="['fab', 'cc-amex']" />
+          <font-awesome-icon :icon="['fab', 'cc-discover']" />
+          <font-awesome-icon :icon="['fab', 'cc-jcb']" />
         </div>
-        <!-- Used to display form errors. -->
-        <div id="card-errors" role="alert" aria-live="polite">
-          {{ cardErrors }}
+        <div class="form-group">
+          <label>儲值金額</label>
+          <div class="amount">$ {{ amount }}</div>
         </div>
-      </div>
-      <button type="submit">
-        儲值 ${{ amount }}
-      </button>
-    </form>
+        <div class="form-group">
+          <label for="name">持卡人姓名</label>
+          <input type="text" id="name" required/>
+        </div>
+        <div class="form-group">
+          <label for="card-element" aria-label="信用卡資訊輸入區域">信用卡資訊</label>
+          <div id="card-element">
+            <!-- A Stripe Element will be inserted here. -->
+          </div>
+          <!-- Used to display form errors. -->
+          <div id="card-errors" role="alert" aria-live="polite">
+            {{ cardErrors }}
+          </div>
+        </div>
+        <button type="submit">
+          儲值 ${{ amount }}
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -159,20 +158,36 @@ const stripeTokenHandler = async (token) => {
 </script>
 
 <style scoped>
-.payment-form {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: 50px;
+.payment-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: var(--light-background);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(151, 113, 91, 0.1);
+  margin-bottom: 100px; /* 添加底部 margin */
 }
 
-h2 {
+.payment-header {
   text-align: center;
-  color: #333;
+  margin-bottom: 30px;
+}
+
+.logo {
+  max-width: 200px;
   margin-bottom: 20px;
+}
+
+h1 {
+  color: var(--accent-color);
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.payment-form {
+  /* background-color: var(--background-color); */
+  padding: 30px;
+  border-radius: 12px;
 }
 
 .card-icons {
@@ -181,63 +196,84 @@ h2 {
 }
 
 .card-icons svg {
-  /* 更新為svg選擇器 */
-  font-size: 24px;
-  margin: 0 5px;
-  color: #6772e5;
+  font-size: 32px;
+  margin: 0 10px;
+  color: var(--accent-color);
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
-  color: #6b7c93;
-  font-weight: 300;
+  margin-bottom: 8px;
+  color: var(--text-color);
+  font-weight: 600;
 }
 
 input,
 .amount,
 #card-element {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #e6e6e6;
-  border-radius: 4px;
+  padding: 12px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
   font-size: 16px;
+  background-color: var(--light-background);
+  color: var(--text-color);
 }
 
 .amount {
-  background-color: #f6f9fc;
-  color: #32325d;
-  font-weight: 500;
+  font-weight: 700;
+  font-size: 1.2rem;
 }
 
 #card-errors {
-  color: #fa755a;
+  color: var(--danger-color);
   font-size: 14px;
   margin-top: 10px;
 }
 
 button {
   width: 100%;
-  padding: 12px;
-  background-color: #5ee7df;
-  color: #fff;
+  padding: 14px;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-  background-color: #4cc3bb;
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
 }
 
 button:disabled {
-  background-color: #b5b5b5;
+  background-color: var(--border-color);
   cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 20px;
+    margin: 30px auto;
+  }
+
+  .payment-form {
+    padding: 20px;
+  }
+
+  .card-icons svg {
+    font-size: 24px;
+  }
+
+  button {
+    font-size: 16px;
+  }
 }
 </style>

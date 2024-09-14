@@ -37,10 +37,11 @@
         </div>
       </div>
       <div class="article-content">
-        <h2 style="font-size: 70px;">加入我們的俱樂部</h2>
-        <h4 >我們的俱樂部為生活中比較不方便交到朋友的人提供了一個理想的平台。在這裡，您可以參加各種有趣的活動，結識志同道合的朋友。每個俱樂部都有自己獨特的內部活動，無論您的興趣是什麼，都能找到適合自己的小組。</h4>
-        <h4>從讀書會到戶外探險，從烹飪課程到藝術工作坊，我們的活動豐富多樣。加入我們，開啟一段充滿驚喜和友誼的旅程！</h4>
-        <button @click="learnMore" style="font-size: 25px; margin: 15px 0px 0px 0px ; font-weight: bold;" >了解更多</button>
+        <h1 style="font-size: 60px;">加入俱樂部</h1>
+        <br />
+        <h5>俱樂部為生活中比較不方便交到朋友的人提供了一個理想的平台。在這裡，您可以參加各種有趣的活動，結識志同道合的朋友。每個俱樂部都有自己獨特的內部活動，無論您的興趣是什麼，都能找到適合自己的舒適圈。</h5>
+        <h5>從讀書會到戶外探險，從烹飪課程到藝術工作坊，我們的活動豐富多樣。加入我們，開啟一段充滿驚喜和友誼的旅程！</h5>
+        <button @click="learnMore" style="font-size: 15px; margin: 15px 0px 0px 0px ; font-weight: bold;" >了解更多</button>
       </div>
     </div>
   </div>
