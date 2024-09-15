@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid full-height" >
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
   <!-- Background -->
   <rect width="1200" height="800" fill="#DECEBF"/> <!-- Homepage background color -->
@@ -62,6 +62,10 @@ onMounted(() => {
 })
 </script>
 
-<style>
-
+<style scoped>
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 </style>

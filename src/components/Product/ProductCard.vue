@@ -1,5 +1,5 @@
 <template>
-  <div class="product-card">
+  <div class="product-card admin-theme ">
     <img class="product-image" :src="`${path}/products/${product.id}/latestphoto?timestamp=${Date.now()}`" :alt="product.name">
     <div class="product-details">
       <h5 class="product-title">{{ product.name }}</h5>
@@ -20,16 +20,16 @@ const emits = defineEmits(["openUpdate","delete"]);
 
 <style scoped>
 .product-card {
-  background-color: var(--secondary-colo);
+  background-color: var(--background-color);
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(177, 151, 252, 0.1);
+  box-shadow: 0 2px 10px rgba(133, 97, 77, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .product-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 4px 15px rgba(177, 151, 252, 0.2);
+  box-shadow: 0 4px 15px rgba(133, 97, 77, 0.2);
 }
 
 .product-image {
@@ -66,12 +66,12 @@ const emits = defineEmits(["openUpdate","delete"]);
 }
 
 .ts-button.is-secondary {
-  background-color: var( --background-color);
+  background-color: var( --primary-color);
   color: white;
 }
 
 .ts-button.is-secondary:hover {
-  background-color: var( --background-color);
+  background-color: var( --border-color);
   color: white;
 }
 
@@ -85,7 +85,7 @@ const emits = defineEmits(["openUpdate","delete"]);
 }
 
 .ts-button.is-danger:hover {
-    background-color: var( --background-color);
+    background-color: var( --border-color);
     color: white;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="fullscreen-container">
+  <div class="fullscreen-container full-height">
   <div class="container">
     <div class="row h-100">
       <div class="col-lg-10 col-xl-9 mx-auto">
@@ -194,5 +194,9 @@ function register() {
   box-shadow: 0 0 0 3px rgba(181, 123, 102, 0.3) !important;
 }
 
-
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 </style>

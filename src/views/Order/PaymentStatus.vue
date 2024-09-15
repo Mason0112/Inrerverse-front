@@ -1,5 +1,5 @@
 <template>
-        <div>
+        <div class="admin-theme full-height">
         <div class="ts-breadcrumb is-stepped is-divided" style="justify-content: center;">
             <h3 class="item">訂單資訊</h3>
         </div>
@@ -17,7 +17,6 @@
                                 <th>詳細資料</th>
                             </tr>
                         </thead>
-                        <div style="margin-bottom: 7px;"></div>
                         <tbody>
                             <tr v-for="(OrderByStatus, index) in OrdersByStatus" :key="OrdersByStatus.id">
                                 <td>{{ OrderByStatus.id }}</td>
@@ -124,14 +123,14 @@ function corfirm(id,status){
     color: white;
 }
 
-.cancelbtn:active {
+/* .cancelbtn:active {
     background-color: var(--primary-color);
     color: white;
-}
+} */
 
 .ts-table :is(thead,tfoot) tr :is(th,td) {
     background:var( --background-color);
-    color: white;
+    color: #6B5147;
     padding: 20px;
     font-size: 15px;
 }
@@ -139,4 +138,15 @@ function corfirm(id,status){
 .detailbtn:active {
     background-color:var( --background-color) ;
 }
+
+tbody{
+    background-color:var( --secondary-color) ;
+}
+
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="centered-container">
+    <div class="centered-container full-height">
     <div class="container">
       <div class="row">
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
@@ -145,6 +145,13 @@ h2 {
   height: 1rem;
   border-radius: .3125rem;
 }
+
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 
 hr {
   border-color: var(--border-color);

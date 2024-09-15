@@ -1,11 +1,11 @@
 <template>
-    <div class="product-management">
+    <div class="product-management  admin-theme">
     <h3 class="main-title">商品管理</h3>
     <div class="control-panel">
       <button type="button" class="ts-button is-primary" @click="openModal('insert')">開啟新增</button>
       <input type="text" class="ts-input" placeholder="請輸入產品名稱">
-      <select class="ts-select">
-        <option disabled selected>選擇類別</option>
+      <select class="ts-select" style="color: saddlebrown; border: 1px solid saddlebrown;">
+        <option disabled selected >選擇類別</option>
         <!-- 添加類別選項 -->
       </select>
     </div>
@@ -205,7 +205,7 @@ function callRemove(id){
 <style scoped>
 .product-management {
   padding: 20px;
-  background-color: var(--background-color);
+  background-color:"#DECEBF"; 
 }
 
 .main-title {
@@ -222,6 +222,7 @@ function callRemove(id){
 
 .ts-input, .ts-select {
   flex: 1;
+  background-color: var(--background-color);
 }
 
 .pagination-container {
@@ -242,7 +243,7 @@ function callRemove(id){
 }
 
 .product-item:hover {
-  box-shadow: 0 4px 15px rgba(177, 151, 252, 0.2);
+    box-shadow: 0 4px 15px rgba(133, 97, 77, 0.2);
 }
 
 @media (max-width: 768px) {

@@ -227,7 +227,7 @@ body {
 }
 
 th {
-background-color: rgb(177, 151, 252) !important;
+background-color: #97715B !important;
 color: white !important;
 padding: 0px;
 }

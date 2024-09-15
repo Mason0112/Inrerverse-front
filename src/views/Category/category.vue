@@ -1,5 +1,5 @@
 <template>
-    <div class="category-management">
+    <div class="category-management  admin-theme full-height" >
       <h3 class="main-title">分類管理</h3>
       
       <!-- 新增分類表單 -->
@@ -118,7 +118,7 @@
         title: '成功！',
         text: '新增成功！',
         icon: 'success',
-        confirmButtonColor: '#B197FC',
+        confirmButtonColor: '#85614D  ',
         confirmButtonText: '確認'
       });
     } catch (error) {
@@ -140,7 +140,7 @@
         title: '成功！',
         text: '修改成功！',
         icon: 'success',
-        confirmButtonColor: '#B197FC',
+        confirmButtonColor: '#85614D',
         confirmButtonText: '確認'
       });
     } catch (error) {
@@ -154,7 +154,7 @@
       text: "此操作無法撤銷！",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#B197FC',
+      confirmButtonColor: '#85614D',
       cancelButtonColor: '#9e9e9e',
       confirmButtonText: '是的，刪除它！',
       cancelButtonText: '取消'
@@ -168,7 +168,7 @@
           title: '成功！',
           text: '刪除成功！',
           icon: 'success',
-          confirmButtonColor: '#B197FC',
+          confirmButtonColor: '#85614D',
           confirmButtonText: '確認'
         });
       } catch (error) {
@@ -202,7 +202,7 @@
   
   <style scoped>
 .category-management {
-  /*background-color: #ffffff; /* 極淡的紫羅蘭色背景 */
+  background-color:"#DECEBF"; /* 極淡的紫羅蘭色背景*/
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(177, 151, 252, 0.2);
@@ -210,7 +210,7 @@
 
 .main-title {
   text-align: center;
-  color: var(--primary-color); /* 主色 */
+  color: #85614D; /* 主色 */
   margin-bottom: 20px;
   font-weight: bold;
 }
@@ -226,13 +226,14 @@
 .input-group input {
   flex-grow: 1;
   padding: 10px;
-  border: 1px solid var(--primary-color); /* 主色邊框 */
+  border: 1px solid #85614D; /* 主色邊框 */
   border-radius: 5px 0 0 5px;
   color: #3A3042; /* 文字顏色 */
+  background-color: var(--background-color);
 }
 
 .add-button {
-  background-color:  var(--background-color); /* 對比色按鈕 */
+  background-color:  #85614D; /* 對比色按鈕 */
   color: white; /* 文字顏色 */
   border: none;
   padding: 10px 20px;
@@ -248,13 +249,13 @@
 }
 
 .category-table th, .category-table td {
-  border: 1px solid var(--primary-color); /* 主色邊框 */
+  border: 1px solid  var(--border-color); /* 主色邊框 */
   padding: 10px;
   color: #3A3042; /* 文字顏色 */
 }
 
 .category-table th {
-  background-color: var(--background-color); /* 主色表頭 */
+  background-color: #85614D; /* 主色表頭 */
   color: white;
 }
 
@@ -281,7 +282,7 @@
 }
 
 .edit-button, .delete-button {
-  color: var(--primary-color);
+  color: #85614D;
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
@@ -291,7 +292,7 @@
 }
 
 .delete-button {
-  color: var(--primary-color); /* 文字顏色 */
+  color: #85614D; /* 文字顏色 */
 }
 
 .pagination {
@@ -304,14 +305,14 @@
 .page-item {
   margin: 0 5px;
   padding: 5px 10px;
-  border: 1px solid #B197FC; /* 主色邊框 */
+  border: 1px solid #85614D; /* 主色邊框 */
   cursor: pointer;
   border-radius: 5px;
-  color: #B197FC; /* 主色文字 */
+  color: #85614D; /* 主色文字 */
 }
 
 .page-item.active {
-  background-color: #B197FC; /* 主色活動頁 */
+  background-color: #85614D; /* 主色活動頁 */
   color: white;
 }
 
@@ -324,12 +325,17 @@
 /* 輸入框焦點效果 */
 .input-group input:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.5);
+  box-shadow: 0 0 0 2px #85614D;
 }
 
 /* 按鈕焦點效果 */
 .add-button:focus, .edit-button:focus, .delete-button:focus {
   outline: none;
   box-shadow: 0 0 0 2px rgba(177, 151, 252, 0.5);
+}
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>

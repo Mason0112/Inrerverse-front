@@ -100,7 +100,24 @@ if (userStore.userId) {
   /* 額外的輔助顏色 */
   --muted-color: #B0A8A6;
   --highlight-color: #FFD700;
+
+    /* 後台色系 */
+    --admin-primary-color: #85614D;
+  --admin-secondary-color: #DECEBF;
+  --admin-background-color: #F5EFE7;
+  --admin-text-color: #3A3042;
+  --admin-border-color: #C8B6A6;
+  --admin-body-color: #C8B6A6;
 }
+
+.admin-theme {
+  --primary-color: var(--admin-primary-color);
+  --secondary-color: var(--admin-secondary-color);
+  --background-color: var(--admin-background-color);
+  --text-color: var(--admin-text-color);
+  --border-color: var(--admin-border-color);
+}
+
 
 body {
   color: var(--text-color);

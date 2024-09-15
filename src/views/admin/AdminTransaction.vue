@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="container mt-4 full-height">
     <div class="row mb-3">
       <div class="col-md-3">
         <label class="form-label">
@@ -213,13 +213,14 @@ onMounted(fetchTransactions);
 .form-label {
   font-weight: bold;
   margin-bottom: 0.5rem;
+  color: var(--admin-text-color);
 }
 
 .transaction-card {
-  border: 1px solid #ddd;
+  border: 1px solid var(--admin-border-color);
   border-radius: 8px;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--admin-secondary-color);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
@@ -228,26 +229,44 @@ onMounted(fetchTransactions);
   padding: 0.5em 1em;
 }
 
+.badge.bg-danger {
+  background-color: #d9534f !important; /* 保持紅色警告 */
+}
+
+.badge.bg-success {
+  background-color: var(--admin-primary-color) !important;
+}
+
+.badge.bg-warning {
+  background-color: #f0ad4e !important; /* 保持黃色警告 */
+}
+
+.badge.bg-secondary {
+  background-color: var(--admin-border-color) !important;
+}
+
 hr {
   margin: 15px 0;
+  border-top-color: var(--admin-border-color);
 }
 
 .financial-summary {
   font-size: 1.2em;
   margin-top: 20px;
-  padding: 15px 0; /* 只保留上下內邊距 */
+  padding: 15px 0;
+  color: var(--admin-text-color);
 }
 
 .income {
-  color: #28a745;
+  color: var(--admin-primary-color);
 }
 
 .expense {
-  color: #dc3545;
+  color: #d9534f; /* 保持支出為紅色 */
 }
 
 .total-amount {
-  color: #0056b3;
+  color: black;
   font-weight: bold;
   margin-top: 10px;
 }
@@ -256,8 +275,13 @@ hr {
   width: 30%; /* 設置寬度為容器的 30%，可以根據需要調整 */
   margin-left: auto; /* 將左邊距設為 auto，使其靠右對齊 */
   margin-right: 0; /* 確保右邊沒有邊距 */
-  border-top: 1px solid black; /* 設置分隔線的顏色和粗細 */
+  border-top: 1px solid var(--admin-border-color); /* 設置分隔線的顏色和粗細 */
   margin-top: 10px;
   margin-bottom: 10px;
+}
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>

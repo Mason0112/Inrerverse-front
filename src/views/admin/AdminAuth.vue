@@ -1,5 +1,5 @@
 <template>
-  <div class="admin-auth-container">
+  <div class="admin-auth-container full-height">
     <div class="admin-auth-layout">
       <div class="side-offset"></div>
       <div class="admin-auth-content">
@@ -135,6 +135,12 @@ function submit() {
 
 .admin-auth-button:active {
   transform: scale(0.98);
+}
+
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
