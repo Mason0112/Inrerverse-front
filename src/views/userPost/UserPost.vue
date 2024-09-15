@@ -81,7 +81,7 @@
 
     <div class="main-content">
       <!-- 新增: 創建貼文部分 -->
-      <div class="create-post-section">
+      <div class="create-post-section"v-if="viewingUserId == currentUserId">
           <n-space vertical>
             <n-input
               type="textarea"
