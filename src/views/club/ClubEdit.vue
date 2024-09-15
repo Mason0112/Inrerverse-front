@@ -69,12 +69,14 @@ import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import {
   NCard, NSpin, NResult, NForm, NFormItem, NInput, NSelect, NButton,
-  NSpace, NUpload, NImage, NAlert, NH1
+  NSpace, NUpload, NImage, NAlert, NH1, useMessage
 } from 'naive-ui';
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const message = useMessage()
+
 
 const loading = ref(true);
 const hasPermission = ref(false);
@@ -169,9 +171,14 @@ const submitForm = async () => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    console.log('Club updated:', response.data);
-    router.push({ name: 'club-detail-link', params: { id: clubId } });
-  } catch (error) {
+     // 顯示成功提示
+     message.success('俱樂部更新成功！');
+    
+    // 短暫延遲後返回上一頁，讓用戶有時間看到成功提示
+    setTimeout(() => {
+      router.back();
+    }, 500);
+    } catch (error) {
     console.error('Error updating club:', error);
     if (error.response) {
       console.error('Response data:', error.response.data);
@@ -182,6 +189,7 @@ const submitForm = async () => {
     } else {
       errorMessage.value = `請求設置錯誤: ${error.message}`;
     }
+    message.error(errorMessage.value);
   }
 };
 
