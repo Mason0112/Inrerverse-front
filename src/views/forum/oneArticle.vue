@@ -11,8 +11,8 @@
       </div>
       <div class="article-meta">
         <span>作者: 
-          <img v-if="article.user && article.user.avatar" :src="article.user.avatar" alt="User Avatar" class="user-avatar">
           <a @click="navigateToUserPost(article.userId)"> 
+          <img v-if="article.user && article.user.avatar" :src="article.user.avatar" alt="User Avatar" class="user-avatar">
           {{ article.userId ? article.userName : "匿名" }}
         </a>
       </span>
@@ -47,8 +47,8 @@
         </div>
       </div>
       <span class="comment-author">
+        <a @click="navigateToUserPost(comment.userId)" class="a-link">
             <img v-if="comment.user && comment.user.avatar" :src="comment.user.avatar" alt="User Avatar" class="user-avatar">
-            <a @click="navigateToUserPost(comment.userId)" class="a-link">
               {{ comment.userName }}:
             </a>
           </span>
@@ -394,7 +394,7 @@ h1 {
   margin-bottom: 16px;
   display: flex;
   justify-content: space-between;
-  background-color: #FEE8E8;
+  background-color: #FFD6D6; /* 略深於内容的背景色 */
   padding: 10px;
   border-radius: 8px;
 }
@@ -409,6 +409,7 @@ h1 {
   border-radius: 8px;
   white-space: pre-wrap;
 }
+
 
 /* 文章圖片 */
 .article-photos {
@@ -464,7 +465,7 @@ h1 {
 .comments-section h3 {
   font-size: 20px;
   font-weight: 700;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
   color: #333;
 }
 
@@ -481,7 +482,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
 }
 
 .comment-date {
@@ -489,10 +490,7 @@ h1 {
   color: #6c757d;
 }
 
-.comment-actions {
-  display: flex;
-  gap: 8px;
-}
+
 
 .btn-edit, .btn-delete {
   background: none;
@@ -508,12 +506,13 @@ h1 {
 
 .comment-content {
   line-height: 1.4;
+  margin-left: 20px; /* 向右偏移 */
+  padding: 10px;
+  background-color: #FFF0F0;
+  border-radius: 4px;
 }
 
-.comment-author {
-  font-weight: bold;
-  margin-right: 8px;
-}
+
 
 /* 評論表單 */
 .comment-form {
@@ -562,9 +561,10 @@ h1 {
 .article-meta a,
 
 .a-link {
-  color: rgb(177 151 252);
+  color: #97715B;
   cursor: pointer;
   text-decoration: none;
+  font-size: 16px;
 }
 
 .article-meta a:hover,
@@ -602,5 +602,32 @@ h1 {
 .comment-author {
   display: flex;
   align-items: center;
+  background-color: #FFD6D6; /* 略深於内容的背景色 */
+  padding: 5px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.comment-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 4px;
+  gap: 10px;
+}
+
+.comment-actions button {
+  background-color: #FFD6D6;
+  border: none;
+  padding: 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.comment-actions button:hover {
+  background-color: #FFC0C0;
+  color: #97715B;
 }
   </style>
