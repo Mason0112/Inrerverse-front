@@ -27,12 +27,12 @@
                       <div class="detail-content">{{ eventDetail.location }}</div>
                     </div>
                     <div class="detail-item creator-item" @click="goToUserPost(event.eventCreatorId)">
-            <div class="detail-label">主辦者</div>
-            <div class="detail-content creator-content">
-              <n-avatar :src="creatorPhotoUrl" :size="40" />
-              <span>{{ event.creatorName }}</span>
-            </div>
-          </div>
+                      <div class="detail-label">主辦者</div>
+                      <div class="detail-content creator-content">
+                        <n-avatar :src="creatorPhotoUrl" :fallback-src="defaultAvatarUrl" :size="40" round />
+                        <span>{{ event.creatorName }}</span>
+                      </div>
+                    </div>
                     <div class="detail-item">
                       <div class="detail-label">開始時間</div>
                       <div class="detail-content">{{ formatDateTime(eventDetail.startTime) }}</div>
@@ -93,10 +93,11 @@
               <n-scrollbar style="max-height: 300px">
                 <n-space v-if="approvedParticipants.length > 0" justify="start" align="center" :wrap="true">
                   <div v-for="participant in approvedParticipants" :key="participant.userId" class="participant-item"
-                    @click="goToUserPost(participant.userId)"> <n-avatar :src="participant.photoUrl || defaultAvatarUrl"
-                      :fallback-src="defaultAvatarUrl" :size="50" />
-                    <span class="participant-name">{{ participant.userName }}</span>
-                  </div>
+    @click="goToUserPost(participant.userId)">
+    <n-avatar :src="participant.photoUrl || defaultAvatarUrl"
+      :fallback-src="defaultAvatarUrl" :size="50" round />
+    <span class="participant-name">{{ participant.userName }}</span>
+  </div>
                 </n-space>
                 <n-empty v-else description="暫無參加者" />
               </n-scrollbar>
@@ -413,6 +414,7 @@ onMounted(() => {
   flex: 2;
   color: #4a0080;
 }
+
 .participant-item {
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
@@ -421,6 +423,7 @@ onMounted(() => {
 .participant-item:hover {
   transform: translateY(-5px);
 }
+
 .participation-button {
   background-color: #9370DB;
   color: white;
@@ -442,10 +445,31 @@ onMounted(() => {
 }
 
 .participant-item {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 8px;
+}
+
+.participant-item:hover {
+  transform: translateY(-5px);
+}
+
+.participant-item .n-avatar {
+  transition: all 0.3s ease;
+}
+
+.participant-item:hover .n-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
+}
+
+.participant-name {
+  margin-top: 4px;
+  font-size: 12px;
+  text-align: center;
 }
 
 .participant-name {
@@ -460,11 +484,27 @@ onMounted(() => {
 
 .creator-item {
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.creator-item:hover {
+  background-color: #f0e6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .creator-content {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.creator-content .n-avatar {
+  transition: all 0.3s ease;
+}
+
+.creator-item:hover .n-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
 }
 </style>
