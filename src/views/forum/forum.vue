@@ -15,7 +15,13 @@
           <div class="content-container" @click="enterArticle(oneArticle.id)">
             <n-thing>
               <template #header>
-                <div class="article-title">{{ oneArticle.title }}</div>
+                <div class="article-header">
+                  <div class="article-title">{{ oneArticle.title }}</div>
+                  <div class="article-info">
+      <span class="article-author">作者：{{ oneArticle.userName }}</span>
+      <span class="article-date">{{ formatDate(oneArticle.added) }}</span>
+    </div>
+                </div>
               </template>
               <template #header-extra>
                 <!-- 如果有額外的標題內容,放在這裡 -->
@@ -101,6 +107,12 @@
   import {  useMessage, NModal, NSpace, NInput, NTag, NUpload, NButton } from 'naive-ui'
   import { RouterLink } from "vue-router";
   import { useRouter } from "vue-router";
+  import { format } from 'date-fns';
+
+
+  function formatDate(dateString) {
+  return format(new Date(dateString), 'yyyy-MM-dd HH:mm');
+}
 
   // 定義 props
 const props = defineProps({
@@ -399,7 +411,7 @@ async function submit() {
   cursor: pointer;
   background-color: #FEE8E8;
   border-radius: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   overflow: hidden;
 }
 
@@ -460,9 +472,8 @@ async function submit() {
 }
 
 .like-container {
-  margin-top: 10px;
   cursor: default;
-  padding: 0 15px 15px;
+  padding: 0 15px;
 }
 
 .like-container .font-awesome-icon {
@@ -470,13 +481,73 @@ async function submit() {
 }
 
 .create-article-button {
-  background-color: #4CAF50;
+  background-color: #F3D2A8;
   color: white;
   border: none;
   transition: background-color 0.3s ease;
 }
 
 .create-article-button:hover {
-  background-color: #45a049;
+  background-color: #EEC48D;
+}
+
+.article-header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.article-title-author {
+  flex-grow: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 10px;
+  min-width: 0; /* 允許子元素縮小 */
+}
+
+.article-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.article-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.article-author {
+  font-size: 0.9rem;
+  color: #666;
+}
+.article-date {
+  font-size: 1rem;
+  color: #888;
+  white-space: nowrap;
+}
+
+:deep(.n-thing-header) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+:deep(.n-thing-header__title) {
+  width: 100%;
+}
+
+:deep(.n-list-item){
+  background-color: #FEE8E8;
+}
+
+:deep(.n-list-item):hover{
+  background-color: #EEC48D;
 }
 </style>

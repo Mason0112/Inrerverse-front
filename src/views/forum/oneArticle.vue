@@ -11,7 +11,8 @@
       </div>
       <div class="article-meta">
         <span>作者: 
-        <a @click="navigateToUserPost(article.userId)"> 
+          <img v-if="article.user && article.user.avatar" :src="article.user.avatar" alt="User Avatar" class="user-avatar">
+          <a @click="navigateToUserPost(article.userId)"> 
           {{ article.userId ? article.userName : "匿名" }}
         </a>
       </span>
@@ -45,10 +46,13 @@
           <button @click="deleteComment(comment.id)" class="btn-delete">刪除</button>
         </div>
       </div>
+      <span class="comment-author">
+            <img v-if="comment.user && comment.user.avatar" :src="comment.user.avatar" alt="User Avatar" class="user-avatar">
+            <a @click="navigateToUserPost(comment.userId)" class="a-link">
+              {{ comment.userName }}:
+            </a>
+          </span>
       <div class="comment-content">
-        <a @click="navigateToUserPost(comment.userId)" class="a-link">
-          <strong class="comment-author">{{ comment.userName }}:</strong>
-        </a>
         <p>{{ comment.content }}</p>
         <button @click="toggleCommentLike(comment)" class="like-button">
       <font-awesome-icon 
@@ -125,10 +129,23 @@
     } else {
       const response = await axios.get(`/club/article/oneArticle/${articleId}`);
       article.value = response.data;
+      article.user.avatar = fetchUserAvatar(article.userId)
+    }
+
+    // 獲取文章作者的頭像
+    if (article.value.userId) {
+      article.value.user = { avatar: await fetchUserAvatar(article.value.userId) };
     }
 
     if(!Array.isArray(article.value.comments)){
       article.value.comments =[];
+
+       // 獲取每個評論作者的頭像
+    for (let comment of article.value.comments) {
+      if (comment.userId) {
+        comment.user = { avatar: await fetchUserAvatar(comment.userId) };
+      }
+    }
     }
     await checkLikeStatus();
   } catch (error) {
@@ -174,6 +191,17 @@ async function deleteArticle() {
       console.error('Error deleting article:', error);
       message.error('刪除文章失敗');
     }
+  }
+}
+
+// 新增函數來獲取用戶頭像
+async function fetchUserAvatar(userId) {
+  try {
+    const response = await axios.get(`/user/secure/profile-photo/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user avatar:', error);
+    return null;
   }
 }
   
@@ -257,11 +285,14 @@ async function toggleCommentLike(comment) {
         userId: userStore.userId
       })
 
+      const newComment = response.data;
+      newComment.user = { avatar: await fetchUserAvatar(userStore.userId) };
+
       if(!Array.isArray(article.value.comments)){
         article.value.comments=[];
       }
 
-      article.value.comments.push(response.data);
+      article.value.comments.push(newComment);
       commentText.value='';
       message.success('發布評論成功');
     }catch(error){
@@ -553,5 +584,18 @@ h1 {
 
 .like-count {
   margin-left: 4px;
+}
+
+.user-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.comment-author {
+  display: flex;
+  align-items: center;
 }
   </style>
