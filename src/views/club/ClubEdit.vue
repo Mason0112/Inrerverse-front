@@ -2,8 +2,8 @@
   <n-card class="club-edit-container">
     <n-h1>編輯俱樂部</n-h1>
     <n-spin :show="loading">
-      <n-result v-if="!hasPermission" status="error" title="權限錯誤" description="您沒有權限編輯此俱樂部。" />
-      <n-form v-else @submit.prevent="submitForm" label-placement="left" label-width="auto" require-mark-placement="right-hanging">
+      <n-result v-if="!loading && !hasPermission" status="error" title="權限錯誤" description="您沒有權限編輯此俱樂部。" />
+      <n-form v-if="!loading && hasPermission" @submit.prevent="submitForm" label-placement="left" label-width="auto" require-mark-placement="right-hanging">
         <n-form-item label="社團名稱" required>
           <n-input v-model:value="club.clubName" placeholder="請輸入社團名稱" />
         </n-form-item>
@@ -69,12 +69,14 @@ import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
 import {
   NCard, NSpin, NResult, NForm, NFormItem, NInput, NSelect, NButton,
-  NSpace, NUpload, NImage, NAlert, NH1
+  NSpace, NUpload, NImage, NAlert, NH1, useMessage
 } from 'naive-ui';
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const message = useMessage()
+
 
 const loading = ref(true);
 const hasPermission = ref(false);
@@ -111,6 +113,7 @@ const handleFileUpload = ({ file }) => {
 };
 
 const fetchClubDetails = async () => {
+  loading.value = true;
   try {
     const response = await axios.get(`/clubs/${clubId}`);
     club.value = {
@@ -129,6 +132,8 @@ const fetchClubDetails = async () => {
   } catch (error) {
     console.error('Error fetching club details:', error);
     errorMessage.value = '獲取俱樂部詳情時出錯';
+    loading.value = false;
+  }finally {
     loading.value = false;
   }
 };
@@ -166,9 +171,14 @@ const submitForm = async () => {
         'Content-Type': 'multipart/form-data'
       }
     });
-    console.log('Club updated:', response.data);
-    router.push({ name: 'club-detail-link', params: { id: clubId } });
-  } catch (error) {
+     // 顯示成功提示
+     message.success('俱樂部更新成功！');
+    
+    // 短暫延遲後返回上一頁，讓用戶有時間看到成功提示
+    setTimeout(() => {
+      router.back();
+    }, 500);
+    } catch (error) {
     console.error('Error updating club:', error);
     if (error.response) {
       console.error('Response data:', error.response.data);
@@ -179,6 +189,7 @@ const submitForm = async () => {
     } else {
       errorMessage.value = `請求設置錯誤: ${error.message}`;
     }
+    message.error(errorMessage.value);
   }
 };
 
