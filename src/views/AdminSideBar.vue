@@ -109,10 +109,12 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import useAdminStore from "@/stores/adminStore";
 import axios from "@/plugins/axios";
 
 const adminStore = useAdminStore();
+const router = useRouter();
 
 let nickname = adminStore.nickname;
 
@@ -137,6 +139,8 @@ function logoutAdmin() {
   adminStore.resetStore();
   axios.defaults.headers.authorization = "";
   axios.defaults.headers.common["X-User-ID"] = "";
+
+  router.push("/");
 }
 
 //下面開始是控制樣式

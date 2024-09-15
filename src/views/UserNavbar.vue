@@ -11,40 +11,24 @@
           <li class="nav-item">
             <RouterLink class="nav-link active" aria-current="page" :to="{ name: 'home-link' }">首頁</RouterLink>
           </li>
-          <!-- <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'post-create-link' }">新增動態(暫放)</RouterLink>
-          </li> -->
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'club-all-link' }">俱樂部</RouterLink>
           </li>
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'event-all-link' }">工作坊</RouterLink>
           </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'product-cart' }">商城</RouterLink>
-          </li>
-          <!-- <li class="nav-item dropdown">
+          <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
-            @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')" aria-expanded="dropdownStates.club">
-              靖緯(暫放) <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.club }" />
+            @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')" aria-expanded="dropdownStates.club" v-show="userStore.isLoggedIn">
+              主辦頁面 <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.club }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }" @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')">
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-all-link' }" @click="closeDropdown('club')">俱樂部
+              <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部管理
               </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">我創建的俱樂部
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-my-link' }" @click="closeDropdown('club')">我的俱樂部
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'club-favorite-link' }" @click="closeDropdown('club')">收藏
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'event-all-link' }" @click="closeDropdown('club')">工作坊
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">我主辦的活動/工作坊
-              </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'event-my-link' }" @click="closeDropdown('club')">我參加的活動/工作坊
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">工作坊管理
               </RouterLink></li>
             </ul>
-          </li> -->
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
             @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')" aria-expanded="dropdownStates.settings">
@@ -65,18 +49,21 @@
             </ul>
           </li>
           <!-- Other items -->
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'product-cart' }">購物商城</RouterLink>
+          </li>
         </ul>
 
         <ul class="navbar-nav ms-auto">
           <li class="nav-item dropdown me-2">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
             @mouseenter="openDropdown('person')" @mouseleave="closeDropdown('person')" 
-            aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn">
+            aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn"> Welcome, {{ userStore.nickname }}
               <font-awesome-icon :icon="['fas', 'user']" /> <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.person }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
               :class="{ 'show': dropdownStates.person }" @mouseenter="openDropdown('person')" @mouseleave="closeDropdown('person')">
-              <RouterLink class="dropdown-item" :to="{ name: 'profile-link' }" @click="closeDropdown('person')">會員詳細
+              <RouterLink class="dropdown-item" :to="{ name: 'profile-link' }" @click="closeDropdown('person')">會員詳細資料
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'friend-link' }" @click="closeDropdown('person')">我的好友列表
               </RouterLink>
@@ -85,10 +72,6 @@
               <RouterLink class="dropdown-item" :to="{ name: 'user-orders' }" @click="closeDropdown('person')">我的訂單紀錄
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'club-my-link' }" @click="closeDropdown('club')">我的俱樂部
-              </RouterLink>
-              <RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部審核
-              </RouterLink>
-              <RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">我主辦的活動/工作坊
               </RouterLink>
               <RouterLink class="dropdown-item" :to="{ name: 'event-my-link' }" @click="closeDropdown('club')">我參加的活動/工作坊
               </RouterLink>

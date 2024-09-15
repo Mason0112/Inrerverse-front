@@ -5,7 +5,7 @@
         <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
           <div class="card border-0 shadow rounded-3 my-5">
             <div class="card-body p-4 p-sm-5">
-              <h2><b>後台登入</b></h2>
+              <h2><b>管理者後台登入</b></h2>
               <hr />
   
               <Vueform :display-errors="false" ref="form$" :endpoint="false">
