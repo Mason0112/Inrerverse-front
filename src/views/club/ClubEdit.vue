@@ -2,8 +2,8 @@
   <n-card class="club-edit-container">
     <n-h1>編輯俱樂部</n-h1>
     <n-spin :show="loading">
-      <n-result v-if="!hasPermission" status="error" title="權限錯誤" description="您沒有權限編輯此俱樂部。" />
-      <n-form v-else @submit.prevent="submitForm" label-placement="left" label-width="auto" require-mark-placement="right-hanging">
+      <n-result v-if="!loading && !hasPermission" status="error" title="權限錯誤" description="您沒有權限編輯此俱樂部。" />
+      <n-form v-if="!loading && hasPermission" @submit.prevent="submitForm" label-placement="left" label-width="auto" require-mark-placement="right-hanging">
         <n-form-item label="社團名稱" required>
           <n-input v-model:value="club.clubName" placeholder="請輸入社團名稱" />
         </n-form-item>
@@ -53,7 +53,7 @@
         <n-form-item>
           <n-space>
             <n-button type="primary" attr-type="submit">更新俱樂部</n-button>
-            <n-button @click="$router.push({ name: 'club-detail-link', params: { id: clubId } })">取消</n-button>
+            <n-button @click="$router.go(-1)">取消</n-button>
           </n-space>
         </n-form-item>
       </n-form>
@@ -111,6 +111,7 @@ const handleFileUpload = ({ file }) => {
 };
 
 const fetchClubDetails = async () => {
+  loading.value = true;
   try {
     const response = await axios.get(`/clubs/${clubId}`);
     club.value = {
@@ -129,6 +130,8 @@ const fetchClubDetails = async () => {
   } catch (error) {
     console.error('Error fetching club details:', error);
     errorMessage.value = '獲取俱樂部詳情時出錯';
+    loading.value = false;
+  }finally {
     loading.value = false;
   }
 };
