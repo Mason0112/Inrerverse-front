@@ -40,7 +40,6 @@
           <button v-if="isCreator" @click.stop="confirmRemoveMember(member.userId)" class="delete-button">
             踢除
           </button>
-
         </li>
       </ul>
     </div>
@@ -52,7 +51,10 @@ import { ref, onMounted } from 'vue';
 import axios from "@/plugins/axios";
 import useUserStore from '@/stores/userstore';
 import { useRouter } from 'vue-router';
+import { useMessage } from 'naive-ui';
+
 const router = useRouter();
+const message = useMessage();
 
 const props = defineProps({
   clubId: {
@@ -60,9 +62,7 @@ const props = defineProps({
     required: true
   }
 });
-const goToUserPost = (userId) => {
-  router.push({ name: 'user-post-link', params: { id: userId } });
-};
+
 const emit = defineEmits(['close']);
 
 const members = ref([]);
@@ -71,7 +71,13 @@ const error = ref(null);
 const isCreator = ref(false);
 const userStore = useUserStore();
 
+const goToUserPost = (userId) => {
+  router.push({ name: 'user-post-link', params: { id: userId } });
+};
+
 const fetchMembers = async () => {
+  loading.value = true;
+  error.value = null;
   try {
     const response = await axios.get(`/clubMember/club/${props.clubId}/approved-members`);
     const membersData = response.data;
@@ -94,7 +100,6 @@ const fetchMembers = async () => {
     const clubResponse = await axios.get(`/clubs/${props.clubId}`);
     isCreator.value = clubResponse.data.clubCreator === userStore.userId;
 
-    loading.value = false;
   } catch (err) {
     console.error('Error fetching club members or club info:', err);
     if (err.response && err.response.status === 404) {
@@ -102,6 +107,7 @@ const fetchMembers = async () => {
     } else {
       error.value = err.response?.data || '获取俱乐部成员时出错';
     }
+  } finally {
     loading.value = false;
   }
 };
@@ -109,18 +115,18 @@ const fetchMembers = async () => {
 const handleRemoveMember = async (userId) => {
   try {
     const response = await axios.delete(`/clubMember/club/${props.clubId}/user/${userId}`);
-    alert(response.data);
-    fetchMembers();
+    message.success(response.data);
+    await fetchMembers();
   } catch (err) {
     console.error('Error removing member:', err);
-    alert(err.response.data);
+    message.error(err.response.data);
   }
 };
 
 const confirmRemoveMember = async (userId) => {
   const confirmed = confirm("確定要刪除此成員嗎？");
   if (confirmed) {
-    handleRemoveMember(userId);
+    await handleRemoveMember(userId);
   }
 };
 
@@ -128,7 +134,13 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleString();
 };
 
+const refreshMembers = async () => {
+  await fetchMembers();
+};
+
 onMounted(fetchMembers);
+
+defineExpose({ refreshMembers });
 </script>
 
 <style scoped>
@@ -146,13 +158,11 @@ h2 {
   color: #111827;
 }
 
-/* 移除li的黑點 */
 ul {
   list-style-type: none;
   padding-left: 0;
 }
 
-/* 成員列表的橫向排列 */
 .member-list {
   display: flex;
   flex-wrap: wrap;
@@ -183,6 +193,7 @@ ul {
   justify-content: center;
   align-items: center;
   background-color: #d1d5db;
+  margin: 0 auto;
 }
 
 .avatar-image {
@@ -204,7 +215,6 @@ ul {
 
 .delete-button {
   background-color: #ff4d4f;
-  /* 初始紅色 */
   color: white;
   font-weight: bold;
   padding: 8px 16px;
@@ -213,21 +223,17 @@ ul {
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  /* 添加陰影 */
+  margin-top: 10px;
 }
 
 .delete-button:hover {
   background-color: #ff7875;
-  /* 懸停時的顏色變化 */
   transform: translateY(-2px);
-  /* 懸停時的位移效果 */
 }
 
 .delete-button:active {
   background-color: #d9363e;
-  /* 按壓時的顏色變化 */
   transform: translateY(0);
-  /* 按壓時的回彈效果 */
 }
 
 .member-details {

@@ -42,14 +42,14 @@
             <div v-if="isMember" class="member-status">歡迎來到俱樂部</div>
             <div v-else-if="isPending" class="member-status pending">您的申請正在審核中</div>
             <div v-else>
-              <button @click="joinClub" class="styled-button">
-                {{ club.isPublic ? '立即加入' : '申請加入' }}
+              <button @click="joinClub" :disabled="joiningClub" class="styled-button">
+                {{ joiningClub ? '加入中...' : (club.isPublic ? '立即加入' : '申請加入') }}
               </button>
             </div>
             <ClubPhotoAlbum v-if="club" :clubId="clubId" :isMember="isMember" />
           </div>
         </div>
-        <ClubMembersList :clubId="clubId" />
+        <ClubMembersList :clubId="clubId" ref="membersListRef" />
       </div>
 
       <!-- 第二個標籤：俱樂部活動 -->
@@ -60,7 +60,6 @@
             辦活動!
           </button>
           <ClubEvent :clubId="clubId" :isMember="isMember" ref="clubEventComponent" @event-added="handleEventAdded" />
-
         </div>
 
         <!-- 使用 teleport 將彈跳式視窗傳送到 body 元素中 -->
@@ -87,47 +86,45 @@ import { ref, computed, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
+import { useMessage } from 'naive-ui';
 import ClubMembersList from '@/views/club/ClubMembersList.vue';
 import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
 import ClubEvent from '../Event/ClubEvent.vue';
 import AddClubEventForm from '../Event/AddClubEventForm.vue';
 import forum from '../forum/forum.vue';
-import createArticle from '../forum/createArticle.vue';
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const message = useMessage();
 
 const club = ref(null);
 const loading = ref(true);
 const error = ref(null);
-const errorMessage = ref('');
-const successMessage = ref('');
 const isMember = ref(false);
 const isPending = ref(false);
+const joiningClub = ref(false);
 
 const clubId = route.params.id;
-const clubIdtoForum = ref(route.params.id);  // 使用 ref 來存儲 clubId
+const clubIdtoForum = ref(route.params.id);
 
-
-// 用於控制彈跳式視窗顯示/隱藏的布爾值
 const showModal = ref(false);
+const membersListRef = ref(null);
+const clubEventComponent = ref(null);
 
-// 打開彈跳式視窗
 const openModal = () => {
   showModal.value = true;
 };
 
-// 關閉彈跳式視窗
 const closeModal = () => {
   showModal.value = false;
 };
 
-const clubEventComponent = ref(null);
-
 const joinClub = async () => {
+  if (joiningClub.value) return;
+  joiningClub.value = true;
   try {
-    const status = club.value.isPublic ? 1 : 0; // 如果是公開俱樂部,直接設置狀態為1
+    const status = club.value.isPublic ? 1 : 0;
     const response = await axios.post('/clubMember', {
       clubId: clubId,
       userId: userStore.userId,
@@ -137,6 +134,9 @@ const joinClub = async () => {
       if (club.value.isPublic) {
         isMember.value = true;
         message.success('您已成功加入俱樂部！');
+        if (membersListRef.value) {
+          await membersListRef.value.refreshMembers();
+        }
       } else {
         isPending.value = true;
         message.success('已成功提交加入申請，請等待審核。');
@@ -145,12 +145,12 @@ const joinClub = async () => {
   } catch (error) {
     console.error('Error joining club:', error);
     message.error('加入俱樂部失敗，請稍後再試。');
+  } finally {
+    joiningClub.value = false;
   }
 };
 
-// 處理活動添加後的邏輯
 const handleEventAdded = (newEvent) => {
-  // 在這裡可以添加更新活動列表的邏輯
   if (clubEventComponent.value) {
     clubEventComponent.value.fetchClubEvents();
   }
@@ -166,11 +166,16 @@ const fetchClubDetails = async () => {
     const response = await axios.get(`/clubs/${clubId}`);
     club.value = response.data;
 
-    // 確認當前用戶是否為俱樂部成員
     const memberResponse = await axios.get(`/clubMember/club/${clubId}/approved-members`);
-    isMember.value = memberResponse.data.some(member => member.userId === userStore.userId);
+    const isCurrentUserMember = memberResponse.data.some(member => member.userId === userStore.userId);
+    
+    if (isMember.value !== isCurrentUserMember) {
+      isMember.value = isCurrentUserMember;
+      if (membersListRef.value) {
+        await membersListRef.value.refreshMembers();
+      }
+    }
 
-    // 檢查是否有待審核的申請
     const pendingResponse = await axios.get(`/clubMember/club/${clubId}/pending-members`);
     isPending.value = pendingResponse.data.some(member => member.userId === userStore.userId);
 
@@ -182,16 +187,15 @@ const fetchClubDetails = async () => {
   }
 };
 
-
 const onEventAdded = (newEvent) => {
   console.log("New event added:", newEvent);
-  closeModal(); // 關閉彈跳式視窗
-  handleEventAdded(newEvent); // 更新活動列表
+  closeModal();
+  handleEventAdded(newEvent);
 };
 
 onMounted(() => {
   console.log("isMember:", isMember.value);
-  console.log("clubId:", clubId.value);  // 添加這行來檢查 clubId
+  console.log("clubId:", clubId);
   fetchClubDetails();
 });
 </script>
@@ -280,7 +284,7 @@ h1 {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* 新增活動按鈕樣式 */
+/* 按鈕樣式 */
 .styled-button {
   color: white;
   font-size: 16px;
@@ -304,6 +308,13 @@ h1 {
   background: linear-gradient(90deg, #a84aa4, #ea9de1);
   transform: translateY(0);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.styled-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* 彈跳式視窗樣式 */
