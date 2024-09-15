@@ -26,12 +26,17 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }" @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')">
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部管理
               </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">工作坊管理
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">工作坊/活動管理
               </RouterLink></li>
             </ul>
           </li>
+<<<<<<< HEAD
           <li class="nav-item" v-show="userStore.isLoggedIn">
             <RouterLink class="nav-link" :to="{ name: 'user-post-link' }" >我的動態牆</RouterLink>
+=======
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }">我的動態牆</RouterLink>
+>>>>>>> main
           </li>
           <!-- Other items -->
           <li class="nav-item">

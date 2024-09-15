@@ -256,6 +256,7 @@ async function checkLikeStatus() {
 // 切換按讚狀態
 
 async function toggleLike(article) {
+<<<<<<< HEAD
   // if (!article.value || !userId) return;
   try {
     const response = await axios.post('/articleLike', null, {
@@ -272,6 +273,24 @@ async function toggleLike(article) {
     console.error('Error toggling like:', error);
     message.error('更新按讚狀態失敗');
   }
+=======
+    try {
+        await axios.post('/articleLike', null, {
+            params: { userId: userId, articleId: article.id, type: 1 }
+        });
+        article.isLiked = !article.isLiked;
+        if(article.likeCount=null){
+          article.likeCount=0;
+          // console.log(article.likeCount)
+        }
+        article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
+        console.log(article.likeCount)
+        message.success(article.isLiked ? '已按讚!' : '已取消讚!');
+    } catch (error) {
+        console.error('Error toggling like:', error);
+        message.error('更新按讚狀態失敗');
+    }
+>>>>>>> main
 }
 
 // async function toggleLike(article) {

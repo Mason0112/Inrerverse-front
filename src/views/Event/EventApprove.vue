@@ -1,13 +1,12 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-card class="event-approve-container">
-      <n-h1 class="page-title" style="color: #e3bdbd">我主辦的活動/工作坊</n-h1>
+      <h1>我主辦的活動/工作坊</h1>
       <n-spin :show="loading">
         <n-result v-if="error" status="error" :title="error" />
         <div v-else>
           <!-- 活動列表 -->
           <div v-if="!selectedEvent" class="event-list">
-            <n-h2 class="section-title">您創建的活動</n-h2>
             <n-empty v-if="events.length === 0" description="您還沒有創建任何活動" />
             <n-grid x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4" responsive="screen" v-else>
               <n-grid-item v-for="event in events" :key="event.id">
@@ -34,6 +33,7 @@
                   </n-space>
                   <template #footer>
                     <n-space justify="end">
+                      <n-button size="small" @click.stop="goToEventDetail(event.id)">查看詳情</n-button>
                       <n-button size="small" @click.stop="editEvent(event)">編輯</n-button>
                       <n-button size="small" @click.stop="confirmDelete(event)" type="error" style="background-color: purple">刪除</n-button>
                     </n-space>
@@ -83,6 +83,7 @@
 import { ref, onMounted, h } from 'vue';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
+import { useRouter } from 'vue-router';
 import {
   NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NH3, NEmpty, NGrid, NGridItem,
   NButton, NDataTable, NTag, NSpace, useMessage, NModal, NForm, NFormItem, NInput,
@@ -108,8 +109,14 @@ const themeOverrides = {
   }
 };
 
+const router = useRouter();
+
+const goToEventDetail = (eventId) => {
+  router.push({ name: 'event-detail-link', params: { id: eventId } });
+};
+
 const columns = [
-  { title: '用戶ID', key: 'userId' },
+  // { title: '用戶ID', key: 'userId' },
   { title: '用戶名', key: 'userName' },
   {
     title: '操作',
@@ -271,46 +278,44 @@ const fetchPendingParticipants = async (eventId) => {
 const approveParticipant = async (userId) => {
   const participant = pendingParticipants.value.find(p => p.userId === userId);
   if (!participant) return;
-
   participant.approving = true;
+  
   try {
     await axios.put(`/eventParticipant/approve/${selectedEvent.value.id}/${userId}`);
-    // 從列表中移除已批准的參與者
     pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
     await updateEventPendingStatus(selectedEvent.value.id);
-    // 找出對應的交易
-    const { data: transaction } = await axios.get(`/transaction/transNo/${selectedEvent.value.id}/${userId}`);
 
-    if (transaction) {
-      // 將交易標記為已完成
-      try {
-        // 將原始交易標記為已完成
-        await axios.put(`/transaction/to-completed/${transaction.id}`);
+    if (selectedEvent.value.fee !== 0) {
+      // 只有在活動費用不為零時才處理交易
+      const { data: transaction } = await axios.get(`/transaction/transNo/${selectedEvent.value.id}/${userId}`);
+      if (transaction) {
+        try {
+          // 將原始交易標記為已完成
+          await axios.put(`/transaction/to-completed/${transaction.id}`);
 
-      } catch (transactionError) {
-        console.error('Error updating transaction:', transactionError);
-        console.error('Transaction data:', transaction);
-        if (transactionError.response) {
-          console.error('Server response:', transactionError.response.data);
+          // 創建新的交易
+          const formattedEventId = String(selectedEvent.value.id).padStart(5, '0');
+          const formattedUserId = String(userStore.userId).padStart(5, '0');
+          await axios.post('/transaction/add', {
+            transactionNo: `E${formattedEventId}${selectedEvent.value.eventName}U${formattedUserId}A`, // A=Accept
+            amount: Math.abs(transaction.amount),
+            paymentMethod: '主辦活動/工作坊',
+            status: 1,
+            user: {
+              id: userStore.userId
+            }
+          });
+        } catch (transactionError) {
+          console.error('Error updating transaction:', transactionError);
+          console.error('Transaction data:', transaction);
+          if (transactionError.response) {
+            console.error('Server response:', transactionError.response.data);
+          }
+          throw new Error('交易更新失敗');
         }
-        throw new Error('交易更新失敗');
+      } else {
+        console.warn('對應的交易未找到');
       }
-
-       // 創建新的交易
-       const formattedEventId = String(selectedEvent.value.id).padStart(5, '0');
-      const formattedUserId = String(userStore.userId).padStart(5, '0');
-
-      await axios.post('/transaction/add', {
-        transactionNo: `E${formattedEventId}${selectedEvent.value.eventName}U${formattedUserId}A`,  // A=Accept
-        amount: Math.abs(transaction.amount),  // 使用原交易金額的絕對值
-        paymentMethod: '主辦活動/工作坊',
-        status: 1,
-        user: {
-          id: userStore.userId
-        }
-      });
-    } else {
-      console.warn('對應的交易未找到');
     }
   } catch (err) {
     console.error('Error approving participant or updating transactions:', err);
@@ -318,7 +323,6 @@ const approveParticipant = async (userId) => {
     if (err.response) {
       console.error('Server response:', err.response.data);
     }
-    // alert(err.message || '審核參與者或更新交易時出錯');
   } finally {
     participant.approving = false;
   }
@@ -327,21 +331,23 @@ const approveParticipant = async (userId) => {
 const removeParticipant = async (userId) => {
   const participant = pendingParticipants.value.find(p => p.userId === userId);
   if (!participant) return;
-
   participant.deleting = true;
+  
   try {
     await axios.delete(`/eventParticipant/event/${selectedEvent.value.id}/user/${userId}`);
     pendingParticipants.value = pendingParticipants.value.filter(p => p.userId !== userId);
     await updateEventPendingStatus(selectedEvent.value.id);
 
-     // 找出對應的交易
-     const { data: transaction } = await axios.get(`/transaction/transNo/${selectedEvent.value.id}/${userId}`);
-     console.error('Transaction data:', transaction);
-    if (transaction) {
-      // 將交易標記為失敗
-      await axios.put(`/transaction/to-failed/${transaction.id}`);
-    } else {
-      console.warn('對應的交易未找到');
+    if (selectedEvent.value.fee !== 0) {
+      // 只有在活動費用不為零時才處理交易
+      const { data: transaction } = await axios.get(`/transaction/transNo/${selectedEvent.value.id}/${userId}`);
+      console.error('Transaction data:', transaction);
+      if (transaction) {
+        // 將交易標記為失敗
+        await axios.put(`/transaction/to-failed/${transaction.id}`);
+      } else {
+        console.warn('對應的交易未找到');
+      }
     }
   } catch (err) {
     console.error('Error removing participant:', err);
@@ -367,6 +373,7 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--background-color);
 }
 
 .page-title {
@@ -376,6 +383,7 @@ onMounted(() => {
 
 .section-title {
   margin-bottom: 15px;
+  color: var(--text-color);
 }
 
 .event-card {
@@ -383,6 +391,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  background-color: #FAFAFA;
+  border: 1px solid var(--border-color);
 }
 
 .event-cover {
@@ -393,10 +403,11 @@ onMounted(() => {
 
 .event-name {
   cursor: pointer;
+  color: var(--text-color);
 }
 
 .event-name:hover {
-  color: #8E44AD;
+  color: var(--accent-color);
 }
 
 .approve-button,
@@ -414,5 +425,13 @@ onMounted(() => {
 
 .n-tag {
   margin-right: 8px;
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
 }
 </style>

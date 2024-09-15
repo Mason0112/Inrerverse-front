@@ -1,5 +1,5 @@
 <template>
-  <n-config-provider>
+  <n-config-provider :theme-overrides="customTheme">
     <n-dialog-provider>
       <n-message-provider>
         <div class="container-fluid" v-if="isAdminAuthPage">
@@ -38,6 +38,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "tocas/dist/tocas.min.css";
 import { NConfigProvider, NMessageProvider, NDialogProvider } from "naive-ui";
+import { useCustomTheme } from '@/plugins/naiveui';
+
+
+const { customTheme } = useCustomTheme(); 
 
 import { computed } from "vue";
 import { useRoute } from 'vue-router';

@@ -26,6 +26,13 @@
                       <div class="detail-label">地點</div>
                       <div class="detail-content">{{ eventDetail.location }}</div>
                     </div>
+                    <div class="detail-item creator-item" @click="goToUserPost(event.eventCreatorId)">
+                      <div class="detail-label">主辦者</div>
+                      <div class="detail-content creator-content">
+                        <n-avatar :src="creatorPhotoUrl" :fallback-src="defaultAvatarUrl" :size="40" round />
+                        <span>{{ event.creatorName }}</span>
+                      </div>
+                    </div>
                     <div class="detail-item">
                       <div class="detail-label">開始時間</div>
                       <div class="detail-content">{{ formatDateTime(eventDetail.startTime) }}</div>
@@ -86,10 +93,11 @@
               <n-scrollbar style="max-height: 300px">
                 <n-space v-if="approvedParticipants.length > 0" justify="start" align="center" :wrap="true">
                   <div v-for="participant in approvedParticipants" :key="participant.userId" class="participant-item"
-                    @click="goToUserPost(participant.userId)"> <n-avatar :src="participant.photoUrl || defaultAvatarUrl"
-                      :fallback-src="defaultAvatarUrl" :size="50" />
-                    <span class="participant-name">{{ participant.userName }}</span>
-                  </div>
+    @click="goToUserPost(participant.userId)">
+    <n-avatar :src="participant.photoUrl || defaultAvatarUrl"
+      :fallback-src="defaultAvatarUrl" :size="50" round />
+    <span class="participant-name">{{ participant.userName }}</span>
+  </div>
                 </n-space>
                 <n-empty v-else description="暫無參加者" />
               </n-scrollbar>
@@ -129,6 +137,19 @@ const approvedParticipants = ref([]);
 const message = useMessage();
 const coverPhotoUrl = ref('https://via.placeholder.com/300');
 const defaultAvatarUrl = 'https://via.placeholder.com/50';
+const creatorPhotoUrl = ref(defaultAvatarUrl);
+
+const fetchCreatorPhoto = async () => {
+  try {
+    if (event.value && event.value.eventCreatorId) {
+      const photoResponse = await axios.get(`/user/secure/profile-photo/${event.value.eventCreatorId}`);
+      creatorPhotoUrl.value = photoResponse.data || defaultAvatarUrl;
+    }
+  } catch (error) {
+    console.error('獲取主辦者頭像失敗:', error);
+    creatorPhotoUrl.value = defaultAvatarUrl;
+  }
+};
 
 const fetchEventDetail = async () => {
   try {
@@ -171,6 +192,7 @@ const fetchEvent = async () => {
     const response = await axios.get(`/events/${route.params.id}`);
     event.value = response.data;
     console.log("Event data:", event.value);
+    await fetchCreatorPhoto();
   } catch (error) {
     console.error('獲取活動名稱失敗:', error);
     error.value = '獲取活動名稱失敗';
@@ -219,7 +241,6 @@ const formatDateTime = (dateTimeString) => {
 
 const handleParticipation = async () => {
   if (!canParticipate.value) return;
-
   loading.value = true;
   let participantResponse = null;
   let transactionResponse = null;
@@ -231,43 +252,49 @@ const handleParticipation = async () => {
       userId: userStore.userId
     });
 
-    // 如果加入活動成功，再嘗試進行支付
+    // 如果加入活動成功
     if (participantResponse.status === 201) {
-      // 將 event ID 轉換為五位數格式，使用 padStart 方法
-      const formattedEventId = String(event.value.id).padStart(5, '0');
-      const formattedUserId = String(userStore.userId).padStart(5, '0')
-
-      transactionResponse = await axios.post('/transaction/add', {
-        transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
-        amount: -eventDetail.value.fee,
-        paymentMethod: '錢包支付',
-        status: 2,
-        user: {
-          id: userStore.userId
-        }
-      });
-
-      // 如果兩個操作都成功
-      if (transactionResponse.status === 201) {
-        message.success(`成功提交參加請求並將從錢包支付${eventDetail.value.fee}元活動款項`, {
+      if (eventDetail.value.fee === 0) {
+        // 如果是免費活動
+        message.success('成功提交參加請求', {
           closable: true,
           duration: 5000
         });
+      } else {
+        // 如果是付費活動
+        const formattedEventId = String(event.value.id).padStart(5, '0');
+        const formattedUserId = String(userStore.userId).padStart(5, '0');
+        transactionResponse = await axios.post('/transaction/add', {
+          transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`, //R=request
+          amount: -eventDetail.value.fee,
+          paymentMethod: '錢包支付',
+          status: 2,
+          user: {
+            id: userStore.userId
+          }
+        });
 
-        // 更新本地狀態
-        participationStatus.value = {
-          eventId: route.params.id,
-          userId: userStore.userId,
-          status: 0  // 0 表示待審核狀態
-        };
+        if (transactionResponse.status === 201) {
+          message.success(`成功提交參加請求並將從錢包支付${eventDetail.value.fee}元活動款項`, {
+            closable: true,
+            duration: 5000
+          });
+        }
       }
+
+      // 更新本地狀態
+      participationStatus.value = {
+        eventId: route.params.id,
+        userId: userStore.userId,
+        status: 0 // 0 表示待審核狀態
+      };
     }
   } catch (error) {
     console.error('處理參與請求時發生錯誤:', error);
 
     // 錯誤處理和回滾邏輯
-    if (participantResponse && participantResponse.status === 201) {
-      // 如果加入活動成功但支付失敗，需要取消加入活動
+    if (participantResponse && participantResponse.status === 201 && eventDetail.value.fee !== 0) {
+      // 如果加入活動成功但支付失敗（僅針對付費活動），需要取消加入活動
       try {
         await axios.delete(`/eventParticipant/${route.params.id}/${userStore.userId}`);
         console.log('成功回滾活動參與');
@@ -283,7 +310,7 @@ const handleParticipation = async () => {
 
     // 根據錯誤類型顯示不同的錯誤消息
     if (error.response) {
-      if (error.response.status === 400) {
+      if (error.response.status === 400 && eventDetail.value.fee !== 0) {
         message.error('餘額不足，請先儲值', {
           closable: true,
           duration: 5000
@@ -392,6 +419,7 @@ onMounted(() => {
   flex: 2;
   color: #4a0080;
 }
+
 .participant-item {
   cursor: pointer;
   transition: transform 0.2s ease-in-out;
@@ -400,6 +428,7 @@ onMounted(() => {
 .participant-item:hover {
   transform: translateY(-5px);
 }
+
 .participation-button {
   background-color: #9370DB;
   color: white;
@@ -421,10 +450,31 @@ onMounted(() => {
 }
 
 .participant-item {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 8px;
+}
+
+.participant-item:hover {
+  transform: translateY(-5px);
+}
+
+.participant-item .n-avatar {
+  transition: all 0.3s ease;
+}
+
+.participant-item:hover .n-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
+}
+
+.participant-name {
+  margin-top: 4px;
+  font-size: 12px;
+  text-align: center;
 }
 
 .participant-name {
@@ -435,5 +485,31 @@ onMounted(() => {
 
 .photo-card {
   padding: 20px;
+}
+
+.creator-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.creator-item:hover {
+  background-color: #f0e6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.creator-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.creator-content .n-avatar {
+  transition: all 0.3s ease;
+}
+
+.creator-item:hover .n-avatar {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
 }
 </style>

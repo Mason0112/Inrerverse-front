@@ -72,7 +72,7 @@
       </table>
       <hr />
 
-      <div>
+      <div class="aboutme">
         <h5>關於我</h5>
         <p>{{ userData.bio }}</p>
       </div>
@@ -743,6 +743,7 @@ h2 {
   background-color: #FFF5EE; /* 淺蜜桃色 */
   border-radius: 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+  margin-bottom: 50px
 }
 
 /* 左侧部分 */
@@ -1045,6 +1046,7 @@ post-author {
 /* 確保.item有相對定位 */
 .item {
   position: relative;
+  white-space: pre-wrap;
   /* 其他現有樣式保持不變 */
 }
 
@@ -1191,5 +1193,8 @@ post-author {
   font-size: 0.9em;
   padding: 5px 10px;
 }
-
+.aboutme{
+  white-space: pre-wrap;
+  text-align: center;
+}
 </style>

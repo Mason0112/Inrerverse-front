@@ -53,7 +53,7 @@
         <n-form-item>
           <n-space>
             <n-button type="primary" attr-type="submit">更新俱樂部</n-button>
-            <n-button @click="$router.push({ name: 'club-detail-link', params: { id: clubId } })">取消</n-button>
+            <n-button @click="$router.go(-1)">取消</n-button>
           </n-space>
         </n-form-item>
       </n-form>
