@@ -3,8 +3,8 @@
     <div class="admin-auth-layout">
       <div class="side-offset"></div>
       <div class="admin-auth-content">
-        <h1 class="admin-auth-title">IYKYK</h1>
-        <input type="text" v-model="auth" required class="admin-auth-input" placeholder="請輸入通關密語">
+        <h1 class="admin-auth-title">前往管理者後台</h1>
+        <input type="password" v-model="auth" required class="admin-auth-input" placeholder="請輸入驗證碼">
         <button type="button" @click="submit" class="admin-auth-button">送出</button>
       </div>
       <div class="side-offset"></div>

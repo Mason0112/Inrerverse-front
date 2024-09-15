@@ -114,7 +114,7 @@ function login() {
 }
 
 .card {
-  background-color: #FAFAFA;
+  background-color: var(--light-background);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);

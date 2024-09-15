@@ -77,6 +77,7 @@ if (userStore.userId) {
 
 <style >
 :root {
+  /* 主要顏色 */
   --primary-color: #E4BAB6;
   --secondary-color: #F3D2A8;
   --accent-color: #97715B;
@@ -84,6 +85,21 @@ if (userStore.userId) {
   --text-color: #6B5147;
   --light-text-color: #97715B;
   --border-color: #E4BAB6;
+  --light-background: #F5E6E3;
+
+  /* 新增狀態顏色 */
+  --success-color: #7FB069;
+  --success-light: #D4EDDA;
+  --warning-color: #FFB347;
+  --warning-light: #FFF3CD;
+  --danger-color: #D9534F;
+  --danger-light: #F8D7DA;
+  --info-color: #5BC0DE;
+  --info-light: #D1ECF1;
+
+  /* 額外的輔助顏色 */
+  --muted-color: #B0A8A6;
+  --highlight-color: #FFD700;
 }
 
 body {
@@ -92,7 +108,7 @@ body {
 }
 
 .ts-box, .modal-content {
-  background-color: #FAFAFA;
+  background-color: var(--light-background);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
@@ -106,7 +122,7 @@ body {
 
 .ts-table th {
   background-color: var(--primary-color);
-  color: #FAFAFA;
+  color: var(--text-color);
   padding: 12px;
   font-weight: 600;
 }
@@ -148,7 +164,7 @@ body {
 
 .btn-danger, .btn-warning {
   background-color: var(--accent-color);
-  color: #FAFAFA;
+  color: var(--light-background);
 }
 
 .btn-danger:hover, .btn-warning:hover {
@@ -170,7 +186,7 @@ input[type="text"], input[type="number"], select {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   padding: 8px;
-  background-color: #FAFAFA;
+  background-color: var(--light-background);
   color: var(--text-color);
 }
 

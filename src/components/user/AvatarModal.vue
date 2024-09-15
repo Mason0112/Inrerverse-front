@@ -143,8 +143,8 @@ const closeModal = (event) => {
 }
 
 .default-avatar {
-  background-color: #ccc;
-  color: #fff;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
   display: flex;
   justify-content: center;
   align-items: center;

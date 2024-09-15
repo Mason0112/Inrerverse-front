@@ -92,35 +92,71 @@ onMounted(() => {
   </script>
   
   <style scoped>
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding-top: 10vh;
+  background-color: var(--background-color);
+}
+
+.card {
+  background-color: var(--light-background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
+}
+
+.card-body {
+  color: var(--text-color);
+}
+
+h2 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+}
+
+.bold-link {
+  font-weight: bold;
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+.bold-link:hover {
+  color: var(--primary-color);
+}
+
+.btn-outline-dark {
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.btn-outline-dark:hover {
+  color: #FAFAFA;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.avatar {
+  position: relative;
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: .3125rem;
+}
+
+hr {
+  border-color: var(--border-color);
+}
+@media (max-width: 576px) {
+  .card-body {
+    padding: 2rem !important;
+  }
   .centered-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    padding-top: 10vh;  /* 添加頂部內邊距 */
-    background-color: #f8f9fa;
+    padding-top: 5vh;  /* 在小屏幕上減少頂部內邊距 */
   }
-  
-  .bold-link {
-    font-weight: bold;
-    color: black;
-    text-decoration: none;
-  }
-  
-  .avatar {
-      position: relative;
-      display: inline-block;
-      width: 1rem;
-      height: 1rem;
-      border-radius: .3125rem;
-  }
-  @media (max-width: 576px) {
-    .card-body {
-      padding: 2rem !important;
-    }
-    .centered-container {
-      padding-top: 5vh;  /* 在小屏幕上減少頂部內邊距 */
-    }
-  }
-  </style>
+}
+</style>
+
   

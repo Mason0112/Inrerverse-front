@@ -148,7 +148,7 @@ function register() {
 }
 
 .card {
-  background-color: #FAFAFA;
+  background-color: var(--light-background);
 }
 
 </style>

@@ -197,68 +197,95 @@ function getDefaultAvatar(friend) {
 </script>
 
 <style scoped>
-.input-icon {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #888;
-  pointer-events: none; /* 防止圖標阻礙用戶點擊輸入框 */
+.container {
+  margin-bottom: 60px;
+  padding: 30px;
+  /* background-color: var(--background-color); */
+  background-color: var(--light-background);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(151, 113, 91, 0.08);
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
 }
 
 .card {
-  background-color: #fff;
-  padding: 15px;
+  background-color: var(--light-background);
   border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(228, 186, 182, 0.1);
 }
 
 .input-box {
   position: relative;
-}
+  margin: 20px auto 25px;
+  max-width: 300px;
 
-.input-box i {
-  position: absolute;
-  right: 13px;
-  top: 15px;
-  color: #ced4da;
 }
 
 .form-control {
-  height: 50px;
-  background-color: #eeeeee69;
+  height: 48px;
+  background-color: var(--background-color);
+  border: 2px solid var(--border-color);
+  border-radius: 24px;
+  color: var(--text-color);
+  padding: 0 20px 0 50px;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  width: 100%;
 }
 
 .form-control:focus {
-  background-color: #eeeeee69;
-  box-shadow: none;
-  border-color: #eee;
+  background-color: var(--light-background);
+  box-shadow: 0 0 0 4px rgba(228, 186, 182, 0.15);
+  border-color: var(--primary-color);
+}
+
+.input-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--light-text-color);
+  pointer-events: none;
+  font-size: 1.2rem;
 }
 
 .list {
-  padding-top: 20px;
-  padding-bottom: 10px;
+  padding: 15px 20px;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.border-bottom {
-  border-bottom: 2px solid #eee;
+.list:hover {
+  background-color: rgba(243, 210, 168, 0.08);
+  transform: translateX(5px);
 }
 
-.list i {
-  font-size: 19px;
-  color: red;
-}
-
-.list small {
-  color: #dedddd;
+.list:last-child {
+  border-bottom: none;
 }
 
 .friend-photo {
   width: 50px;
   height: 50px;
-  border-radius: 50%;
+  border-radius: 25px;
   overflow: hidden;
+  margin-right: 15px;
+  transition: transform 0.3s ease;
+}
+
+.friend-photo:hover {
+  transform: scale(1.1);
 }
 
 .friend-photo img {
@@ -268,18 +295,76 @@ function getDefaultAvatar(friend) {
 }
 
 .default-avatar {
-  background-color: #ccc;
-  color: #fff;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 1.5rem;
   font-weight: bold;
   width: 100%;
   height: 100%;
 }
 
-.badge-margin {
-  margin-right: 8px; /* 可根据需要调整 */
+.friend-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.friend-name {
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+
+.friend-account {
+  font-size: 0.9rem;
+  color: var(--light-text-color);
+}
+
+.btn-outline-danger {
+  color: var(--danger-color);
+  border: 2px solid var(--danger-color);
+  background-color: transparent;
+  border-radius: 20px;
+  padding: 6px 15px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.btn-outline-danger:hover {
+  color: var(--light-background);
+  background-color: var(--danger-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(217, 83, 79, 0.2);
+}
+
+.spinner-border {
+  color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .input-box {
+    max-width: 100%; /* 在小螢幕上全寬 */
+  }
+  
+  .friend-photo {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .btn-outline-danger {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
 }
 </style>

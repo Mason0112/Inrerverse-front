@@ -1,22 +1,42 @@
 <template>
   <div class="home-page">
 
-     <div class="mosaic-grid">
-      <div v-for="num in 18" :key="num" 
-      :class="['mosaic-item', `item-${(num - 1) % 5 + 1}`]">
-      <img :src="`http://localhost:8080/interverse/products/10/${69 - num}`" :alt="`Image ${18 - num}`" />
+    <div class="mosaic-grid">
+      <div v-for="num in 18" :key="num" :class="['mosaic-item', `item-${(num - 1) % 5 + 1}`]">
+        <img :src="`http://localhost:8080/interverse/products/10/${69 - num}`" :alt="`Image ${18 - num}`" />
         <div class="mosaic-caption">
         </div>
       </div>
     </div>
+
+    <div class="hero-section">
+      <h1>發現您的理想社群</h1>
+      <p>InterVerse 是一個讓您可以建立和加入俱樂部、參與活動，並與志同道合的人聯繫的平台。</p>
+      <div class="features">
+        <div class="feature">
+          <font-awesome-icon :icon="['fas', 'dollar-sign']" class="feature-icon" />
+          <h3>付費活動</h3>
+          <p>在此平台輕鬆管理和收費付費活動。</p>
+        </div>
+        <div class="feature">
+          <font-awesome-icon :icon="['fas', 'globe']" class="feature-icon" />
+          <h3>專屬空間</h3>
+          <p>為您的俱樂部提供私密的專屬空間，統一管理您的社群。</p>
+        </div>
+        <div class="feature">
+          <font-awesome-icon :icon="['fas', 'comments']" class="feature-icon" />
+          <h3>主題論壇</h3>
+          <p>為每個俱樂部提供專屬討論空間，促進成員交流、分享想法和深入探討共同興趣。</p>
+        </div>
+      </div>
+      <button @click="exploreClubs">探索俱樂部</button>
+    </div>
+
+
     <div class="featured-products-wrapper">
       <div class="featured-products">
-        <div
-          class="featured-product"
-          v-for="(product, index) in products"
-          :key="index"
-          @click="navigateToProductDetails(product.id)"
-        >
+        <div class="featured-product" v-for="(product, index) in products" :key="index"
+          @click="navigateToProductDetails(product.id)">
           <div class="product-image-container" style="height: 300px; width: 300px;">
             <img :src="product.image" :alt="product.name" />
           </div>
@@ -28,30 +48,53 @@
       </div>
     </div>
 
+
     <div class="separator"></div>
 
-    <div class="club-article" >
+    <div class="workshop-article">
       <div class="article-image">
         <div class="cookie-border">
-          <div class="cloud-shape" ></div>
+          <div class="workshop-image"></div>
         </div>
       </div>
       <div class="article-content">
-        <h2 style="font-size: 70px;">加入我們的俱樂部</h2>
-        <h4 >我們的俱樂部為生活中比較不方便交到朋友的人提供了一個理想的平台。在這裡，您可以參加各種有趣的活動，結識志同道合的朋友。每個俱樂部都有自己獨特的內部活動，無論您的興趣是什麼，都能找到適合自己的小組。</h4>
-        <h4>從讀書會到戶外探險，從烹飪課程到藝術工作坊，我們的活動豐富多樣。加入我們，開啟一段充滿驚喜和友誼的旅程！</h4>
-        <button @click="learnMore" style="font-size: 25px; margin: 15px 0px 0px 0px ; font-weight: bold;" >了解更多</button>
+        <h1>創建您的工作坊</h1>
+        <h5>在 InterVerse，您可以輕鬆創建和主持自己的工作坊，並從中獲得收入。無論您是專業人士、創意工作者還是熱愛分享的愛好者，都能在這裡找到屬於自己的舞台。</h5>
+        <h5>設置靈活的定價模式，接受一次性付費或訂閱制。我們提供簡單的工具來管理您的工作坊，讓您專注於創造精彩內容。</h5>
+        <div class="benefits-list">
+          <div class="benefit-item">
+            <font-awesome-icon :icon="['fas', 'check-circle']" />
+            <span>輕鬆設置付費工作坊</span>
+          </div>
+          <div class="benefit-item">
+            <font-awesome-icon :icon="['fas', 'check-circle']" />
+            <span>靈活的定價選項</span>
+          </div>
+          <div class="benefit-item">
+            <font-awesome-icon :icon="['fas', 'check-circle']" />
+            <span>直接從您的專業知識中獲利</span>
+          </div>
+          <div class="benefit-item">
+            <font-awesome-icon :icon="['fas', 'check-circle']" />
+            <span>建立您的專業品牌</span>
+          </div>
+        </div>
       </div>
+      <button @click="createWorkshop" class="create-button">開始創建工作坊</button>
     </div>
+
+
+    <div class="cta-section">
+      <h2>輕鬆交友，展現真我</h2>
+      <h3>個人主頁動態牆</h3>
+        <p>分享您的日常生活、想法和創意。與朋友互動，獲得靈感，擴展您的社交圈。</p>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import useUserStore from '@/stores/userstore';
-
-const userStore = useUserStore();
-const nickname = ref(userStore.nickname);
 
 const products = ref([
   { id: 'product1', name: '馬克杯', image: '/馬克杯2.png' },
@@ -67,18 +110,33 @@ function navigateToShop() {
   console.log('Navigating to shop');
 }
 
-function learnMore() {
-  console.log('Learn more about the club');
-}
 </script>
 
 <style scoped>
+.item-1 {
+  grid-column: span 1;
+  grid-row: span 1;
+}
 
-.item-1 { grid-column: span 1; grid-row: span 1; }
-.item-2 { grid-column: span 1; grid-row: span 1; }
-.item-3 { grid-column: span 1; grid-row: span 1; }
-.item-4 { grid-column: span 1; grid-row: span 2; }
-.item-5 { grid-column: span 2; grid-row: span 2; }
+.item-2 {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.item-3 {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.item-4 {
+  grid-column: span 1;
+  grid-row: span 2;
+}
+
+.item-5 {
+  grid-column: span 2;
+  grid-row: span 2;
+}
 
 
 .mosaic-grid {
@@ -105,8 +163,10 @@ function learnMore() {
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(232, 204, 204, 0.7); /* 粉藕色半透明背景 */
-  color: #4a3636; /* 深棕色文字 */
+  background: rgba(232, 204, 204, 0.7);
+  /* 粉藕色半透明背景 */
+  color: #4a3636;
+  /* 深棕色文字 */
   padding: 10px;
 }
 
@@ -126,7 +186,7 @@ function learnMore() {
 .featured-products-wrapper {
   display: flex;
   background-color: #FBE4E1;
-  min-height: 350px; /* 設置最小高度以確保內容顯示正常 */
+  min-height: 350px;
 }
 
 .featured-products {
@@ -203,14 +263,18 @@ function learnMore() {
   background-color: #E4BAB6;
 }
 
-.club-article {
+.workshop-article {
   display: flex;
-  background-color: #F9E1DD;
+  flex-wrap: wrap;
+  background-color: var(--light-background);
   padding: 50px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .article-image {
-  flex: 0 0 35%; /* This sets the image section to 35% of the container width */
+  flex: 0 0 30%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -218,9 +282,9 @@ function learnMore() {
 }
 
 .cookie-border {
-  width: 350px;
-  height: 350px;
-  border: 15px solid #E4BAB6;
+  width: 250px;
+  height: 250px;
+  border: 12px solid var(--primary-color);
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
   overflow: hidden;
   display: flex;
@@ -228,45 +292,181 @@ function learnMore() {
   align-items: center;
 }
 
-.cloud-shape {
-  width: 300px;
-  height: 300px;
-  background-image: url('/public/Capybaras.gif');
+.workshop-image {
+  width: 220px;
+  height: 220px;
+  background-image: url('/Capybaras.gif');
   background-size: cover;
   background-position: center;
   border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
 }
 
 .article-content {
-  flex: 0 0 65%; /* This sets the content section to 65% of the container width */
-  padding-left: 0;
+  flex: 0 0 70%;
+  padding-left: 30px;
 }
-.article-content h2 {
+
+.article-content h1 {
   font-size: 2.5em;
-  color: #97715B;
+  color: var(--accent-color);
   margin-bottom: 20px;
 }
 
-.article-content p {
+.article-content h5 {
   font-size: 1.1em;
   line-height: 1.6;
-  color: #6B5147;
+  color: var(--text-color);
   margin-bottom: 15px;
+  font-weight: normal;
 }
 
-.article-content button {
-  background-color: #F3D2A8;
-  color: #97715B;
+.benefits-list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+.benefit-item {
+  flex: 0 0 50%;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.benefit-item svg {
+  color: var(--accent-color);
+  margin-right: 10px;
+}
+
+.benefit-item span {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.create-button {
+  position: absolute;
+  bottom: 30px;
+  right: 50px;
+  background-color: var(--accent-color);
+  color: var(--light-background);
   border: none;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 1.1em;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
   border-radius: 5px;
 }
 
-.article-content button:hover {
-  background-color: #EEC48D;
+.create-button:hover {
+  background-color: var(--secondary-color);
+}
+
+
+.hero-section {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hero-section h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+}
+
+.hero-section>p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 40px;
+}
+
+.feature {
+  flex: 1;
+  margin: 0 15px;
+  max-width: 300px;
+}
+
+.feature-icon {
+  font-size: 2.5em;
+  color: var(--accent-color);
+  margin-bottom: 15px;
+}
+
+.feature h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.feature p {
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+.hero-section button {
+  font-size: 1.1em;
+  padding: 12px 24px;
+  background-color: var(--accent-color);
+  color: var(--light-background);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.hero-section button:hover {
+  background-color: var(--secondary-color);
+}
+
+.cta-section {
+  background-color: var(--secondary-color);
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-color);
+}
+
+.cta-section h2 {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+}
+
+.cta-section p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.cta-section button {
+  font-size: 1.1em;
+  padding: 10px 20px;
+  background-color: var(--accent-color);
+  color: var(--light-background);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .hero-section h1 {
+    font-size: 2.5em;
+  }
+
+  .features {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .feature {
+    margin-bottom: 30px;
+  }
+
+  .cta-section h2 {
+    font-size: 2em;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -288,17 +488,24 @@ function learnMore() {
     writing-mode: horizontal-tb;
   }
 
-  .club-article {
+  .workshop-article {
     flex-direction: column;
   }
 
-  .article-image, .article-content {
+  .article-image,
+  .article-content {
     width: 100%;
   }
 
   .article-content {
     padding-left: 0;
     padding-top: 30px;
+  }
+
+  .create-button {
+    position: static;
+    margin-top: 20px;
+    align-self: flex-end;
   }
 }
 
@@ -317,9 +524,16 @@ function learnMore() {
     height: 250px;
   }
 
-  .cloud-shape {
-    width: 200px;
-    height: 200px;
+  .workshop-article {
+    padding: 30px;
+  }
+
+  .article-content h1 {
+    font-size: 2em;
+  }
+
+  .benefit-item {
+    flex: 0 0 100%;
   }
 }
 
