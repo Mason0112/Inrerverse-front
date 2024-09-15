@@ -8,10 +8,7 @@
         
         <!-- 分類標籤 -->
         <div class="category-tabs">
-          <button class="category-tab active">全部</button>
-          <button class="category-tab">戶外</button>
-          <button class="category-tab">室內</button>
-          <button class="category-tab">混合</button>
+          <button class="active"></button>
         </div>
 
         <!-- 搜索輸入框 -->
@@ -19,7 +16,7 @@
           <input 
             v-model="searchQuery" 
             type="text"
-            placeholder="來探索有趣的聚會吧"
+            placeholder="來探索有趣的工作坊吧"
             @input="filterEvents"
           >
         </div>

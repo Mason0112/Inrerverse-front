@@ -2,7 +2,7 @@
   <div class="ts-container is-fluid">
     <div class="ts-space is-large"></div>
     <div class="ts-container">
-      <div class="ts-header is-huge is-center-aligned"style="color: #e3bdbd">我創建的俱樂部</div>
+      <div class="ts-header is-huge is-center-aligned" style="color: #e3bdbd">我創建的俱樂部</div>
       <div class="ts-space"></div>
       <div class="ts-grid">
         <div class="column is-1-wide"></div>
@@ -33,7 +33,7 @@
                 <th class="is-center-aligned">公開</th>
                 <th class="is-center-aligned">編輯</th>
                 <th class="is-center-aligned">審核</th>
-                <th class="is-center-aligned">成員列表</th>
+                <th class="is-center-aligned">刪除俱樂部</th>
               </tr>
             </thead>
             <tbody>
@@ -70,15 +70,15 @@
                     :to="{ name: 'club-approve2-link', params: { id: club.id } }" 
                     class="ts-button is-mini is-pink"
                   >
-                    管理成員
+                    審核
                   </router-link>
                 </td>
                 <td class="is-center-aligned">
                   <button
-                    @click="handleShowMembers(club.id, club.clubName)"
-                    class="ts-button is-mini is-pink"
+                    @click="handleDeleteClub(club.id, club.clubName)"
+                    class="ts-button is-mini is-negative" style="background-color: pink;"
                   >
-                    查看成員
+                    刪除俱樂部
                   </button>
                 </td>
               </tr>
@@ -88,23 +88,6 @@
         <div class="column is-1-wide"></div>
       </div>
     </div>
-
-    <!-- 成員列表模態框 -->
-    <div v-if="showModal" class="ts-modal is-visible">
-      <div class="ts-box">
-        <div class="ts-content">
-          <h3 class="ts-header">{{ selectedClubName }} 成員列表</h3>
-          <ClubMembersList
-            :key="selectedClubId"
-            :clubId="selectedClubId"
-            @close="handleCloseMembersList"
-          />
-        </div>
-        <div class="ts-actions">
-          <button class="ts-button is-secondary" @click="handleCloseMembersList">關閉</button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -112,14 +95,11 @@
 import { ref, onMounted } from 'vue';
 import axios from "@/plugins/axios";
 import useUserStore from "@/stores/userstore";
-import ClubMembersList from '@/views/club/ClubMembersList.vue';
+import Swal from 'sweetalert2';
 
 const clubs = ref([]);
 const loading = ref(true);
 const error = ref(null);
-const selectedClubId = ref(null);
-const selectedClubName = ref('');
-const showModal = ref(false);
 const userStore = useUserStore();
 
 const fetchMyClubs = async () => {
@@ -139,16 +119,40 @@ const getPhotoUrl = (photoName) => {
   return `${import.meta.env.VITE_API_URL}/clubs/photo/${photoName}`;
 };
 
-const handleShowMembers = (clubId, clubName) => {
-  selectedClubId.value = clubId;
-  selectedClubName.value = clubName;
-  showModal.value = true;
+const handleDeleteClub = (clubId, clubName) => {
+  Swal.fire({
+    title: '確認刪除',
+    text: `您確定真的要刪除俱樂部 "${clubName}" 嗎？`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: '確定刪除',
+    cancelButtonText: '取消'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      confirmDelete(clubId);
+    }
+  });
 };
 
-const handleCloseMembersList = () => {
-  showModal.value = false;
-  selectedClubId.value = null;
-  selectedClubName.value = '';
+const confirmDelete = async (clubId) => {
+  try {
+    await axios.delete(`/clubs/${clubId}`);
+    clubs.value = clubs.value.filter(club => club.id !== clubId);
+    Swal.fire(
+      '刪除成功',
+      '俱樂部已被刪除。',
+      'success'
+    );
+  } catch (err) {
+    console.error('Error deleting club:', err);
+    Swal.fire(
+      '刪除失敗',
+      '刪除俱樂部時發生錯誤。',
+      'error'
+    );
+  }
 };
 
 onMounted(fetchMyClubs);

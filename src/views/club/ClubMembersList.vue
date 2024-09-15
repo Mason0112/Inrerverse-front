@@ -14,7 +14,8 @@
       <p class="text-xl text-gray-500">加載中...</p>
     </div>
 
-    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+      role="alert">
       <strong class="font-bold">錯誤：</strong>
       <span class="block sm:inline">{{ error }}</span>
     </div>
@@ -25,7 +26,7 @@
 
     <div v-else>
       <ul class="member-list">
-        <li v-for="member in members" :key="member.userId" class="member-item">
+        <li v-for="member in members" :key="member.userId" class="member-item" @click="goToUserPost(member.userId)">
           <div class="avatar-container">
             <img v-if="member.photoUrl" :src="member.photoUrl" :alt="member.userName" class="avatar-image">
             <div v-else class="avatar-default">
@@ -36,9 +37,9 @@
             <p class="text-lg font-medium text-gray-900">{{ member.userName }}</p>
             <p class="text-sm text-gray-500">加入時間: {{ formatDate(member.added) }}</p>
           </div>
-         <button v-if="isCreator" @click="confirmRemoveMember(member.userId)" class="delete-button">
-  踢除
-</button>
+          <button v-if="isCreator" @click.stop="confirmRemoveMember(member.userId)" class="delete-button">
+            踢除
+          </button>
 
         </li>
       </ul>
@@ -50,6 +51,8 @@
 import { ref, onMounted } from 'vue';
 import axios from "@/plugins/axios";
 import useUserStore from '@/stores/userstore';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const props = defineProps({
   clubId: {
@@ -57,7 +60,9 @@ const props = defineProps({
     required: true
   }
 });
-
+const goToUserPost = (userId) => {
+  router.push({ name: 'user-post-link', params: { id: userId } });
+};
 const emit = defineEmits(['close']);
 
 const members = ref([]);
@@ -196,8 +201,10 @@ ul {
   font-weight: bold;
   color: #374151;
 }
+
 .delete-button {
-  background-color: #ff4d4f; /* 初始紅色 */
+  background-color: #ff4d4f;
+  /* 初始紅色 */
   color: white;
   font-weight: bold;
   padding: 8px 16px;
@@ -205,20 +212,35 @@ ul {
   border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加陰影 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* 添加陰影 */
 }
 
 .delete-button:hover {
-  background-color: #ff7875; /* 懸停時的顏色變化 */
-  transform: translateY(-2px); /* 懸停時的位移效果 */
+  background-color: #ff7875;
+  /* 懸停時的顏色變化 */
+  transform: translateY(-2px);
+  /* 懸停時的位移效果 */
 }
 
 .delete-button:active {
-  background-color: #d9363e; /* 按壓時的顏色變化 */
-  transform: translateY(0); /* 按壓時的回彈效果 */
+  background-color: #d9363e;
+  /* 按壓時的顏色變化 */
+  transform: translateY(0);
+  /* 按壓時的回彈效果 */
 }
+
 .member-details {
   margin-top: 10px;
+}
+
+.member-item {
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.member-item:hover {
+  transform: translateY(-5px);
 }
 
 .text-gray-900 {
