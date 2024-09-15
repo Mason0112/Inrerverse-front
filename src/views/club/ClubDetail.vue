@@ -37,7 +37,13 @@
             <h2 class="club-name">{{ club.clubName }}</h2>
             <p class="club-info"><strong></strong> {{ club.description }}</p>
             <p class="club-info"><strong>公開：</strong> {{ club.isPublic ? '是' : '否' }}</p>
-            <p class="club-info"><strong>創建者：</strong> {{ club.userName }}</p>
+            <div class="club-info creator-item" @click="goToUserPost(club.clubCreator)">
+      <strong>創建者：</strong>
+      <div class="creator-content">
+        <n-avatar :src="creatorPhotoUrl" :fallback-src="defaultAvatarUrl" :size="40" round />
+        <span>{{ club.userName }}</span>
+      </div>
+    </div>
 
             <div v-if="isMember" class="member-status">歡迎來到俱樂部</div>
             <div v-else-if="isPending" class="member-status pending">您的申請正在審核中</div>
@@ -92,6 +98,7 @@ import ClubPhotoAlbum from './ClubPhotoAlbum.vue';
 import ClubEvent from '../Event/ClubEvent.vue';
 import AddClubEventForm from '../Event/AddClubEventForm.vue';
 import forum from '../forum/forum.vue';
+import { NAvatar } from 'naive-ui';
 
 const router = useRouter();
 const route = useRoute();
@@ -111,7 +118,24 @@ const clubIdtoForum = ref(route.params.id);
 const showModal = ref(false);
 const membersListRef = ref(null);
 const clubEventComponent = ref(null);
+const creatorPhotoUrl = ref('');
+const defaultAvatarUrl = 'https://via.placeholder.com/50';
 
+const fetchCreatorPhoto = async () => {
+  try {
+    if (club.value && club.value.clubCreator) {
+      const photoResponse = await axios.get(`/user/secure/profile-photo/${club.value.clubCreator}`);
+      creatorPhotoUrl.value = photoResponse.data || defaultAvatarUrl;
+    }
+  } catch (error) {
+    console.error('獲取創建者頭像失敗:', error);
+    creatorPhotoUrl.value = defaultAvatarUrl;
+  }
+};
+
+const goToUserPost = (userId) => {
+  router.push({ name: 'user-post-link', params: { id: userId } });
+};
 const openModal = () => {
   showModal.value = true;
 };
@@ -165,7 +189,7 @@ const fetchClubDetails = async () => {
   try {
     const response = await axios.get(`/clubs/${clubId}`);
     club.value = response.data;
-
+    await fetchCreatorPhoto();
     const memberResponse = await axios.get(`/clubMember/club/${clubId}/approved-members`);
     const isCurrentUserMember = memberResponse.data.some(member => member.userId === userStore.userId);
     
@@ -372,5 +396,28 @@ h1 {
   .modal-content {
     width: 95%;
   }
+}
+.creator-item {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+
+
+.creator-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 10px;
+}
+
+.creator-content .n-avatar {
+  transition: all 0.3s ease;
+}
+
+.creator-item:hover .n-avatar {
+  transform: scale(1.1);
 }
 </style>
