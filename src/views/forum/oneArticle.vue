@@ -121,32 +121,37 @@
 };
 
 
-  onMounted(async () => {
+onMounted(async () => {
   try {
     const articleId = route.params.id;
+    let articleData;
     if (route.state && route.state.articleData) {
-      article.value = route.state.articleData;
+      articleData = route.state.articleData;
     } else {
       const response = await axios.get(`/club/article/oneArticle/${articleId}`);
-      article.value = response.data;
-      article.user.avatar = fetchUserAvatar(article.userId)
+      articleData = response.data;
     }
 
     // 獲取文章作者的頭像
-    if (article.value.userId) {
-      article.value.user = { avatar: await fetchUserAvatar(article.value.userId) };
+    if (articleData.userId) {
+      articleData.user = { avatar: await fetchUserAvatar(articleData.userId) };
     }
 
-    if(!Array.isArray(article.value.comments)){
-      article.value.comments =[];
+    // 確保評論是一個數組
+    if (!Array.isArray(articleData.comments)) {
+      articleData.comments = [];
+    }
 
-       // 獲取每個評論作者的頭像
-    for (let comment of article.value.comments) {
+    // 獲取每個評論作者的頭像
+    for (let comment of articleData.comments) {
       if (comment.userId) {
         comment.user = { avatar: await fetchUserAvatar(comment.userId) };
       }
     }
-    }
+
+    // 設置文章數據
+    article.value = articleData;
+
     await checkLikeStatus();
   } catch (error) {
     console.error('Error fetching article:', error);
