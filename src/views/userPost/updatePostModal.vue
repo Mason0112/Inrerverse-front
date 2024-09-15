@@ -10,8 +10,8 @@
                         <textarea v-model="post.content" rows="4" class="form-control"></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="hideModal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="saveChanges">Save changes</button>
+                        <button type="button" class="btn btn-secondary" @click="saveChanges">Save changes</button>
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="hideModal">Close</button>
                     </div>
                 </div>
             </div>

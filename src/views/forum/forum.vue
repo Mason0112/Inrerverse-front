@@ -254,22 +254,42 @@ async function checkLikeStatus() {
 }
 
 // 切換按讚狀態
+
 async function toggleLike(article) {
-    try {
-        await axios.post('/articleLike', null, {
-            params: { userId: userId, articleId: article.id, type: 1 }
-        });
-        article.isLiked = !article.isLiked;
-        if(article.likeCount=null){
-          article.likeCount=0;
-        }
-        article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
-        message.success(article.isLiked ? '已按讚!' : '已取消讚!');
-    } catch (error) {
-        console.error('Error toggling like:', error);
-        message.error('更新按讚狀態失敗');
-    }
+  // if (!article.value || !userId) return;
+  try {
+    const response = await axios.post('/articleLike', null, {
+      params: { 
+        userId: userId, 
+        articleId: article.id, 
+        type: article.isLiked ? 0 : 1 // 0 表示取消讚，1 表示按讚
+      }
+    });
+    article.isLiked = !article.isLiked;
+    article.likeCount = (article.likeCount) + (article.isLiked ? 1 : -1);
+    message.success(article.isLiked ? '已按讚!' : '已取消讚!');
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    message.error('更新按讚狀態失敗');
+  }
 }
+
+// async function toggleLike(article) {
+//     try {
+//         await axios.post('/articleLike', null, {
+//             params: { userId: userId, articleId: article.id, type: 1 }
+//         });
+//         article.isLiked = !article.isLiked;
+//         if(article.likeCount=null){
+//           article.likeCount=0;
+//         }
+//         article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
+//         message.success(article.isLiked ? '已按讚!' : '已取消讚!');
+//     } catch (error) {
+//         console.error('Error toggling like:', error);
+//         message.error('更新按讚狀態失敗');
+//     }
+// }
 
 async function searchByHashtag(hashtag) {
   try {
@@ -544,10 +564,10 @@ async function submit() {
 }
 
 :deep(.n-list-item){
-  background-color: #FEE8E8;
+  background-color: #FFF5EE;
 }
 
 :deep(.n-list-item):hover{
-  background-color: #EEC48D;
+  background-color: #FEE8E8 !important; 
 }
 </style>

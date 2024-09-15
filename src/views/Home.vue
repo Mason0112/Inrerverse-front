@@ -16,6 +16,7 @@
         <div class="feature">
           <font-awesome-icon :icon="['fas', 'dollar-sign']" class="feature-icon" />
           <h3>付費活動</h3>
+          <p>在這裡輕鬆管理和參加活動。</p>
           <p>在此平台輕鬆管理和收費付費活動。</p>
         </div>
         <div class="feature">
