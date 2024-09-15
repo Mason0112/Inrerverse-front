@@ -116,7 +116,7 @@ const goToEventDetail = (eventId) => {
 };
 
 const columns = [
-  { title: '用戶ID', key: 'userId' },
+  // { title: '用戶ID', key: 'userId' },
   { title: '用戶名', key: 'userName' },
   {
     title: '操作',

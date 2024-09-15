@@ -201,6 +201,8 @@ async function uploadPhoto() {
   text-align: center;
   align-items: center;
   box-shadow: 0 2px 10px rgba(228, 186, 182, 0.1);
+  white-space: pre-wrap;
+
 }
 
 .profile-info {

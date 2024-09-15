@@ -173,7 +173,7 @@ function finishCheckout() {
   localStorage.removeItem('checkoutTotal');
 
   // Redirect to user orders page
-  router.push({ name: 'user-orders' });
+  router.push({ name: 'home-link' });
 }
 
 function handleError(error) {
