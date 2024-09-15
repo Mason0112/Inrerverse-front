@@ -141,9 +141,9 @@ function register() {
 <style scoped>
 .card-img-left {
   width: 45%;
-  /* Link to your background image using in the property below! 
+  /* Link to your background image using in the property below!  */
   background: scroll center
-    url("https://source.unsplash.com/WEQbe2jBg40/414x512"); */
+    url("/public/user\ register\ pic.jpg");
   background-size: cover;
 }
 
