@@ -11,19 +11,19 @@
               <StaticElement name="register_title" content="註冊" tag="h1" />
               <StaticElement name="divider" tag="hr" />
 
-              <TextElement name="accountNumber" placeholder="請輸入帳號" rules="required" />
+              <TextElement name="accountNumber" placeholder="請輸入帳號" field-name="帳號" rules="required" />
 
               <TextElement name="password" input-type="password"
-                :rules="['required', 'min:8', 'same:password_confirmation']" field-name="Password"
+                :rules="['required', 'min:8', 'same:password_confirmation']" field-name="密碼"
                 placeholder="請輸入密碼" />
               <TextElement name="password_confirmation" input-type="password" :rules="['required']"
-                field-name="Password confirmation" placeholder="再次輸入密碼" />
+                field-name="密碼確認" placeholder="再次輸入密碼" />
 
               <TextElement name="email" input-type="email" :rules="['required', 'max:255', 'email']"
                 placeholder="請輸入Email" field-name="Email"
-                description="You will receive a confirmation letter to this email." />
+                description="驗證信將會寄到您輸入的Email郵件地址。" />
 
-              <TextElement name="nickname" placeholder="請輸入暱稱" rules="required" />
+              <TextElement name="nickname" placeholder="請輸入暱稱" field-name="暱稱" rules="required" />
 
               <DateElement name="birthday" placeholder="生日" field-name="生日" :rules="['required', 'before:today']"
                 display-format="YYYY-MM-DD" />
@@ -46,11 +46,11 @@
                 }"
               /> -->
 
-              <TextElement name="country" placeholder="請輸入國籍" rules="required" :columns="{
+              <TextElement name="country" placeholder="請輸入國籍" field-name="國籍" rules="required" :columns="{
                 container: 6,
                 wrapper: 12,
               }" />
-              <TextElement name="city" placeholder="請輸入居住城市" rules="required" :columns="{
+              <TextElement name="city" placeholder="請輸入居住城市" field-name="居住城市" rules="required" :columns="{
                 container: 6,
                 wrapper: 12,
               }" />
@@ -143,7 +143,7 @@ function register() {
   width: 45%;
   /* Link to your background image using in the property below!  */
   background: scroll center
-    url("/public/user\ register\ pic.jpg");
+    url("/user\ register\ pic.jpg");
   background-size: cover;
 }
 
