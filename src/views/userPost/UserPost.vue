@@ -370,7 +370,14 @@ async function toggleLike(post) {
   }
 }
 
-
+async function updateLikeCount(post) {
+  try {
+    const response = await axios.get(`/userPost/${post.id}/likeCount`);
+    post.likeCount = response.data;
+  } catch (error) {
+    console.error('Error fetching like count:', error);
+  }
+}
 
 //渲染comment
 async function fetchComments(postId) {
@@ -762,7 +769,7 @@ h2 {
 }
 
 
-.post-author {
+post-author {
   font-weight: bold;
   color: var(--dark-pink);
   font-size: 1.1em;
@@ -775,7 +782,6 @@ h2 {
   border-radius: 8px;
   padding: 15px;
   margin-bottom: 15px;
-  white-space: pre-wrap
 }
 
 /* 点赞部分 */
