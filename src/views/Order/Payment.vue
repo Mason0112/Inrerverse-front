@@ -18,6 +18,10 @@
             <input type="radio" name="payment" value="paypal" v-model="selectedPayment" />
             Paypal
           </label>
+          <label class="payment-option">
+            <input type="radio" name="payment" value="wallet" v-model="selectedPayment" />
+            錢包扣款
+          </label>
         </div>
       </div>
       <div class="payment-divider"></div>
