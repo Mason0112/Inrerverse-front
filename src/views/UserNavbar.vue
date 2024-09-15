@@ -30,13 +30,8 @@
               </RouterLink></li>
             </ul>
           </li>
-<<<<<<< HEAD
-          <li class="nav-item" v-show="userStore.isLoggedIn">
-            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }" >我的動態牆</RouterLink>
-=======
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'user-post-link' }">我的動態牆</RouterLink>
->>>>>>> main
           </li>
           <!-- Other items -->
           <li class="nav-item">
