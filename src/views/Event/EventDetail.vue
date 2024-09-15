@@ -241,7 +241,6 @@ const formatDateTime = (dateTimeString) => {
 
 const handleParticipation = async () => {
   if (!canParticipate.value) return;
-
   loading.value = true;
   let participantResponse = null;
   let transactionResponse = null;
@@ -253,43 +252,49 @@ const handleParticipation = async () => {
       userId: userStore.userId
     });
 
-    // 如果加入活動成功，再嘗試進行支付
+    // 如果加入活動成功
     if (participantResponse.status === 201) {
-      // 將 event ID 轉換為五位數格式，使用 padStart 方法
-      const formattedEventId = String(event.value.id).padStart(5, '0');
-      const formattedUserId = String(userStore.userId).padStart(5, '0')
-
-      transactionResponse = await axios.post('/transaction/add', {
-        transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`,  //R=request
-        amount: -eventDetail.value.fee,
-        paymentMethod: '錢包支付',
-        status: 2,
-        user: {
-          id: userStore.userId
-        }
-      });
-
-      // 如果兩個操作都成功
-      if (transactionResponse.status === 201) {
-        message.success(`成功提交參加請求並將從錢包支付${eventDetail.value.fee}元活動款項`, {
+      if (eventDetail.value.fee === 0) {
+        // 如果是免費活動
+        message.success('成功提交參加請求', {
           closable: true,
           duration: 5000
         });
+      } else {
+        // 如果是付費活動
+        const formattedEventId = String(event.value.id).padStart(5, '0');
+        const formattedUserId = String(userStore.userId).padStart(5, '0');
+        transactionResponse = await axios.post('/transaction/add', {
+          transactionNo: `E${formattedEventId}${event.value.eventName}U${formattedUserId}R`, //R=request
+          amount: -eventDetail.value.fee,
+          paymentMethod: '錢包支付',
+          status: 2,
+          user: {
+            id: userStore.userId
+          }
+        });
 
-        // 更新本地狀態
-        participationStatus.value = {
-          eventId: route.params.id,
-          userId: userStore.userId,
-          status: 0  // 0 表示待審核狀態
-        };
+        if (transactionResponse.status === 201) {
+          message.success(`成功提交參加請求並將從錢包支付${eventDetail.value.fee}元活動款項`, {
+            closable: true,
+            duration: 5000
+          });
+        }
       }
+
+      // 更新本地狀態
+      participationStatus.value = {
+        eventId: route.params.id,
+        userId: userStore.userId,
+        status: 0 // 0 表示待審核狀態
+      };
     }
   } catch (error) {
     console.error('處理參與請求時發生錯誤:', error);
 
     // 錯誤處理和回滾邏輯
-    if (participantResponse && participantResponse.status === 201) {
-      // 如果加入活動成功但支付失敗，需要取消加入活動
+    if (participantResponse && participantResponse.status === 201 && eventDetail.value.fee !== 0) {
+      // 如果加入活動成功但支付失敗（僅針對付費活動），需要取消加入活動
       try {
         await axios.delete(`/eventParticipant/${route.params.id}/${userStore.userId}`);
         console.log('成功回滾活動參與');
@@ -305,7 +310,7 @@ const handleParticipation = async () => {
 
     // 根據錯誤類型顯示不同的錯誤消息
     if (error.response) {
-      if (error.response.status === 400) {
+      if (error.response.status === 400 && eventDetail.value.fee !== 0) {
         message.error('餘額不足，請先儲值', {
           closable: true,
           duration: 5000
