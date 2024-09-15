@@ -2,7 +2,6 @@
   <div class="payment-container">
     <div class="payment-header">
       <img src="/interverse navlogo.png" alt="Interverse Logo" class="logo">
-      <h1>Stripe 付款</h1>
     </div>
     <div class="payment-form">
       <form @submit.prevent="handleSubmit" id="payment-form" aria-label="信用卡支付表單">
@@ -35,6 +34,11 @@
           儲值 ${{ amount }}
         </button>
       </form>
+
+      <div class="powered-by">
+        <span>powered by</span>
+        <font-awesome-icon :icon="['fab', 'stripe']" />
+      </div>
     </div>
   </div>
 </template>
@@ -258,6 +262,24 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.powered-by {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  color: var(--text-color-light);
+  font-size: 14px;
+}
+
+.powered-by span {
+  margin-right: 8px;
+}
+
+.powered-by svg {
+  font-size: 24px;
+  color: #6772e5; /* Stripe 的標誌藍色 */
+}
+
 @media (max-width: 768px) {
   .payment-container {
     padding: 20px;
@@ -274,6 +296,14 @@ button:disabled {
 
   button {
     font-size: 16px;
+  }
+
+  .powered-by {
+    font-size: 12px;
+  }
+
+  .powered-by svg {
+    font-size: 20px;
   }
 }
 </style>

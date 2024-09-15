@@ -55,9 +55,9 @@
       <n-space vertical>
         <n-radio-group v-model:value="paymentMethod" name="paymentMethod">
           <n-space>
-            <n-radio value="creditCard">信用卡支付</n-radio>
+            <n-radio value="creditCard" class="stripe">信用卡支付 <font-awesome-icon :icon="['fab', 'stripe']" /></n-radio>
             <n-radio value="linePay">LINE Pay</n-radio>
-            <n-radio value="linePay">PayPal</n-radio>
+            <n-radio value="PayPal" class="paypal">PayPal <font-awesome-icon :icon="['fab', 'paypal']" /></n-radio>
           </n-space>
         </n-radio-group>
         <n-input-number v-model:value="depositAmount" placeholder="請輸入儲值金額" min="100" step="100"/>
@@ -361,32 +361,14 @@ function withdraw() {
   color: var(--text-color);
 }
 
-/* Naive UI 組件樣式覆蓋 */
-:deep(.n-card) {
-  background-color: var(--background-color);
-  color: var(--text-color);
+.stripe svg {
+  font-size: 24px;
+  color: #6772e5; /* Stripe 的標誌藍色 */
 }
 
-:deep(.n-button) {
-  background-color: var(--secondary-color);
-  color: var(--text-color);
-}
-
-:deep(.n-button:hover) {
-  background-color: var(--primary-color);
-}
-
-:deep(.n-input-number) {
-  background-color: var(--background-color);
-  color: var(--text-color);
-}
-
-:deep(.n-radio) {
-  color: var(--text-color);
-}
-
-:deep(.n-radio__dot) {
-  background-color: var(--accent-color);
+.paypal svg {
+  font-size: 16px;
+  color: #003087;
 }
 
 </style>
