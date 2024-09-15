@@ -2,7 +2,7 @@
   <div class="ts-container is-fluid">
     <div class="ts-space is-large"></div>
     <div class="ts-container">
-      <div class="ts-header is-huge is-center-aligned" style="color: #e3bdbd">我創建的俱樂部</div>
+      <h1>我創建的俱樂部</h1>
       <div class="ts-space"></div>
       <div class="ts-grid">
         <div class="column is-1-wide"></div>
@@ -222,5 +222,13 @@ onMounted(fetchMyClubs);
 
 .club-photo-link:hover :deep(.ts-image.is-rounded) {
   transform: scale(1.1);
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
 }
 </style>

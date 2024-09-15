@@ -3,7 +3,7 @@
     <div class="ts-space"></div>
     <div class="custom-container">
       <div class="ts-content">
-        <div class="ts-header is-huge is-center-aligned">工作坊活動列表</div>
+        <h1>工作坊活動列表</h1>
         <div class="ts-space"></div>
         
         <!-- 分類標籤 -->
@@ -397,5 +397,13 @@ onMounted(() => {
 
 .custom-button:hover {
   background-color: #FFA07A !important;
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
 }
 </style>

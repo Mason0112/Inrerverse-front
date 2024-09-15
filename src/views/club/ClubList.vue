@@ -1,14 +1,14 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-4xl font-bold text-center text-pink-400 mb-8" style="color: #e3bdbd">所有俱樂部</h1>
-    <div class="flex justify-end mb-4">
+    <h1 class="text-4xl font-bold text-center text-pink-400 mb-8">所有俱樂部</h1>
+    <div class="button-container">
       <router-link :to="{ name: 'club-form-link' }" class="new-club-button">新增俱樂部</router-link>
       <router-link :to="{ name: 'club-favorite-link' }" class="new-club-button">我的收藏</router-link>
     </div>
     <!-- 搜索和排序控件 -->
-    <div class="flex justify-between items-center mb-4">
+    <div class="search-sort-container">
       <div class="ts-input is-end-icon custom-input search-input">
-        <input v-model="searchQuery" type="text" placeholder="搜索俱樂部..." @input="filterClubs">
+        <input v-model="searchQuery" type="text" placeholder="搜索俱樂部" @input="filterClubs">
         <i class="search icon"></i>
       </div>
       <div class="ts-select custom-select sort-select">
@@ -190,12 +190,12 @@ onMounted(fetchClubs);
   display: flex;
   flex-direction: column;
   height: 350px;
-  border: 1px solid #fcd9e6;
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
-  background-color: #fff0f5;
+  background-color: var(--light-background);
   position: relative;
 }
 
@@ -222,8 +222,8 @@ onMounted(fetchClubs);
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #fde8ef;
-  color: #f8a5c2;
+  background-color: var(--light-background);
+  color: var(--muted-color);
   font-size: 1.2rem;
 }
 
@@ -240,22 +240,22 @@ onMounted(fetchClubs);
   font-size: 1.25rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
-  color: #e3bdbd;
+  color: var(--text-color);
 }
 
 .club-name a {
-  color: #e3bdbd;
+  color: var(--text-color);
   text-decoration: none;
   transition: color 0.3s ease;
 }
 
 .club-name a:hover {
-  color: #d3a9a9;
+  color: var(--accent-color);
 }
 
 .review-status {
   color: white;
-  background-color: rgba(248, 165, 194, 0.7);
+  background-color: var(--accent-color);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 0.875rem;
@@ -272,8 +272,8 @@ onMounted(fetchClubs);
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: rgba(255, 209, 220, 0.8);
-  color: #ff69b4;
+  background-color: rgba(228, 186, 182, 0.8);
+  color: var(--accent-color);
   font-size: 1.5rem;
   width: 40px;
   height: 40px;
@@ -288,17 +288,23 @@ onMounted(fetchClubs);
 }
 
 .favorite-button:hover {
-  background-color: rgba(255, 182, 193, 0.9);
+  background-color: rgba(243, 210, 168, 0.9);
 }
 
 .favorite-button.is-favorite {
-  background-color: rgba(255, 105, 180, 0.8);
+  background-color: var(--accent-color);
   color: white;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .new-club-button {
   padding: 0.75rem 1.5rem;
-  background-color: #aa6788;
+  background-color: var(--accent-color);
   color: white;
   border: none;
   border-radius: 2rem;
@@ -307,21 +313,52 @@ onMounted(fetchClubs);
   font-weight: bold;
   text-decoration: none;
   display: inline-block;
-  box-shadow: 0 4px 6px rgba(255, 105, 180, 0.4);
-  margin-left: 1rem;
+  box-shadow: 0 4px 6px rgba(151, 113, 91, 0.4);
+  margin: 0 0.5rem;
 }
 
 .new-club-button:hover {
-  background-color: #cb6ea1;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
   transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(255, 105, 180, 0.6);
+  box-shadow: 0 6px 8px rgba(151, 113, 91, 0.6);
+}
+
+.search-sort-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .custom-input {
-  width: 78%;
+  width: 50%;
+  margin-right: 1rem;
 }
 
 .sort-select {
   width: 20%;
+}
+
+.sort-select select {
+  background-color: var(--light-background);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  padding: 0.5rem;
+}
+
+.sort-select select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px rgba(151, 113, 91, 0.2);
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
 }
 </style>

@@ -298,6 +298,11 @@ watch(
 }
 
 .nav-link {
+  color: var(--text-color) !important;
+  font-size: 1.2rem;
+  margin: 0 0.8rem;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
   cursor: pointer;
 }
 
