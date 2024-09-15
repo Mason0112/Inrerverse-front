@@ -1,5 +1,5 @@
 <template>
-    <div class="product-management  admin-theme">
+    <div class="product-management  admin-theme full-height">
     <h3 class="main-title">商品管理</h3>
     <div class="control-panel">
       <button type="button" class="ts-button is-primary" @click="openModal('insert')">開啟新增</button>
@@ -244,6 +244,12 @@ function callRemove(id){
 
 .product-item:hover {
     box-shadow: 0 4px 15px rgba(133, 97, 77, 0.2);
+}
+
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {

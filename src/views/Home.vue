@@ -3,7 +3,7 @@
 
     <div class="mosaic-grid">
       <div v-for="num in 18" :key="num" :class="['mosaic-item', `item-${(num - 1) % 5 + 1}`]">
-        <img :src="`http://localhost:8080/interverse/products/10/${69 - num}`" :alt="`Image ${18 - num}`" />
+        <img :src="`http://localhost:8080/interverse/products/1/${21 - num}`" :alt="`Image ${18 - num}`" />
         <div class="mosaic-caption">
         </div>
       </div>
