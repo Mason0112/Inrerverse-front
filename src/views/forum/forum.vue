@@ -221,19 +221,21 @@ function resetSearch() {
   message.success("返回文章列表");
 }
 
-async function enterArticle(articleId){
-  try{
+async function enterArticle(articleId) {
+  try {
     const response = await axios.get(`/club/article/oneArticle/${articleId}`);
     const articleData = response.data;
-    console.log("Article data from API:",articleData)
+    console.log("Article data from API:", articleData);
 
     router.push({
-      name:"club-article-link",
-      params:{ id : articleId
+      name: "club-article-link",
+      params: { 
+        id: props.clubIdtoForum,
+        articleId: articleId
       },
-      state:{ articleData }
-    })
-  }catch(error){
+      state: { articleData }
+    });
+  } catch (error) {
     console.error("Error fetching article details:", error);
     message.error("Failed to fetch article details");
   }
@@ -431,7 +433,7 @@ async function submit() {
 }
 
 :deep(.n-thing-header) {
-  background-color: #FFD6D6;
+  background-color: #E4BAB6;
   padding: 10px;
 }
 
@@ -544,10 +546,10 @@ async function submit() {
 }
 
 :deep(.n-list-item){
-  background-color: #FEE8E8;
+  background-color: #FFF5EE;
 }
 
 :deep(.n-list-item):hover{
-  background-color: #EEC48D;
+  background-color: #FEE8E8 !important; 
 }
 </style>

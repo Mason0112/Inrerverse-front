@@ -74,7 +74,18 @@ const routes = [
 
     //靖緯
     { path: "/club/all", name: "club-all-link", component: ClubList},
-    { path: "/club/:id", name:"club-detail-link", component:ClubDetail},
+    { path: "/club/:id", name:"club-detail-link", component:ClubDetail,children: [
+        {
+          path: 'forum',
+          component: forum,
+          name: 'club-forum',
+        },
+        {
+          path: 'forum/:articleId',
+          name: 'club-article-link',
+          component: oneArticle,
+        }
+      ]},
     { path: "/club/new", name:"club-form-link", component:ClubForm},
     { path: "/club/:id/edit",name:"club-edit-link", component:ClubEdit},
     { path: "/clubMember/approve",name:"club-approve-link", component:ClubApprove},

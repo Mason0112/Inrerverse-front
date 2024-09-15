@@ -75,7 +75,7 @@
 
       <!-- 新增的第三個標籤：俱樂部論壇 -->
       <div class="tab-pane fade" id="club-forum" role="tabpanel" aria-labelledby="club-forum-tab">
-        <forum :clubIdtoForum="clubIdtoForum" :isMember="isMember" @event-added="handleEventAdded" />
+        <forum :clubIdtoForum="clubIdtoForum" :key="$route.fullPath" :isMember="isMember" @event-added="handleEventAdded" />
       </div>
     </div>
   </div>
