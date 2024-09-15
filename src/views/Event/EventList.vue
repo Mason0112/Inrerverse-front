@@ -11,6 +11,17 @@
           <button class="active"></button>
         </div>
 
+        <div class="search-and-add">
+
+          <!-- 新增工作坊按鈕 -->
+            <router-link 
+              :to="{ name: 'event-addWorkshop-link' }" 
+              class="ts-button custom-button"
+              style="margin: 0px 0px 10px 0px ;"
+            >
+              新增工作坊
+            </router-link>
+            
         <!-- 搜索輸入框 -->
         <div class="search-container">
           <input 
@@ -21,20 +32,12 @@
           >
         </div>
 
-        <!-- 新增工作坊按鈕 -->
-        <div class="ts-row is-end-aligned">
-          <router-link 
-            :to="{ name: 'event-addWorkshop-link' }" 
-            class="ts-button custom-button"
-            style="margin: 0px 0px 10px 0px ;"
-          >
-            新增工作坊
-          </router-link>
-        </div>
-
+      </div>
         <!-- 工作坊列表 -->
-        <div v-if="loading" class="ts-center">
-          <n-spin size="large" />
+        <div v-if="loading" class="spinner-container">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">載入中</span>
+          </div>
         </div>
         <div v-else-if="filteredEvents.length === 0" class="ts-center">
           沒有找到工作坊活動
@@ -292,6 +295,15 @@ onMounted(() => {
 }
 
 .search-container {
+  width: 50%;
+  margin-right: 20px;
+}
+
+.search-and-add {
+  display: flex;
+  flex-direction: column; /* 改为垂直排列 */
+  align-items: center; /* 水平居中 */
+  justify-content: center; /* 垂直居中 */
   margin-bottom: 20px;
 }
 
@@ -299,8 +311,10 @@ onMounted(() => {
   width: 100%;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
+  background-color: var(--light-background);
+  color: var(--text-color);
 }
 
 .event-grid {
@@ -310,7 +324,7 @@ onMounted(() => {
 }
 
 .event-card {
-  background: #fff;
+  background: var(--light-background);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -340,7 +354,8 @@ onMounted(() => {
 
 .event-tag {
   display: inline-block;
-  background: #FFD700;
+  background: var(--secondary-color);
+  color: var(--text-color);
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 12px;
@@ -350,6 +365,7 @@ onMounted(() => {
 .event-name {
   font-size: 18px;
   margin-bottom: 10px;
+  color: var(--text-color);
 }
 
 .event-creator {
@@ -367,7 +383,7 @@ onMounted(() => {
 
 .event-date, .event-location {
   font-size: 14px;
-  color: #666;
+  color: var(--light-text-color);
   margin-bottom: 5px;
 }
 
@@ -376,8 +392,8 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f0f0f0;
-  color: #999;
+  background: var(--light-background);
+  color: var(--muted-color);
 }
 
 .action-buttons {
@@ -391,12 +407,19 @@ onMounted(() => {
 }
 
 .custom-button {
-  background-color: #FFB6C1 !important;
+  background-color: #97715B !important;
   color: #FFF !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 10px;
 }
 
 .custom-button:hover {
-  background-color: #FFA07A !important;
+  background-color: var(--secondary-color) !important;
+  color: var(--text-color) !important;
 }
 
 h1 {
@@ -406,4 +429,18 @@ h1 {
   font-size: 2.2rem;
   text-align: center;
 }
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100px; /* 可以根据需要调整高度 */
+}
+
+.spinner-border {
+  width: 3rem; /* 可以根据需要调整大小 */
+  height: 3rem;
+  color: var(--accent-color) !important; /* 使用自定义颜色 */
+}
+
 </style>
