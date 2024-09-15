@@ -17,6 +17,13 @@
           <ul class="payment-icons">
             <li><font-awesome-icon :icon="['fab', 'cc-stripe']" /></li>
             <li><font-awesome-icon :icon="['fab', 'cc-paypal']" /></li>
+            <li class="line-pay-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 60">
+              <path d="M13 0h134c7.18 0 13 5.82 13 13v34c0 7.18-5.82 13-13 13H13C5.82 60 0 54.18 0 47V13C0 5.82 5.82 0 13 0z" fill="#00B900"/>
+              <path d="M45.13 33.67h-5.86V19.94h5.86v13.73zm16.03-13.73l-5.86 9.97v3.76h-5.86V19.94h5.86l5.86 9.97v-9.97h5.86v13.73h-5.86v-3.76l-5.86-9.97zm26 0h-5.86v13.73h5.86V19.94zm26 13.73h-5.86V19.94h5.86v13.73z" fill="#FFF"/>
+              <path d="M146.35 19.94h-16.7v3.91h5.42v9.82h5.86v-9.82h5.42v-3.91z" fill="#FFF"/>
+            </svg>
+          </li>
           </ul>
           <ul>
             <li>服務條款</li>
