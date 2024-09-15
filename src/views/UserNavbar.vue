@@ -25,28 +25,12 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink" :class="{ 'show': dropdownStates.club }" @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')">
               <li><RouterLink class="dropdown-item" :to="{ name: 'club-approve-link' }" @click="closeDropdown('club')">俱樂部管理
               </RouterLink></li>
-              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">工作坊管理
+              <li><RouterLink class="dropdown-item" :to="{ name: 'event-approve-link' }" @click="closeDropdown('club')">工作坊/活動管理
               </RouterLink></li>
             </ul>
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
-            @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')" aria-expanded="dropdownStates.settings">
-              會員動態牆 <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.settings }" />
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
-              :class="{ 'show': dropdownStates.settings }" @mouseenter="openDropdown('settings')" @mouseleave="closeDropdown('settings')">
-              <li><RouterLink class="dropdown-item" :to="{ name: 'post-create-link' }" @click="closeDropdown('settings')">新增動態
-              </RouterLink></li>
-              <RouterLink 
-                class="dropdown-item" 
-                :to="{ name: 'user-post-link', params: { id: currentUserId } }" 
-                @click="closeDropdown('settings')"
-                >
-                我的動態牆
-              </RouterLink>
-
-            </ul>
+          <li class="nav-item">
+            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }">我的動態牆</RouterLink>
           </li>
           <!-- Other items -->
           <li class="nav-item">

@@ -262,8 +262,10 @@ async function toggleLike(article) {
         article.isLiked = !article.isLiked;
         if(article.likeCount=null){
           article.likeCount=0;
+          // console.log(article.likeCount)
         }
         article.likeCount = (article.likeCount) + (article.isLiked ? 1 : 0);
+        console.log(article.likeCount)
         message.success(article.isLiked ? '已按讚!' : '已取消讚!');
     } catch (error) {
         console.error('Error toggling like:', error);
