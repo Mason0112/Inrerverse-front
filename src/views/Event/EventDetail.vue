@@ -26,6 +26,13 @@
                       <div class="detail-label">地點</div>
                       <div class="detail-content">{{ eventDetail.location }}</div>
                     </div>
+                    <div class="detail-item creator-item" @click="goToUserPost(event.eventCreatorId)">
+            <div class="detail-label">主辦者</div>
+            <div class="detail-content creator-content">
+              <n-avatar :src="creatorPhotoUrl" :size="40" />
+              <span>{{ event.creatorName }}</span>
+            </div>
+          </div>
                     <div class="detail-item">
                       <div class="detail-label">開始時間</div>
                       <div class="detail-content">{{ formatDateTime(eventDetail.startTime) }}</div>
@@ -129,6 +136,19 @@ const approvedParticipants = ref([]);
 const message = useMessage();
 const coverPhotoUrl = ref('https://via.placeholder.com/300');
 const defaultAvatarUrl = 'https://via.placeholder.com/50';
+const creatorPhotoUrl = ref(defaultAvatarUrl);
+
+const fetchCreatorPhoto = async () => {
+  try {
+    if (event.value && event.value.eventCreatorId) {
+      const photoResponse = await axios.get(`/user/secure/profile-photo/${event.value.eventCreatorId}`);
+      creatorPhotoUrl.value = photoResponse.data || defaultAvatarUrl;
+    }
+  } catch (error) {
+    console.error('獲取主辦者頭像失敗:', error);
+    creatorPhotoUrl.value = defaultAvatarUrl;
+  }
+};
 
 const fetchEventDetail = async () => {
   try {
@@ -171,6 +191,7 @@ const fetchEvent = async () => {
     const response = await axios.get(`/events/${route.params.id}`);
     event.value = response.data;
     console.log("Event data:", event.value);
+    await fetchCreatorPhoto();
   } catch (error) {
     console.error('獲取活動名稱失敗:', error);
     error.value = '獲取活動名稱失敗';
@@ -435,5 +456,15 @@ onMounted(() => {
 
 .photo-card {
   padding: 20px;
+}
+
+.creator-item {
+  cursor: pointer;
+}
+
+.creator-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 </style>
