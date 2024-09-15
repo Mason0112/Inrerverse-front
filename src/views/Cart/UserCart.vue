@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="ts-breadcrumb is-stepped is-divided">
-            <a href="#!" class="item">我的購物車</a>
+        <div class="ts-breadcrumb is-stepped is-divided cart-title-container ">
+            <h2>我的購物車</h2>
         </div>
         <div class="cart-container has-top-spaced">
             <div class="cart-list">
@@ -180,6 +180,7 @@ body {
 .cart-container {
     display: flex;
     gap: 20px;
+    margin-bottom: 50px; /* 增加底部 margin，避免與 footer 重疊 */
 }
 
 .cart-list {
@@ -236,5 +237,17 @@ padding: 0px;
     padding: 5px;
     margin: 2px;
     width: 5px;
+}
+
+h2 {
+    color: var(--text-color);
+    text-align: center;
+    font-weight: bold;
+}
+
+.cart-title-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; /* 可以根據需要調整 */
 }
 </style>

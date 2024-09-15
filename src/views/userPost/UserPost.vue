@@ -58,15 +58,15 @@
 
       <table class="table table-borderless">
         <tr>
-          <td><font-awesome-icon :icon="['fas', 'location-dot']" /></td>
+          <td><font-awesome-icon :icon="['fas', 'location-dot']" style="color: #97715B; background-color: transparent;" /></td>
           <td>{{ userData.country }} , {{ userData.city }}</td>
         </tr>
         <tr>
-          <td><font-awesome-icon :icon="['fas', 'cake-candles']" /></td>
+          <td><font-awesome-icon :icon="['fas', 'cake-candles']" style="color: #97715B; background-color: transparent;"/></td>
           <td>{{ userData.age }} 歲</td>
         </tr>
         <tr>
-          <td><font-awesome-icon :icon="['fas', 'venus-mars']" /></td>
+          <td><font-awesome-icon :icon="['fas', 'venus-mars']" style="color: #97715B; background-color: transparent;"/></td>
           <td>{{ userData.gender }}</td>
         </tr>
       </table>

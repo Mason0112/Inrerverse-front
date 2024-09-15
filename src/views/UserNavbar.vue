@@ -58,7 +58,7 @@
           <li class="nav-item dropdown me-2">
             <a class="nav-link dropdown-toggle" href="#" id="anotherDropdownMenuLink" role="button"
             @mouseenter="openDropdown('person')" @mouseleave="closeDropdown('person')" 
-            aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn"> Welcome, {{ userStore.nickname }}
+            aria-expanded="dropdownStates.person" v-show="userStore.isLoggedIn"> 歡迎回來, {{ userStore.nickname }}
               <font-awesome-icon :icon="['fas', 'user']" /> <font-awesome-icon :icon="['fas', 'caret-down']" :class="{ 'rotate': dropdownStates.person }" />
             </a>
             <ul class="dropdown-menu" aria-labelledby="anotherDropdownMenuLink"
