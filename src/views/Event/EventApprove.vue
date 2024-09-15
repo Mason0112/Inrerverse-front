@@ -34,6 +34,7 @@
                   </n-space>
                   <template #footer>
                     <n-space justify="end">
+                      <n-button size="small" @click.stop="goToEventDetail(event.id)">查看詳情</n-button>
                       <n-button size="small" @click.stop="editEvent(event)">編輯</n-button>
                       <n-button size="small" @click.stop="confirmDelete(event)" type="error" style="background-color: purple">刪除</n-button>
                     </n-space>
@@ -83,6 +84,7 @@
 import { ref, onMounted, h } from 'vue';
 import axios from '@/plugins/axios';
 import useUserStore from "@/stores/userstore";
+import { useRouter } from 'vue-router';
 import {
   NConfigProvider, NCard, NSpin, NResult, NH1, NH2, NH3, NEmpty, NGrid, NGridItem,
   NButton, NDataTable, NTag, NSpace, useMessage, NModal, NForm, NFormItem, NInput,
@@ -106,6 +108,12 @@ const themeOverrides = {
     primaryColorHover: '#9B59B6',
     primaryColorPressed: '#7D3C98',
   }
+};
+
+const router = useRouter();
+
+const goToEventDetail = (eventId) => {
+  router.push({ name: 'event-detail-link', params: { id: eventId } });
 };
 
 const columns = [
