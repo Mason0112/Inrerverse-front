@@ -153,6 +153,8 @@ const submitForm = async () => {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  background-color: #FBE4E1;
+  margin-bottom: 50px;
 }
 
 .photo-preview {

@@ -76,7 +76,7 @@
                 <td class="is-center-aligned">
                   <button
                     @click="handleDeleteClub(club.id, club.clubName)"
-                    class="ts-button is-mini is-negative" style="background-color: pink;"
+                    class="custom-delete-button"
                   >
                     刪除俱樂部
                   </button>
@@ -161,30 +161,32 @@ onMounted(fetchMyClubs);
 <style scoped>
 /* 自定义粉藕色样式 */
 :deep(.ts-button.is-pink) {
-  background-color: #e3bdbd;
+  background-color: #97715B;
   color: white;
 }
 
 :deep(.ts-button.is-pink:hover) {
-  background-color: #d3a9a9;
+  background-color: #F3D2A8;
+  color: #6B5147;
 }
 
 :deep(.ts-table) {
-  border-color: #e3bdbd;
+  border-color: #E4BAB6;
 }
 
 :deep(.ts-table thead) {
-  background-color: #f5e0e0;
+  background-color: #F5E6E3;
 }
 
 :deep(.ts-table tbody tr:hover) {
-  background-color: #faf0f0;
+  background-color: #FBE4E1;
 }
 
 :deep(.ts-table th),
 :deep(.ts-table td) {
   text-align: center;
   vertical-align: middle;
+  color: #6B5147;
 }
 
 :deep(.ts-image.is-rounded) {
@@ -203,12 +205,12 @@ onMounted(fetchMyClubs);
 :deep(.ts-icon.is-photo-icon) {
   width: 100px;
   height: 100px;
-  background-color: #f5e0e0;
+  background-color: #F5E6E3;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 24px;
-  color: #c48888;
+  color: #97715B;
 }
 
 :deep(.ts-icon.is-photo-icon::before) {
@@ -230,5 +232,32 @@ h1 {
   font-weight: 700;
   font-size: 2.2rem;
   text-align: center;
+}
+
+.ts-container {
+  background-color: #FBE4E1 !important;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.custom-delete-button {
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.custom-delete-button:hover {
+  background-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.custom-delete-button:active {
+  transform: translateY(0);
 }
 </style>

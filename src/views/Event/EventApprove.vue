@@ -1,13 +1,12 @@
 <template>
   <n-config-provider :theme-overrides="themeOverrides">
     <n-card class="event-approve-container">
-      <n-h1 class="page-title" style="color: #e3bdbd">我主辦的活動/工作坊</n-h1>
+      <h1>我主辦的活動/工作坊</h1>
       <n-spin :show="loading">
         <n-result v-if="error" status="error" :title="error" />
         <div v-else>
           <!-- 活動列表 -->
           <div v-if="!selectedEvent" class="event-list">
-            <n-h2 class="section-title">您創建的活動</n-h2>
             <n-empty v-if="events.length === 0" description="您還沒有創建任何活動" />
             <n-grid x-gap="12" y-gap="12" cols="1 s:2 m:3 l:4" responsive="screen" v-else>
               <n-grid-item v-for="event in events" :key="event.id">
@@ -367,6 +366,7 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  background-color: var(--background-color);
 }
 
 .page-title {
@@ -376,6 +376,7 @@ onMounted(() => {
 
 .section-title {
   margin-bottom: 15px;
+  color: var(--text-color);
 }
 
 .event-card {
@@ -383,6 +384,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   cursor: pointer;
+  background-color: #FAFAFA;
+  border: 1px solid var(--border-color);
 }
 
 .event-cover {
@@ -393,10 +396,11 @@ onMounted(() => {
 
 .event-name {
   cursor: pointer;
+  color: var(--text-color);
 }
 
 .event-name:hover {
-  color: #8E44AD;
+  color: var(--accent-color);
 }
 
 .approve-button,
@@ -414,5 +418,13 @@ onMounted(() => {
 
 .n-tag {
   margin-right: 8px;
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
+  text-align: center;
 }
 </style>
