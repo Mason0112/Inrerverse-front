@@ -3,7 +3,7 @@
 
     <div class="mosaic-grid">
       <div v-for="num in 18" :key="num" :class="['mosaic-item', `item-${(num - 1) % 5 + 1}`]">
-        <img :src="`http://localhost:8080/interverse/products/1/${21 - num}`" :alt="`Image ${18 - num}`" />
+        <img :src="`http://localhost:8080/interverse/products/1/${57 - num}`" :alt="`Image ${18 - num}`" />
         <div class="mosaic-caption">
         </div>
       </div>
@@ -11,12 +11,12 @@
 
     <div class="hero-section">
       <h1>發現您的理想社群</h1>
-      <p>InterVerse 是一個讓您可以建立和加入俱樂部、參與活動，並與志同道合的人聯繫的平台。</p>
+      <p>InterVerse 找到你感興趣的俱樂部參加、參與活動，並與志同道合的人聯繫的平台。</p>
       <div class="features">
         <div class="feature">
           <font-awesome-icon :icon="['fas', 'dollar-sign']" class="feature-icon" />
-          <h3>付費活動</h3>
-          <p>在這裡輕鬆管理和參加活動。</p>
+          <h3>精彩活動</h3>
+          <p>在這裡舉辦或參加你感興趣的活動。</p>
         </div>
         <div class="feature">
           <font-awesome-icon :icon="['fas', 'globe']" class="feature-icon" />
