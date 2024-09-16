@@ -311,12 +311,12 @@ async function showUserPostList() {
     for (let post of postList.value) {
       post.user.avatar = await fetchUserAvatar(post.user.id);
       
-      // 獲取每個評論作者的頭像
-      if (post.comments && post.comments.length > 0) {
-        for (let comment of post.comments) {
-          comment.user.avatar = await fetchUserAvatar(comment.user.id);
-        }
-      }
+      // // 獲取每個評論作者的頭像
+      // if (post.comments && post.comments.length > 0) {
+      //   for (let comment of post.comments) {
+      //     comment.user.avatar = await fetchUserAvatar(comment.user.id);
+      //   }
+      // }
     }
     await Promise.all(postList.value.map(post => fetchComments(post.id)));
     await checkLikeStatus();
@@ -354,21 +354,43 @@ async function checkLikeStatus() {
 
 // 切換按讚狀態
 async function toggleLike(post) {
+  // if (!article.value || !userId) return;
   try {
-    await axios.post('/postLike', null, {
-      params: { userId: userId, postId: post.id, type: 1 }
+    const response = await axios.post('/postLike', null, {
+      params: { 
+        userId: userId, 
+        postId: post.id, 
+        type: post.isLiked ? 0 : 1 // 0 表示取消讚，1 表示按讚
+      }
     });
     post.isLiked = !post.isLiked;
-    if (post.likeCount = null) {
-      post.likeCount = 0;
-    }
-    post.likeCount = (post.likeCount) + (post.isLiked ? 1 : 0);
+    post.likeCount = (post.likeCount) + (post.isLiked ? 1 : -1);
     message.success(post.isLiked ? '已按讚!' : '已取消讚!');
   } catch (error) {
     console.error('Error toggling like:', error);
     message.error('更新按讚狀態失敗');
   }
 }
+
+
+// async function toggleLike(post) {
+//   if (!post.value || !userId) return;
+
+//   try {
+//     const response = await axios.post('/postLike', null, {
+//       params: { userId: userId, postId: post.id, type: 1 }
+//     });
+//     post.isLiked = !post.isLiked;
+//     if (post.likeCount = null) {
+//       post.likeCount = 0;
+//     }
+//     post.likeCount = (post.likeCount) + (post.isLiked ? 1 : -1);
+//     message.success(post.isLiked ? '已按讚!' : '已取消讚!');
+//   } catch (error) {
+//     console.error('Error toggling like:', error);
+//     message.error('更新按讚狀態失敗');
+//   }
+// }
 
 async function updateLikeCount(post) {
   try {

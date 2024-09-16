@@ -17,6 +17,7 @@
           <li class="nav-item">
             <RouterLink class="nav-link" :to="{ name: 'event-all-link' }">工作坊</RouterLink>
           </li>
+            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }" >我的動態牆</RouterLink>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
             @mouseenter="openDropdown('club')" @mouseleave="closeDropdown('club')" aria-expanded="dropdownStates.club" v-show="userStore.isLoggedIn">
