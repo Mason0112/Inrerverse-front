@@ -104,12 +104,14 @@ import { onMounted, ref,computed } from 'vue';
 import useUserStore from '@/stores/userstore';
 import axios from '@/plugins/axios';
 import { useCartStore } from '@/stores/cartStore';
+import { useRouter } from "vue-router";
 
 import NotificationDropdown from '@/components/user/NotificationDropdown.vue';
 
 const cartStore = useCartStore();
 
 const cartValue = computed(() => cartStore.cartItemCount);
+const router = useRouter();
 
 onMounted(() => {
   cartStore.initializeCartCount();
@@ -140,6 +142,8 @@ function logout() {
   userStore.resetStore();
   axios.defaults.headers.authorization = '';
   axios.defaults.headers.common['X-User-ID'] = '';
+
+  router.push("/");
 }
 
 </script>

@@ -201,6 +201,8 @@ onMounted(fetchClubDetails);
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
+  margin-bottom: 60px;
+  background-color: #FBE4E1;
 }
 
 .photo-preview {

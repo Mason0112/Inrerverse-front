@@ -1,9 +1,9 @@
 <template>
   <div>
-    <h2 v-if="viewingUserId != currentUserId">
+    <h1 v-if="viewingUserId != currentUserId">
       查看用戶 {{ viewingUserName || '載入中...' }} 的動態牆
-    </h2>
-    <h2 v-else>這是您的個人動態牆</h2>
+    </h1>
+    <h1 v-else>這是您的個人動態牆</h1>
     <!-- 其餘模板保持不變 -->
   </div>
 
@@ -1195,6 +1195,14 @@ post-author {
 }
 .aboutme{
   white-space: pre-wrap;
+  text-align: center;
+}
+
+h1 {
+  color: var(--accent-color);
+  margin-bottom: 25px;
+  font-weight: 700;
+  font-size: 2.2rem;
   text-align: center;
 }
 </style>

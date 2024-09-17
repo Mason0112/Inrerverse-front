@@ -103,11 +103,11 @@
     display: flex;
     flex-direction: column;
     height: 500px;
-    border: 1px solid #fcd9e6;
+    border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     overflow: hidden;
     transition: all 0.3s ease;
-    background-color: #fff0f5;
+    background-color: var(--light-background);
   }
   
   .club-image {
@@ -127,8 +127,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #fde8ef;
-    color: #f8a5c2;
+    background-color: var(--background-color);
+    color: var(--light-text-color);
     font-size: 1.2rem;
   }
   
@@ -141,22 +141,22 @@
     font-size: 1.25rem;
     font-weight: bold;
     margin-bottom: 0.5rem;
-    color: #e3bdbd;
+    color: var(--text-color);
   }
   
   .club-name a {
-    color: #e3bdbd;
+    color: var(--text-color);
     text-decoration: none;
     transition: color 0.3s ease;
   }
   
   .club-name a:hover {
-    color: #d3a9a9;
+    color: var(--accent-color);
   }
   
   .review-status {
-    color: white;
-    background-color: rgba(248, 165, 194, 0.7);
+    color: var(--background-color);
+    background-color: var(--accent-color);
     padding: 0.25rem 0.5rem;
     border-radius: 0.25rem;
     font-size: 0.875rem;
@@ -176,13 +176,13 @@
     border-radius: 0.25rem;
     cursor: pointer;
     transition: all 0.3s ease;
-    background-color: #ff69b4;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--text-color);
     font-size: 1rem;
     font-weight: bold;
   }
   
   .favorite-button:hover {
-    background-color: #ff1493;
+    background-color: var(--secondary-color);
   }
   </style>

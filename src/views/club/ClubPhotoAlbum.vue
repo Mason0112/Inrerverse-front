@@ -62,7 +62,7 @@
     <div v-if="showPhotoModal" class="modal-overlay" @click.self="showPhotoModal = false">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 style="color: #e3bdbd;">所有俱樂部照片</h2>
+          <h2>所有俱樂部照片</h2>
           <button @click="showPhotoModal = false" class="modal-close">✕</button>
         </div>
         <div class="photo-grid-modal">
@@ -233,7 +233,7 @@ onMounted(() => {
   width: 100%;
   padding-top: 100%;
   overflow: hidden;
-  background-color: #f3f3f3;
+  background-color: var(--light-background);
 }
 
 .photo {
@@ -256,7 +256,7 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: var(--background-color);
   font-size: 24px;
   border-radius: 8px;
 }
@@ -268,7 +268,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(107, 81, 71, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -276,7 +276,7 @@ onMounted(() => {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   max-width: 80%;
@@ -288,7 +288,7 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: white;
+  background-color: var(--background-color);
 }
 
 .modal-close {
@@ -296,6 +296,7 @@ onMounted(() => {
   border: none;
   font-size: 1.5em;
   cursor: pointer;
+  color: var(--text-color);
 }
 
 .photo-grid-modal {
@@ -325,18 +326,27 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
+  background-color: rgba(151, 113, 91, 0.7);
+  color: var(--background-color);
   padding: 5px;
-  font-size: 0.8em;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  min-height: 36px; /* 設置最小高度 */
+}
+
+.photo-caption p {
+  margin: 0;
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 24px; /* 確保文字垂直居中 */
 }
 
 .ts-button {
-  background-color: var(--primary-purple); /* 按鈕背景色 */
-  color: white;
+  background-color: var(--primary-color); /* 按鈕背景色 */
+  color: var(--text-color);
   font-weight: bold;
   padding: 12px 24px;
   border: none;
@@ -348,22 +358,69 @@ onMounted(() => {
 }
 
 .ts-button:hover {
-  background-color: var(--secondary-purple); /* 懸停時的背景色變化 */
+  background-color: var(--secondary-color); /* 懸停時的背景色變化 */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* 懸停時加強陰影效果 */
   transform: translateY(-2px); /* 懸停時按鈕微微上移 */
 }
 
 .ts-button:active {
-  background-color: #d1b0ff; /* 按壓時的背景色變化 */
+  background-color: var(--accent-color); /* 按壓時的背景色變化 */
+  color: var(--background-color);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* 按壓時減少陰影 */
   transform: translateY(0); /* 按壓時按鈕恢復原狀 */
 }
 
 /* 按鈕禁用狀態樣式 */
 .ts-button:disabled {
-  background-color: #ccc;
-  color: #666;
+  background-color: var(--light-background);
+  color: var(--light-text-color);
   cursor: not-allowed;
   box-shadow: none;
+}
+
+.ts-button.is-negative {
+  background-color: #e74c3c;
+  color: white;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.2;
+  height: 24px; /* 確保按鈕高度一致 */
+}
+
+.ts-button.is-negative:hover {
+  background-color: #c0392b;
+}
+
+.ts-input input[type="file"] {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 8px;
+  width: 100%;
+  background-color: var(--light-background);
+  color: var(--text-color);
+}
+
+.ts-header {
+  color: var(--accent-color);
+  font-weight: bold;
+}
+
+.ts-header.is-huge {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.ts-header.is-large {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.ts-notice.is-negative {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
 }
 </style>

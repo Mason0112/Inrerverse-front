@@ -336,7 +336,7 @@ defineExpose({ fetchClubEvents });
 }
 
 .event-card {
-  background: #fff;
+  background: var(--light-background);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -366,7 +366,7 @@ defineExpose({ fetchClubEvents });
 
 .event-tag {
   display: inline-block;
-  background: #FFD700;
+  background: var(--secondary-color);
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 12px;
@@ -393,7 +393,7 @@ defineExpose({ fetchClubEvents });
 
 .event-date {
   font-size: 14px;
-  color: #666;
+  color: var(--light-text-color);
   margin-bottom: 5px;
 }
 
@@ -402,8 +402,8 @@ defineExpose({ fetchClubEvents });
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #f0f0f0;
-  color: #999;
+  background: var(--light-background);
+  color: var(--muted-color);
 }
 
 .action-buttons {
@@ -417,11 +417,11 @@ defineExpose({ fetchClubEvents });
 }
 
 .custom-button {
-  background-color: #FFB6C1 !important;
+  background-color: #97715B !important;
   color: #FFF !important;
 }
 
 .custom-button:hover {
-  background-color: #FFA07A !important;
+  background-color: var(--secondary-color) !important;
 }
 </style>

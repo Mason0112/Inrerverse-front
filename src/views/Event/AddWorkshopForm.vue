@@ -161,9 +161,10 @@ const goBack = () => {
   max-width: 600px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: var(--light-background);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 60px;
 }
 
 .form-header {
@@ -181,7 +182,7 @@ const goBack = () => {
 .back-button {
   background: none;
   border: none;
-  color:rgb(177, 151, 252);
+  color:var(--accent-color);
   cursor: pointer;
   font-size: 16px;
   display: flex;
@@ -215,7 +216,7 @@ const goBack = () => {
 label {
   margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
+  color: var(--text-color);
 }
 
 input[type="text"],
@@ -224,20 +225,23 @@ input[type="datetime-local"],
 textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 14px;
+  background-color: white;
+  color: var(--text-color);
 }
 
 input[type="file"] {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   padding: 5px;
   border-radius: 4px;
+  background-color: white;
 }
 
 .submit-button {
-  background-color:  rgb(177, 151, 252);
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   border: none;
   padding: 10px 15px;
   border-radius: 4px;
@@ -247,6 +251,6 @@ input[type="file"] {
 }
 
 .submit-button:hover {
-  background-color: rgb(215, 217, 229);
+  background-color: var(--secondary-color);
 }
 </style>

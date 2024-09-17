@@ -226,21 +226,22 @@ onMounted(() => {
 
 <style scoped>
 /* 主題顏色 */
-:root {
+/* :root {
   --primary-pink: #FFD1DC;
   --secondary-pink: #FFC0CB;
   --primary-purple: #E6E6FA;
   --secondary-purple: #D8BFD8;
   --text-color: #4A4A4A;
-}
+} */
 
 /* 標題樣式 */
 h1 {
-  color: var(--secondary-purple);
-  font-size: 2rem;
+  color: var(--accent-color);
+  font-size: 2.2rem;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 25px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
 }
 
 /* 布局樣式 */
@@ -282,35 +283,36 @@ h1 {
 .club-name {
   font-size: 1.5rem;
   font-weight: bold;
-  color: var(--secondary-purple);
+  color: var(--accent-color);
   margin-bottom: 1rem;
 }
 
 .club-info {
   margin-bottom: 0.5rem;
   line-height: 1.6;
+  color: var(--text-color);
 }
 
 .club-info strong {
-  color: var(--secondary-purple);
+  color: var(--light-text-color);
 }
 
 /* 成員狀態 */
 .member-status {
   text-align: center;
-  color: var(--secondary-purple);
+  color: var(--text-color);
   font-weight: bold;
   margin-top: 1rem;
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background-color: #e6e6fa;
+  background-color: var(--light-background);
   border-radius: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* 按鈕樣式 */
 .styled-button {
-  color: white;
+  color: var(--text-color);
   font-size: 16px;
   font-weight: bold;
   padding: 12px 24px;
@@ -319,23 +321,23 @@ h1 {
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: #e387c4;
+  background-color: var(--primary-color);
 }
 
 .styled-button:hover {
-  background: linear-gradient(90deg, #e143a1, #e387c4);
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   transform: translateY(-2px);
   box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .styled-button:active {
-  background: linear-gradient(90deg, #a84aa4, #ea9de1);
+  background: linear-gradient(90deg, var(--secondary-color), var(--primary-color));
   transform: translateY(0);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .styled-button:disabled {
-  background-color: #cccccc;
+  background-color: var(--light-background);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -356,7 +358,7 @@ h1 {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   position: relative;
@@ -374,7 +376,7 @@ h1 {
   cursor: pointer;
   background: none;
   border: none;
-  color: #888;
+  color: var(--light-text-color);
 }
 
 /* 響應式設計 */
