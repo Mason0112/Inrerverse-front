@@ -254,6 +254,9 @@ body {
 <style scoped>
 .app-container {
   display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background-color: #f4f3f1;
 }
 
 .main-content {

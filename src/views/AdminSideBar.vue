@@ -167,6 +167,7 @@ const isOpen = (categoryName) => openCategories.value.has(categoryName);
   left: 0;
   top: 0;
   overflow-y: auto;
+  min-height: 100vh;
 }
 
 .user-info {
@@ -270,5 +271,11 @@ const isOpen = (categoryName) => openCategories.value.has(categoryName);
 
 .dropdown-content .nav-item {
   padding-left: 20px;
+}
+
+.full-height {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>

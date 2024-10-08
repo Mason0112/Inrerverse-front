@@ -30,7 +30,7 @@
             </ul>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }">我的動態牆</RouterLink>
+            <RouterLink class="nav-link" :to="{ name: 'user-post-link' }" v-show="userStore.isLoggedIn">我的動態牆</RouterLink>
           </li>
           <!-- Other items -->
           <li class="nav-item">
